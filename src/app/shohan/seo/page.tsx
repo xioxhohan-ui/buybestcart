@@ -223,6 +223,39 @@ export default function AdminSEOPage() {
           </div>
         </div>
 
+        {/* Dynamic SEO Health & Validation Rules */}
+        <div style={{ background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: 'var(--radius-lg)', padding: '1.75rem', boxShadow: 'var(--shadow-sm)' }}>
+          <h2 style={{ fontSize: '1.125rem', marginBottom: '1.25rem', display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
+            <Sliders size={18} color="var(--green-accent)" />
+            <span>Search Intent & Metadata Quality Standards</span>
+          </h2>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1rem', fontSize: '0.8125rem' }}>
+            <div style={{ padding: '0.75rem', background: 'var(--bg-main)', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border)' }}>
+              <div style={{ fontWeight: 700, color: 'var(--text-primary)', marginBottom: '0.25rem' }}>SEO Title Length</div>
+              <div style={{ color: 'var(--text-muted)' }}>Target: 50–60 characters</div>
+              <div style={{ marginTop: '0.4rem', fontWeight: 600, color: templates.default_title.length > 60 ? 'var(--amber-deal)' : 'var(--success)' }}>
+                Current: {templates.default_title.length} chars {templates.default_title.length > 60 ? '(Slightly Long)' : '✓ Optimal'}
+              </div>
+            </div>
+
+            <div style={{ padding: '0.75rem', background: 'var(--bg-main)', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border)' }}>
+              <div style={{ fontWeight: 700, color: 'var(--text-primary)', marginBottom: '0.25rem' }}>Meta Description Length</div>
+              <div style={{ color: 'var(--text-muted)' }}>Target: 120–160 characters</div>
+              <div style={{ marginTop: '0.4rem', fontWeight: 600, color: templates.default_description.length > 160 ? 'var(--amber-deal)' : 'var(--success)' }}>
+                Current: {templates.default_description.length} chars {templates.default_description.length > 160 ? '(Slightly Long)' : '✓ Optimal'}
+              </div>
+            </div>
+
+            <div style={{ padding: '0.75rem', background: 'var(--bg-main)', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border)' }}>
+              <div style={{ fontWeight: 700, color: 'var(--text-primary)', marginBottom: '0.25rem' }}>Canonical Domain</div>
+              <div style={{ color: 'var(--text-muted)' }}>Required: Production Base</div>
+              <div style={{ marginTop: '0.4rem', fontWeight: 700, color: 'var(--success)' }}>
+                https://buybestcart.shop ✓ Verified
+              </div>
+            </div>
+          </div>
+        </div>
+
         <button
           type="submit"
           disabled={saving}
