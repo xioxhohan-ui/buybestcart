@@ -93,13 +93,22 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
     notFound();
   }
 
-  // Related products from same category
-  const { data: relatedProducts } = await supabase
+  // Related products from same category or top-rated fallbacks
+  let { data: relatedProducts } = await supabase
     .from('products')
     .select('*, brand:brands(*), category:categories(*)')
     .eq('category_id', product.category_id)
     .neq('id', product.id)
     .limit(3);
+
+  if (!relatedProducts || relatedProducts.length === 0) {
+    const { data: fallbackProds } = await supabase
+      .from('products')
+      .select('*, brand:brands(*), category:categories(*)')
+      .neq('id', product.id)
+      .limit(3);
+    relatedProducts = fallbackProds;
+  }
 
   // FAQs for product or global
   const { data: faqs } = await supabase
@@ -422,11 +431,18 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
         </div>
       </div>
 
-      {/* Related Products */}
+      {/* SIMILAR RECOMMENDATIONS / You May Also Consider */}
       {relatedProducts && relatedProducts.length > 0 && (
-        <section style={{ margin: '4rem 0 2rem 0' }}>
-          <div className="editorial-eyebrow">SIMILAR RECOMMENDATIONS</div>
-          <h2 style={{ marginBottom: '2rem' }}>You May Also Consider</h2>
+        <section style={{ margin: '4rem 0 2rem 0', background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: 'var(--radius-lg)', padding: '2rem', boxShadow: 'var(--shadow-sm)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+            <div>
+              <div className="editorial-eyebrow">SIMILAR RECOMMENDATIONS</div>
+              <h2 style={{ fontSize: '1.5rem', margin: 0 }}>You May Also Consider</h2>
+            </div>
+            <span style={{ fontSize: '0.75rem', fontWeight: 800, color: 'var(--green-accent)', background: 'var(--green-light)', padding: '0.25rem 0.65rem', borderRadius: '999px', border: '1px solid var(--green-border)' }}>
+              {relatedProducts.length} Alternative Recommendations
+            </span>
+          </div>
           <ProductGrid products={(relatedProducts as Product[]) || []} columns={3} />
         </section>
       )}
