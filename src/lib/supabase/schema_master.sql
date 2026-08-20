@@ -194,13 +194,37 @@ CREATE TABLE IF NOT EXISTS public.comparisons (
   slug TEXT NOT NULL UNIQUE,
   description TEXT,
   category_id UUID REFERENCES public.categories(id) ON DELETE SET NULL,
-  product_ids UUID[] DEFAULT '{}',
+  product_a_id UUID REFERENCES public.products(id) ON DELETE SET NULL,
+  product_b_id UUID REFERENCES public.products(id) ON DELETE SET NULL,
   winner_product_id UUID REFERENCES public.products(id) ON DELETE SET NULL,
+  product_ids UUID[] DEFAULT '{}',
   comparison_metrics JSONB DEFAULT '{}',
+  summary TEXT,
   verdict TEXT,
+  key_differences TEXT[] DEFAULT '{}',
   seo_title TEXT,
   seo_description TEXT,
   status TEXT DEFAULT 'published' CHECK (status IN ('draft', 'published', 'archived')),
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- 9b. DEALS & PROMOTIONS
+CREATE TABLE IF NOT EXISTS public.deals (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  title TEXT NOT NULL,
+  product_id UUID REFERENCES public.products(id) ON DELETE SET NULL,
+  deal_price NUMERIC(10, 2),
+  original_price NUMERIC(10, 2),
+  discount_percentage INT,
+  badge TEXT DEFAULT 'Limited Deal',
+  priority INT DEFAULT 1,
+  start_date TIMESTAMPTZ,
+  end_date TIMESTAMPTZ,
+  image_url TEXT,
+  cta_text TEXT DEFAULT 'View Deal',
+  cta_url TEXT,
+  status TEXT DEFAULT 'active' CHECK (status IN ('active', 'scheduled', 'draft', 'expired')),
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
