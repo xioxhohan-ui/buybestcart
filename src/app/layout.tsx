@@ -33,6 +33,9 @@ export async function generateMetadata(): Promise<Metadata> {
       index: true,
       follow: true,
     },
+    verification: {
+      google: 'VGCKTw_xZGWQqX0N2aH6sH0raK0U5G5OOm3TV7Ja9t8',
+    },
   };
 }
 
