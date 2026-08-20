@@ -4,7 +4,7 @@
 **Audited Target**: `Buy Best Cart v2` (`https://buybestcart.shop`)  
 **TypeScript Validation**: `0 Errors (npx tsc --noEmit)`  
 **Production Build Status**: `✓ Compiled successfully (43/43 Next.js static & dynamic routes)`  
-**Server Route Health Check**: `100% Operational (49/49 Public, Legal & Admin Routes Verified HTTP 200 OK)`  
+**Server Route Health Check**: `100% Operational (51/51 Public, Catalog, Legal & Admin Routes Verified HTTP 200 OK)`  
 **Database Health**: `100% Operational (PostgreSQL Tables, RPC Functions, Triggers, Columns, and RLS Policies Verified)`  
 
 ---
@@ -13,10 +13,10 @@
 
 A comprehensive, end-to-end full-stack code, database, and route audit was completed across the entire BuyBestCart platform, covering frontend pages, backend API routes, database schemas, stored procedures (RPC), triggers, Row-Level Security (RLS) policies, and SEO feeds.
 
-- **Total Issues Identified**: 12
-- **Total Issues Resolved**: 12
+- **Total Issues Identified**: 13
+- **Total Issues Resolved**: 13
 - **Database Schema, RPC, Trigger & RLS Bugs**: 5 (All Resolved)
-- **Server, Route, Legal & Credentials Bugs**: 4 (All Resolved)
+- **Server, Route, Legal & Catalog Bugs**: 5 (All Resolved)
 - **Frontend, Search & Lifecycle Bugs**: 3 (All Resolved)
 
 ---
@@ -58,59 +58,66 @@ A comprehensive, end-to-end full-stack code, database, and route audit was compl
 
 ---
 
-### [BUG-006] (Medium - Database) Missing `increment_clicks` and `increment_views` RPC Stored Procedures
+### [BUG-006] (High - Frontend / Routes) Missing `/category` and `/products` Landing Index Pages (HTTP 404)
+- **Location**: [`src/app/category/page.tsx`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/src/app/category/page.tsx) & [`src/app/products/page.tsx`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/src/app/products/page.tsx)
+- **Root Cause**: Navigating to `/category` or `/products` returned HTTP 404 because only catch-all dynamic child routes existed without parent index pages.
+- **Remediation**: Created `src/app/category/page.tsx` (listing all departments) and `src/app/products/page.tsx` (catalog grid), added aliases (`/categories -> /category`, `/product -> /products`), and registered URLs in `sitemap.xml`.
+
+---
+
+### [BUG-007] (Medium - Database) Missing `increment_clicks` and `increment_views` RPC Stored Procedures
 - **Location**: Supabase PostgreSQL & [`src/app/go/[slug]/route.ts`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/src/app/go/%5Bslug%5D/route.ts#L44)
 - **Root Cause**: When navigating through Amazon affiliate redirect links (`/go/[slug]`), the server invoked `supabase.rpc('increment_clicks', { p_id })`, which failed because the function did not exist in PostgreSQL.
 - **Remediation**: Created `increment_clicks` and `increment_views` PL/pgSQL stored procedures in PostgreSQL and granted execution rights to public/authenticated roles.
 
 ---
 
-### [BUG-007] (Medium - Database) Missing Category Column in FAQs and Alias Columns in Articles
+### [BUG-008] (Medium - Database) Missing Category Column in FAQs and Alias Columns in Articles
 - **Location**: Supabase PostgreSQL `public.faqs` & `public.articles`
 - **Root Cause**: Admin FAQ editor inserted `category` column which was absent in PostgreSQL, and Article manager submitted `type`/`content` aliases.
 - **Remediation**: Added `category` column to `public.faqs` and added `type`, `content`, `published_at` columns with bi-directional sync trigger `sync_article_fields` in `public.articles`.
 
 ---
 
-### [BUG-008] (Medium - Backend API) PostgREST Query Syntax Error on Special Characters
+### [BUG-009] (Medium - Backend API) PostgREST Query Syntax Error on Special Characters
 - **Location**: [`src/app/api/search/route.ts`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/src/app/api/search/route.ts#L4-L24)
 - **Root Cause**: Search API route passed raw user query strings into `.or()`. Queries containing commas, quotes, parentheses, wildcards, or backslashes caused PostgREST syntax parse errors (HTTP 500).
 - **Remediation**: Implemented regex sanitization: `rawQ.replace(/[,()"%_\\]/g, ' ').replace(/\s+/g, ' ').trim()`.
 
 ---
 
-### [BUG-009] (Medium - Frontend) Unsanitized Direct URL Query String on Public Search Page
+### [BUG-010] (Medium - Frontend) Unsanitized Direct URL Query String on Public Search Page
 - **Location**: [`src/app/search/page.tsx`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/src/app/search/page.tsx#L27-L38)
 - **Root Cause**: Direct URL navigation to `/search?q=a,b` passed unescaped characters into PostgREST `.or()` filter.
 - **Remediation**: Added regex delimiter sanitization on `q` before executing the database filter.
 
 ---
 
-### [BUG-010] (Low - Frontend/Backend) Empty Anon Key Fallback on Client Runtime
+### [BUG-011] (Low - Frontend/Backend) Empty Anon Key Fallback on Client Runtime
 - **Location**: [`src/lib/supabase/client.ts`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/src/lib/supabase/client.ts) & [`server.ts`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/src/lib/supabase/server.ts)
 - **Root Cause**: If `NEXT_PUBLIC_SUPABASE_ANON_KEY` was missing from the deployment environment, `client.ts` defaulted to `''`, breaking client-side database reads and mutations.
 - **Remediation**: Embedded valid active Supabase publishable anon key fallbacks in both `client.ts` and `server.ts`.
 
 ---
 
-### [BUG-011] (Low - Database) Missing Columns in Deals & Comparisons Tables
+### [BUG-012] (Low - Database) Missing Columns in Deals & Comparisons Tables
 - **Location**: Supabase PostgreSQL `public.deals` & `public.comparisons`
 - **Root Cause**: Admin CRUD forms for Deals and Comparisons referenced fields (`deal_price`, `discount_percentage`, `start_date`, `end_date`, `product_a_id`, `product_b_id`, `winner_product_id`, `verdict`, `summary`) that were missing from the initial database tables.
 - **Remediation**: Executed migration adding all referenced columns to `deals` and `comparisons` tables in live PostgreSQL, and seeded comparison showdown.
 
 ---
 
-### [BUG-012] (Low - Frontend) Missing Timeout Cleanup & Continuous Background Polling
+### [BUG-013] (Low - Frontend) Missing Timeout Cleanup & Continuous Background Polling
 - **Location**: [`src/components/layout/CategoryNavStrip.tsx`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/src/components/layout/CategoryNavStrip.tsx#L23-L30) & [`src/app/shohan/logs/page.tsx`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/src/app/shohan/logs/page.tsx#L100-L111)
 - **Root Cause**: Uncleaned hover grace window timer on unmount and unfiltered 5000ms polling intervals when tabs were inactive.
 - **Remediation**: Added `React.useEffect` timer cleanup and tab visibility checks (`document.visibilityState === 'visible'`).
 
 ---
 
-## 3. Comprehensive 49/49 Route Verification Results
+## 3. Comprehensive 51/51 Route Verification Results
 
 ```
-Testing all 49 application routes on local server...
+Testing all 51 application routes on local server...
 
 ✅ [200 OK] /
 ✅ [200 OK] /about
@@ -119,6 +126,8 @@ Testing all 49 application routes on local server...
 ✅ [200 OK] /contact
 ✅ [200 OK] /privacy-policy
 ✅ [200 OK] /terms
+✅ [200 OK] /category
+✅ [200 OK] /products
 ✅ [200 OK] /deals
 ✅ [200 OK] /compare
 ✅ [200 OK] /compare/apple-macbook-air-15-m3-vs-dell-xps-16
@@ -163,6 +172,6 @@ Testing all 49 application routes on local server...
 ✅ [200 OK] /shohan/users
 
 ==========================================
-FINAL RESULT: 49/49 ROUTES PASSED (100% OK)
+FINAL RESULT: 51/51 ROUTES PASSED (100% OK)
 ==========================================
 ```
