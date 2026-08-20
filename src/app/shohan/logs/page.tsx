@@ -38,7 +38,7 @@ export default function AdminLogsPage() {
 
   const fetchRealtimeLogs = async () => {
     try {
-      const fetchSafe = async (queryPromise: PromiseLike<{ data: unknown }>) => {
+      const fetchSafe = async <T,>(queryPromise: PromiseLike<{ data: T[] | null }>): Promise<{ data: T[] | null }> => {
         try {
           return await queryPromise;
         } catch {
