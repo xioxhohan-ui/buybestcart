@@ -5,6 +5,7 @@ import Footer from '@/components/layout/Footer';
 import SmoothProvider from '@/components/animation/SmoothProvider';
 import { generateWebSiteJsonLd } from '@/lib/seo';
 import { getSiteConfiguration } from '@/lib/settings';
+import { Analytics } from '@vercel/analytics/next';
 
 export async function generateMetadata(): Promise<Metadata> {
   const config = await getSiteConfiguration();
@@ -82,6 +83,7 @@ export default async function RootLayout({
           <main>{children}</main>
           <Footer />
         </SmoothProvider>
+        <Analytics />
       </body>
     </html>
   );
