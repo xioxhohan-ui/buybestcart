@@ -107,6 +107,7 @@ export default function AnimatedHero({
   return (
     <section
       ref={containerRef}
+      className="hero-section"
       style={{
         borderBottom: '1px solid var(--border)',
         background: 'linear-gradient(180deg, #FAF9F5 0%, #F5F3EC 100%)',
@@ -187,6 +188,7 @@ export default function AnimatedHero({
         {/* Featured Editorial Magazine Spread (Luxury Showcase) */}
         <div
           ref={showcaseRef}
+          className="hero-showcase"
           style={{
             background: 'var(--bg-surface)',
             border: '1px solid var(--border)',
@@ -198,7 +200,7 @@ export default function AnimatedHero({
             opacity: 0,
           }}
         >
-          <div style={{ display: 'grid', gridTemplateColumns: 'minmax(280px, 1fr) minmax(320px, 1.2fr)', gap: '2.5rem', alignItems: 'center' }}>
+          <div className="hero-showcase-grid" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1.2fr)', gap: '2.5rem', alignItems: 'center' }}>
             {/* Image Preview */}
             <div
               style={{
@@ -246,7 +248,7 @@ export default function AnimatedHero({
                   </div>
                 </div>
 
-                <div style={{ marginLeft: 'auto', display: 'flex', gap: '0.75rem' }}>
+                <div style={{ marginLeft: 'auto', display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
                   <Link href={`/products/${showcaseItem.slug}`} className="btn btn-secondary btn-sm">
                     In-Depth Review
                   </Link>

@@ -17,7 +17,7 @@ export default function ProductGrid({ products, ranked = false, columns }: Produ
     );
   }
 
-  const gridStyle = columns ? { gridTemplateColumns: `repeat(auto-fill, minmax(280px, 1fr))` } : undefined;
+  const gridStyle = columns ? { gridTemplateColumns: `repeat(auto-fill, minmax(min(100%, 280px), 1fr))` } : undefined;
 
   return (
     <div className="grid-products" style={gridStyle}>

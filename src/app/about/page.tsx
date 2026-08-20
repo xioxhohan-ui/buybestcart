@@ -32,7 +32,7 @@ export default function AboutPage() {
 
         <section>
           <h2 style={{ color: 'var(--text-primary)', marginBottom: '0.75rem' }}>What We Do (And What We Don&apos;t)</h2>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem', marginTop: '1rem' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 260px), 1fr))', gap: '1.5rem', marginTop: '1rem' }}>
             <div style={{ background: 'var(--success-light)', border: '1px solid #bbf7d0', padding: '1.25rem', borderRadius: 'var(--radius)' }}>
               <h3 style={{ color: 'var(--success)', fontSize: '1rem', marginBottom: '0.5rem' }}>✓ What We Do</h3>
               <ul style={{ paddingLeft: '1.25rem', fontSize: '0.9375rem', color: '#166534', display: 'flex', flexDirection: 'column', gap: '0.375rem' }}>

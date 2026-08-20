@@ -53,6 +53,7 @@ export default function CategoryNavStrip() {
 
   return (
     <div
+      className="category-nav-strip"
       onMouseLeave={handleMouseLeave}
       style={{
         position: 'relative',
@@ -74,6 +75,7 @@ export default function CategoryNavStrip() {
       >
         {/* Department Buttons Strip */}
         <div
+          className="category-nav-departments"
           style={{
             display: 'flex',
             alignItems: 'center',

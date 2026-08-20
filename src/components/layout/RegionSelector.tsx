@@ -57,7 +57,7 @@ export default function RegionSelector({ compact = false }: RegionSelectorProps)
       {isOpen && (
         <>
           <div
-            style={{ position: 'fixed', inset: 0, zIndex: 99 }}
+            style={{ position: 'fixed', inset: 0, zIndex: 'var(--z-header, 100)' as unknown as number }}
             onClick={() => setIsOpen(false)}
           />
           <div
@@ -69,7 +69,7 @@ export default function RegionSelector({ compact = false }: RegionSelectorProps)
               border: '1px solid var(--border-strong)',
               borderRadius: 'var(--radius-xs)',
               boxShadow: 'var(--shadow-hover)',
-              zIndex: 100,
+              zIndex: 'var(--z-search-dropdown, 200)' as unknown as number,
               minWidth: '240px',
               padding: '0.375rem',
               display: 'flex',

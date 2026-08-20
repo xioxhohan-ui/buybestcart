@@ -467,7 +467,7 @@ export default function DepartmentDirectDropdown({
         top: '100%',
         left: 0,
         right: 0,
-        zIndex: 9999,
+        zIndex: 'var(--z-search-dropdown, 200)' as unknown as number,
         backgroundColor: 'rgba(28, 25, 23, 0.3)',
         backdropFilter: 'blur(4px)',
         boxShadow: '0 20px 40px rgba(0, 0, 0, 0.1)',

@@ -134,7 +134,7 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
       <Breadcrumbs items={breadcrumbs} />
 
       {/* Main Product Hero Layout */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(320px, 1fr) minmax(380px, 1.2fr)', gap: '2.5rem', margin: '2rem 0 3.5rem 0' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 300px), 1fr))', gap: '2.5rem', margin: '2rem 0 3.5rem 0' }}>
         {/* Left: Product Image & Badges */}
         <div>
           <div
@@ -293,7 +293,7 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
 
         {/* Best For / Why We Like It Grid */}
         {(product.best_for || product.why_we_like_it || product.buying_advice) && (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.25rem', marginBottom: '2rem' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 240px), 1fr))', gap: '1.25rem', marginBottom: '2rem' }}>
             {product.best_for && (
               <div style={{ background: '#FAF9F6', border: '1px solid var(--border)', borderRadius: 'var(--radius-sm)', padding: '1.25rem' }}>
                 <div style={{ fontSize: '0.75rem', fontWeight: 800, color: 'var(--green-accent)', textTransform: 'uppercase', marginBottom: '0.35rem', letterSpacing: '0.06em' }}>
@@ -330,7 +330,7 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
         )}
 
         {/* Pros & Cons Box */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.75rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 250px), 1fr))', gap: '1.75rem' }}>
           {/* Pros */}
           <div style={{ background: 'var(--green-light)', border: '1px solid var(--green-border)', borderRadius: 'var(--radius-sm)', padding: '1.75rem' }}>
             <h3 style={{ color: 'var(--green-dark)', marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '1.0625rem' }}>
@@ -364,7 +364,7 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
 
         {/* Who Should Buy / Avoid */}
         {(product.who_should_buy || product.who_should_avoid) && (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.75rem', marginTop: '1.75rem' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 250px), 1fr))', gap: '1.75rem', marginTop: '1.75rem' }}>
             {product.who_should_buy && (
               <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'flex-start' }}>
                 <ThumbsUp size={18} color="var(--green-accent)" style={{ flexShrink: 0, marginTop: '0.2rem' }} />
@@ -389,7 +389,7 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
       </section>
 
       {/* Technical Specifications Table & Sidebar Ad */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(320px, 1.8fr) minmax(280px, 1fr)', gap: '2.5rem', margin: '3.5rem 0', alignItems: 'start' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))', gap: '2.5rem', margin: '3.5rem 0', alignItems: 'start' }}>
         <div>
           <section>
             <div className="editorial-eyebrow">LAB METRICS</div>

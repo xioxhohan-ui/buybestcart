@@ -76,7 +76,7 @@ export default function CategoryShowcaseGrid({ categories }: CategoryShowcaseGri
         </Link>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '2rem' }}>
+      <div className="category-showcase-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))', gap: '2rem' }}>
         {items.map((cat) => {
           const imgUrl =
             cat.image_url ||

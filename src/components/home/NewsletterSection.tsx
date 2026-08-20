@@ -16,6 +16,7 @@ export default function NewsletterSection() {
   return (
     <section className="container" style={{ margin: '4rem auto' }}>
       <div
+        className="newsletter-grid"
         style={{
           background: 'var(--bg-surface)',
           border: '1px solid var(--border)',
@@ -23,7 +24,7 @@ export default function NewsletterSection() {
           padding: '3.5rem 3rem',
           boxShadow: 'var(--shadow-sm)',
           display: 'grid',
-          gridTemplateColumns: 'minmax(280px, 1.2fr) minmax(280px, 1fr)',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))',
           gap: '3rem',
           alignItems: 'center',
         }}
@@ -64,7 +65,7 @@ export default function NewsletterSection() {
                   required
                   style={{
                     flex: 1,
-                    minWidth: '240px',
+                    minWidth: '0',
                     padding: '0.85rem 1.25rem',
                     border: '1px solid var(--border-strong)',
                     borderRadius: 'var(--radius-sm)',

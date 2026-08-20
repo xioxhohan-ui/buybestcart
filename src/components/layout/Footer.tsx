@@ -89,7 +89,6 @@ export default async function Footer() {
               <li><Link href="/privacy-policy" className="footer-link">Privacy Policy</Link></li>
               <li><Link href="/terms" className="footer-link">Terms of Use</Link></li>
               <li><Link href="/contact" className="footer-link">Contact Editorial Staff</Link></li>
-              <li><Link href="/shohan" className="footer-link" style={{ color: '#57534E' }}>Staff Gateway</Link></li>
             </ul>
           </div>
         </div>

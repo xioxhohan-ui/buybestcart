@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import {
   Menu,
@@ -39,6 +39,17 @@ export default function Header({
   announcementEnabled = true,
 }: HeaderProps) {
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
+
+  useEffect(() => {
+    if (mobileDrawerOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [mobileDrawerOpen]);
 
   const mobileNavCategories = [
     { label: 'Electronics', href: '/category/electronics', icon: Cpu },
@@ -124,68 +135,133 @@ export default function Header({
 
       {/* 04. Mobile Navigation Drawer */}
       {mobileDrawerOpen && (
-        <div className="mobile-drawer">
-          <div className="container" style={{ padding: '1.5rem' }}>
-            <div style={{ marginBottom: '1.5rem' }}>
-              <div style={{ fontSize: '0.75rem', fontWeight: 800, color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '0.75rem', letterSpacing: '0.08em' }}>
-                DEPARTMENTS
-              </div>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.5rem' }}>
-                {mobileNavCategories.map((cat, idx) => {
-                  const Icon = cat.icon;
-                  return (
-                    <Link
-                      key={idx}
-                      href={cat.href}
-                      onClick={() => setMobileDrawerOpen(false)}
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '0.5rem',
-                        padding: '0.625rem 0.75rem',
-                        background: 'var(--bg-subtle)',
-                        borderRadius: 'var(--radius-sm)',
-                        fontSize: '0.8125rem',
-                        fontWeight: 600,
-                        color: 'var(--text-primary)',
-                      }}
-                    >
-                      <Icon size={14} color="var(--green-accent)" />
-                      <span>{cat.label}</span>
-                    </Link>
-                  );
-                })}
-              </div>
+        <>
+          {/* Backdrop overlay */}
+          <div
+            className="mobile-drawer-backdrop"
+            onClick={() => setMobileDrawerOpen(false)}
+            style={{
+              position: 'fixed',
+              inset: 0,
+              background: 'rgba(0,0,0,0.45)',
+              zIndex: 'var(--z-backdrop-overlay, 900)' as unknown as number,
+            }}
+          />
+          <div
+            className="mobile-drawer"
+            style={{
+              position: 'fixed',
+              top: 0,
+              right: 0,
+              bottom: 0,
+              left: 'auto',
+              width: '85vw',
+              maxWidth: '380px',
+              minWidth: '270px',
+              height: '100vh',
+              maxHeight: '100dvh',
+              zIndex: 'var(--z-mobile-drawer, 1000)' as unknown as number,
+              background: 'var(--bg-surface)',
+              boxShadow: '-6px 0 28px rgba(0,0,0,0.18)',
+              overflowY: 'auto',
+              WebkitOverflowScrolling: 'touch',
+              paddingTop: 'env(safe-area-inset-top, 0px)',
+              paddingBottom: 'env(safe-area-inset-bottom, 0px)',
+              paddingRight: 'env(safe-area-inset-right, 0px)',
+            }}
+          >
+            {/* Drawer Header with Close */}
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              padding: '1rem 1.25rem',
+              borderBottom: '1px solid var(--border)',
+            }}>
+              <span style={{ fontFamily: 'var(--font-serif)', fontSize: '1.25rem', fontWeight: 700 }}>
+                {siteName}<span style={{ color: 'var(--green-accent)' }}>.</span>
+              </span>
+              <button
+                onClick={() => setMobileDrawerOpen(false)}
+                style={{
+                  background: 'transparent',
+                  border: '1px solid var(--border-strong)',
+                  borderRadius: 'var(--radius-sm)',
+                  padding: '0.4rem',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: 'var(--text-primary)',
+                }}
+                aria-label="Close menu"
+              >
+                <X size={18} />
+              </button>
             </div>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', borderTop: '1px solid var(--border)', paddingTop: '1.25rem' }}>
-              <Link
-                href="/deals"
-                onClick={() => setMobileDrawerOpen(false)}
-                className="btn btn-primary"
-                style={{ justifyContent: 'center' }}
-              >
-                Today&apos;s Highlighted Deals
-              </Link>
-              <Link
-                href="/guides"
-                onClick={() => setMobileDrawerOpen(false)}
-                className="btn btn-secondary"
-                style={{ justifyContent: 'center' }}
-              >
-                2026 Buying Guides & Reviews
-              </Link>
-              <Link
-                href="/compare"
-                onClick={() => setMobileDrawerOpen(false)}
-                className="btn btn-secondary"
-                style={{ justifyContent: 'center' }}
-              >
-                Compare Flagships Side-by-Side
-              </Link>
+            <div style={{ padding: '1.25rem' }}>
+              <div style={{ marginBottom: '1.5rem' }}>
+                <div style={{ fontSize: '0.75rem', fontWeight: 800, color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '0.75rem', letterSpacing: '0.08em' }}>
+                  DEPARTMENTS
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem' }}>
+                  {mobileNavCategories.map((cat, idx) => {
+                    const Icon = cat.icon;
+                    return (
+                      <Link
+                        key={idx}
+                        href={cat.href}
+                        onClick={() => setMobileDrawerOpen(false)}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '0.5rem',
+                          padding: '0.625rem 0.75rem',
+                          background: 'var(--bg-subtle)',
+                          borderRadius: 'var(--radius-sm)',
+                          fontSize: '0.8125rem',
+                          fontWeight: 600,
+                          color: 'var(--text-primary)',
+                        }}
+                      >
+                        <Icon size={14} color="var(--green-accent)" />
+                        <span>{cat.label}</span>
+                      </Link>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', borderTop: '1px solid var(--border)', paddingTop: '1.25rem' }}>
+                <Link
+                  href="/deals"
+                  onClick={() => setMobileDrawerOpen(false)}
+                  className="btn btn-primary"
+                  style={{ justifyContent: 'center' }}
+                >
+                  Today&apos;s Highlighted Deals
+                </Link>
+                <Link
+                  href="/guides"
+                  onClick={() => setMobileDrawerOpen(false)}
+                  className="btn btn-secondary"
+                  style={{ justifyContent: 'center' }}
+                >
+                  2026 Buying Guides & Reviews
+                </Link>
+                <Link
+                  href="/compare"
+                  onClick={() => setMobileDrawerOpen(false)}
+                  className="btn btn-secondary"
+                  style={{ justifyContent: 'center' }}
+                >
+                  Compare Flagships Side-by-Side
+                </Link>
+              </div>
             </div>
           </div>
-        </div>
+        </>
       )}
     </header>
   );

@@ -58,7 +58,7 @@ export default function AnnouncementBar({
           textAlign: 'center',
         }}
       >
-        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.45rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+        <div className="announcement-text" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.45rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', minWidth: 0, maxWidth: 'calc(100% - 2rem)' }}>
           <Sparkles size={12} color="var(--green-gold, #B38E5D)" />
           <span style={{ fontWeight: 500 }}>{text}</span>
           {linkText && linkUrl && (
