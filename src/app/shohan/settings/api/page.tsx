@@ -149,7 +149,7 @@ export default function AdminApiSettingsPage() {
                 padding: '1.5rem',
                 display: 'flex',
                 flexDirection: 'column',
-                justify: 'space-between',
+                justifyContent: 'space-between',
                 boxShadow: 'var(--shadow-sm)',
               }}
             >
