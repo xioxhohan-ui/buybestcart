@@ -116,7 +116,10 @@ export default function AdminProductsPage() {
   const fetchData = async () => {
     setLoading(true);
     const [prodRes, brandRes, catRes] = await Promise.all([
-      supabase.from('products').select('*, brand:brands(*), category:categories(*)').order('created_at', { ascending: false }),
+      supabase
+        .from('products')
+        .select('*, brand:brands(*), category:categories(*), specifications:product_specifications(*), features:product_features(*), images:product_images(*)')
+        .order('created_at', { ascending: false }),
       supabase.from('brands').select('id, name, slug').order('name', { ascending: true }),
       supabase.from('categories').select('id, name, slug').order('name', { ascending: true }),
     ]);
@@ -413,29 +416,83 @@ export default function AdminProductsPage() {
       updated_at: new Date().toISOString(),
     };
 
+    let savedProductId: string | null = null;
+
     if (editingProduct) {
       const { error } = await supabase
         .from('products')
         .update(payload)
         .eq('id', editingProduct.id);
 
-      if (!error) {
-        setShowModal(false);
-        await fetchData();
-        triggerRevalidation();
-      } else {
+      if (error) {
         alert(`Error updating product: ${error.message}`);
+        return;
       }
+      savedProductId = editingProduct.id;
     } else {
-      const { error } = await supabase.from('products').insert(payload);
+      const { data, error } = await supabase
+        .from('products')
+        .insert(payload)
+        .select('id')
+        .single();
 
-      if (!error) {
-        setShowModal(false);
-        await fetchData();
-        triggerRevalidation();
-      } else {
+      if (error) {
         alert(`Error creating product: ${error.message}`);
+        return;
       }
+      savedProductId = data?.id || null;
+    }
+
+    if (savedProductId) {
+      try {
+        // Sync gallery images
+        await supabase.from('product_images').delete().eq('product_id', savedProductId);
+        const validImages = galleryImages
+          .filter((img) => img.url && img.url.trim())
+          .map((img, idx) => ({
+            product_id: savedProductId,
+            url: img.url.trim(),
+            alt_text: img.alt_text || formData.title,
+            is_primary: !!img.is_primary,
+            display_order: idx + 1,
+          }));
+        if (validImages.length > 0) {
+          await supabase.from('product_images').insert(validImages);
+        }
+
+        // Sync features
+        await supabase.from('product_features').delete().eq('product_id', savedProductId);
+        const validFeatures = featureRows
+          .filter((f) => f.feature && f.feature.trim())
+          .map((f, idx) => ({
+            product_id: savedProductId,
+            feature: f.feature.trim(),
+            display_order: idx + 1,
+          }));
+        if (validFeatures.length > 0) {
+          await supabase.from('product_features').insert(validFeatures);
+        }
+
+        // Sync specifications
+        await supabase.from('product_specifications').delete().eq('product_id', savedProductId);
+        const validSpecs = specRows
+          .filter((s) => s.spec_key && s.spec_key.trim())
+          .map((s, idx) => ({
+            product_id: savedProductId,
+            spec_key: s.spec_key.trim(),
+            spec_value: s.spec_value ? s.spec_value.trim() : '',
+            display_order: idx + 1,
+          }));
+        if (validSpecs.length > 0) {
+          await supabase.from('product_specifications').insert(validSpecs);
+        }
+      } catch (childErr) {
+        console.warn('Notice syncing product specifications or features:', childErr);
+      }
+
+      setShowModal(false);
+      await fetchData();
+      triggerRevalidation();
     }
   };
 
