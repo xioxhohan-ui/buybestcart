@@ -101,6 +101,8 @@ html {
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
   -webkit-text-size-adjust: 100%;
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 body {
@@ -110,6 +112,8 @@ body {
   background-color: var(--bg-main);
   overflow-x: hidden;
   width: 100%;
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 main {
@@ -1086,7 +1090,7 @@ section,
   }
 
   /* Scrollable Tables */
-  .editorial-[#table],
+  .table-responsive,
   .editorial-table {
     display: block;
     width: 100%;
