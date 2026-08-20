@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase/client';
+import { triggerRevalidation } from '@/lib/revalidate';
 import { Product, Brand, Category, ProductStatus, ProductContentSource, ProductImage, ProductFeature, ProductSpecification } from '@/types';
 import {
   Package,
@@ -348,6 +349,7 @@ export default function AdminProductsPage() {
       if (!error) {
         setShowModal(false);
         fetchData();
+        triggerRevalidation();
       } else {
         alert(`Error updating product: ${error.message}`);
       }
@@ -357,6 +359,7 @@ export default function AdminProductsPage() {
       if (!error) {
         setShowModal(false);
         fetchData();
+        triggerRevalidation();
       } else {
         alert(`Error creating product: ${error.message}`);
       }
@@ -367,6 +370,7 @@ export default function AdminProductsPage() {
     if (confirm(`Are you sure you want to delete product "${title}"?`)) {
       await supabase.from('products').delete().eq('id', id);
       fetchData();
+      triggerRevalidation();
     }
   };
 

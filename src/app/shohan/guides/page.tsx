@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase/client';
+import { triggerRevalidation } from '@/lib/revalidate';
 import { Article } from '@/types';
 import { BookOpen, Plus, Trash2, Edit3, Eye, CheckCircle2, Clock } from 'lucide-react';
 import Link from 'next/link';
@@ -98,6 +99,7 @@ export default function AdminBuyingGuidesPage() {
       if (!error) {
         setShowModal(false);
         fetchGuides();
+        triggerRevalidation();
       } else {
         alert(`Error updating guide: ${error.message}`);
       }
@@ -111,6 +113,7 @@ export default function AdminBuyingGuidesPage() {
       if (!error) {
         setShowModal(false);
         fetchGuides();
+        triggerRevalidation();
       } else {
         alert(`Error creating guide: ${error.message}`);
       }
@@ -121,6 +124,7 @@ export default function AdminBuyingGuidesPage() {
     if (confirm(`Delete buying guide "${title}"?`)) {
       await supabase.from('articles').delete().eq('id', id);
       fetchGuides();
+      triggerRevalidation();
     }
   };
 

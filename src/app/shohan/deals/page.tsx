@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase/client';
+import { triggerRevalidation } from '@/lib/revalidate';
 import { Deal, Product, DealStatus } from '@/types';
 import {
   Flame,
@@ -186,6 +187,7 @@ export default function AdminDealsPage() {
       if (!error) {
         setShowModal(false);
         fetchData();
+        triggerRevalidation();
       } else {
         alert(`Error updating deal: ${error.message}`);
       }
@@ -195,6 +197,7 @@ export default function AdminDealsPage() {
       if (!error) {
         setShowModal(false);
         fetchData();
+        triggerRevalidation();
       } else {
         alert(`Error creating deal: ${error.message}`);
       }
@@ -205,6 +208,7 @@ export default function AdminDealsPage() {
     if (confirm(`Delete deal "${title}"?`)) {
       await supabase.from('deals').delete().eq('id', id);
       fetchData();
+      triggerRevalidation();
     }
   };
 

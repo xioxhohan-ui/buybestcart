@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase/client';
+import { triggerRevalidation } from '@/lib/revalidate';
 import { Category } from '@/types';
 import {
   FolderTree,
@@ -136,6 +137,7 @@ export default function AdminCategoriesPage() {
       if (!error) {
         setShowModal(false);
         fetchCategories();
+        triggerRevalidation();
       } else {
         alert(`Error updating category: ${error.message}`);
       }
@@ -145,6 +147,7 @@ export default function AdminCategoriesPage() {
       if (!error) {
         setShowModal(false);
         fetchCategories();
+        triggerRevalidation();
       } else {
         alert(`Error creating category: ${error.message}`);
       }
@@ -155,6 +158,7 @@ export default function AdminCategoriesPage() {
     if (confirm(`Delete department/category "${name}"?`)) {
       await supabase.from('categories').delete().eq('id', id);
       fetchCategories();
+      triggerRevalidation();
     }
   };
 
