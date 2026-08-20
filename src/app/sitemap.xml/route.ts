@@ -10,12 +10,20 @@ export async function GET() {
   try {
     const supabase = createServerClient();
 
+    const fetchSafe = async <T,>(queryPromise: PromiseLike<{ data: T[] | null }>): Promise<{ data: T[] | null }> => {
+      try {
+        return await queryPromise;
+      } catch {
+        return { data: null };
+      }
+    };
+
     // Fetch database items safely with timeouts/fallbacks
     const [productsRes, categoriesRes, articlesRes, brandsRes] = await Promise.all([
-      supabase.from('products').select('slug, updated_at').in('status', ['active', 'featured']).catch(() => ({ data: null })),
-      supabase.from('categories').select('slug, updated_at').eq('is_active', true).catch(() => ({ data: null })),
-      supabase.from('articles').select('slug, updated_at').eq('status', 'published').catch(() => ({ data: null })),
-      supabase.from('brands').select('slug, updated_at').eq('is_active', true).catch(() => ({ data: null })),
+      fetchSafe(supabase.from('products').select('slug, updated_at').in('status', ['active', 'featured'])),
+      fetchSafe(supabase.from('categories').select('slug, updated_at').eq('is_active', true)),
+      fetchSafe(supabase.from('articles').select('slug, updated_at').eq('status', 'published')),
+      fetchSafe(supabase.from('brands').select('slug, updated_at').eq('is_active', true)),
     ]);
 
     const products = productsRes.data || [];
