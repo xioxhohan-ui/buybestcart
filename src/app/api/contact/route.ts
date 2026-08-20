@@ -9,39 +9,43 @@ export async function POST(request: Request) {
 
     if (!name || !email || !message) {
       return NextResponse.json(
-        { error: 'Name, email, and message are required fields.' },
+        { success: false, error: 'Name, email, and message are required fields.' },
         { status: 400 }
       );
     }
 
     const supabase = createServerClient();
+    const sanitizedSubject = subject || 'Editorial Inquiry';
+    const now = new Date().toISOString();
 
-    // 1. Log contact message to system_logs for real-time admin notification
-    await supabase.from('system_logs').insert([
+    // 1. Insert into messages table
+    const { error: msgErr } = await supabase.from('messages').insert([
       {
-        level: 'info',
-        category: 'contact_message',
-        message: `New editorial inquiry from ${name} (${email}): "${subject || 'General'}"`,
-        metadata: { name, email, subject: subject || 'General Inquiry', message },
+        name,
+        email,
+        subject: sanitizedSubject,
+        message,
+        status: 'unread',
+        created_at: now,
       },
     ]);
 
-    // 2. Try inserting into messages table if schema exists
-    try {
-      await supabase.from('messages').insert([
-        {
-          name,
-          email,
-          subject: subject || 'General Inquiry',
-          message,
-          status: 'unread',
-        },
-      ]);
-    } catch {
-      // Ignore if messages table schema is not initialized yet
+    // 2. Insert into system_logs table
+    const { error: logErr } = await supabase.from('system_logs').insert([
+      {
+        level: 'info',
+        category: 'contact_message',
+        message: `New contact message from ${name} (${email}): ${sanitizedSubject}`,
+        metadata: { name, email, subject: sanitizedSubject, message },
+        created_at: now,
+      },
+    ]);
+
+    if (msgErr && logErr) {
+      console.warn('Supabase log insert notice:', msgErr.message || logErr.message);
     }
 
-    // 3. Trigger real-time cache revalidation for admin logs and dashboard
+    // 3. Revalidate cache for real-time admin update
     await triggerRevalidation();
 
     return NextResponse.json({

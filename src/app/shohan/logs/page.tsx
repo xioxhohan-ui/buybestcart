@@ -39,10 +39,10 @@ export default function AdminLogsPage() {
   const fetchRealtimeLogs = async () => {
     try {
       const [messagesRes, systemLogsRes, clicksRes, searchRes] = await Promise.all([
-        supabase.from('messages').select('*').order('created_at', { ascending: false }).limit(30),
-        supabase.from('system_logs').select('*').eq('category', 'contact_message').order('created_at', { ascending: false }).limit(30),
-        supabase.from('affiliate_clicks').select('*').order('created_at', { ascending: false }).limit(30),
-        supabase.from('search_logs').select('*').order('created_at', { ascending: false }).limit(30),
+        supabase.from('messages').select('*').order('created_at', { ascending: false }).limit(30).catch(() => ({ data: null })),
+        supabase.from('system_logs').select('*').eq('category', 'contact_message').order('created_at', { ascending: false }).limit(30).catch(() => ({ data: null })),
+        supabase.from('affiliate_clicks').select('*').order('created_at', { ascending: false }).limit(30).catch(() => ({ data: null })),
+        supabase.from('search_logs').select('*').order('created_at', { ascending: false }).limit(30).catch(() => ({ data: null })),
       ]);
 
       const formattedMessages: ContactMessageItem[] = [];
