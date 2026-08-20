@@ -76,6 +76,22 @@ export default async function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
+        {process.env.NODE_ENV === 'development' && (
+          <script
+            dangerouslySetInnerHTML={{
+              __html: `
+                if (typeof window !== 'undefined') {
+                  window.addEventListener('load', () => {
+                    const docEl = document.documentElement;
+                    if (docEl.scrollWidth > docEl.clientWidth) {
+                      console.warn('[Overflow Check] Horizontal overflow detected: scrollWidth (' + docEl.scrollWidth + ') > clientWidth (' + docEl.clientWidth + ')');
+                    }
+                  });
+                }
+              `,
+            }}
+          />
+        )}
       </head>
       <body>
         <SmoothProvider>

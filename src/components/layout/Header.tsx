@@ -39,6 +39,7 @@ export default function Header({
   announcementEnabled = true,
 }: HeaderProps) {
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
+  const [departmentsExpanded, setDepartmentsExpanded] = useState(true);
 
   useEffect(() => {
     if (mobileDrawerOpen) {
@@ -50,6 +51,26 @@ export default function Header({
       document.body.style.overflow = '';
     };
   }, [mobileDrawerOpen]);
+
+  // Escape key handler & Resize listener
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setMobileDrawerOpen(false);
+      }
+    };
+    const handleResize = () => {
+      if (window.innerWidth > 1024) {
+        setMobileDrawerOpen(false);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('resize', handleResize);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
 
   const mobileNavCategories = [
     { label: 'Electronics', href: '/category/electronics', icon: Cpu },
@@ -201,36 +222,63 @@ export default function Header({
             </div>
 
             <div style={{ padding: '1.25rem' }}>
+              {/* Compact Drawer Search Bar */}
+              <div style={{ marginBottom: '1.25rem' }}>
+                <SearchBar />
+              </div>
+
+              {/* Accordion Departments Section */}
               <div style={{ marginBottom: '1.5rem' }}>
-                <div style={{ fontSize: '0.75rem', fontWeight: 800, color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '0.75rem', letterSpacing: '0.08em' }}>
-                  DEPARTMENTS
-                </div>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem' }}>
-                  {mobileNavCategories.map((cat, idx) => {
-                    const Icon = cat.icon;
-                    return (
-                      <Link
-                        key={idx}
-                        href={cat.href}
-                        onClick={() => setMobileDrawerOpen(false)}
-                        style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '0.5rem',
-                          padding: '0.625rem 0.75rem',
-                          background: 'var(--bg-subtle)',
-                          borderRadius: 'var(--radius-sm)',
-                          fontSize: '0.8125rem',
-                          fontWeight: 600,
-                          color: 'var(--text-primary)',
-                        }}
-                      >
-                        <Icon size={14} color="var(--green-accent)" />
-                        <span>{cat.label}</span>
-                      </Link>
-                    );
-                  })}
-                </div>
+                <button
+                  onClick={() => setDepartmentsExpanded(!departmentsExpanded)}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    width: '100%',
+                    background: 'transparent',
+                    border: 'none',
+                    padding: '0.25rem 0',
+                    cursor: 'pointer',
+                    marginBottom: '0.75rem',
+                  }}
+                >
+                  <span style={{ fontSize: '0.75rem', fontWeight: 800, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                    DEPARTMENTS
+                  </span>
+                  <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                    {departmentsExpanded ? '▲' : '▼'}
+                  </span>
+                </button>
+
+                {departmentsExpanded && (
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '0.4rem' }}>
+                    {mobileNavCategories.map((cat, idx) => {
+                      const Icon = cat.icon;
+                      return (
+                        <Link
+                          key={idx}
+                          href={cat.href}
+                          onClick={() => setMobileDrawerOpen(false)}
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '0.625rem',
+                            padding: '0.625rem 0.75rem',
+                            background: 'var(--bg-subtle)',
+                            borderRadius: 'var(--radius-sm)',
+                            fontSize: '0.8125rem',
+                            fontWeight: 600,
+                            color: 'var(--text-primary)',
+                          }}
+                        >
+                          <Icon size={15} color="var(--green-accent)" />
+                          <span>{cat.label}</span>
+                        </Link>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', borderTop: '1px solid var(--border)', paddingTop: '1.25rem' }}>
