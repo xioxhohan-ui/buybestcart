@@ -3,6 +3,7 @@ const nextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
   compress: true,
+  transpilePackages: ['gsap'],
   images: {
     formats: ['image/avif', 'image/webp'],
     remotePatterns: [
