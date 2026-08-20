@@ -114,6 +114,8 @@ export async function GET() {
 
     // 1. Static Core Landing Pages (Canonical HTTP 200)
     addUrl('/', new Date(), 'daily', '1.0');
+    addUrl('/products', new Date(), 'daily', '0.9');
+    addUrl('/category', new Date(), 'weekly', '0.8');
     addUrl('/deals', new Date(), 'hourly', '0.9');
     addUrl('/compare', new Date(), 'weekly', '0.8');
     addUrl('/guides', new Date(), 'daily', '0.8');

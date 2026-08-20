@@ -98,6 +98,16 @@ const nextConfig = {
         destination: '/affiliate-disclosure',
         permanent: true,
       },
+      {
+        source: '/categories',
+        destination: '/category',
+        permanent: true,
+      },
+      {
+        source: '/product',
+        destination: '/products',
+        permanent: true,
+      },
     ];
   },
 };
