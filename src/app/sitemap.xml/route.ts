@@ -19,7 +19,7 @@ export async function GET() {
 
     // Fetch database items safely with timeouts/fallbacks
     const [productsRes, categoriesRes, articlesRes, comparisonsRes, brandsRes] = await Promise.all([
-      fetchSafe(supabase.from('products').select('slug, updated_at').in('status', ['active', 'featured'])),
+      fetchSafe(supabase.from('products').select('slug, title, thumbnail_url, updated_at')),
       fetchSafe(supabase.from('categories').select('slug, updated_at').eq('is_active', true)),
       fetchSafe(supabase.from('articles').select('slug, updated_at').eq('status', 'published')),
       fetchSafe(supabase.from('comparisons').select('slug, updated_at').eq('is_active', true)),
@@ -32,9 +32,19 @@ export async function GET() {
     const comparisons = comparisonsRes.data || [];
     const brands = brandsRes.data || [];
 
-    const urlMap = new Map<string, { loc: string; lastmod: string; changefreq: string; priority: string }>();
+    const urlMap = new Map<
+      string,
+      { loc: string; lastmod: string; changefreq: string; priority: string; image_url?: string; image_title?: string }
+    >();
 
-    const addUrl = (url: string, lastmodDate: string | Date | undefined, changefreq: string, priority: string) => {
+    const addUrl = (
+      url: string,
+      lastmodDate: string | Date | undefined,
+      changefreq: string,
+      priority: string,
+      imageUrl?: string,
+      imageTitle?: string
+    ) => {
       const cleanUrl = url.replace(/https?:\/\/(www\.)?bestbuycart\.com/g, SITE_URL).replace(/\/$/, '');
       const loc = cleanUrl || SITE_URL;
 
@@ -51,11 +61,13 @@ export async function GET() {
           lastmod: isoDate,
           changefreq,
           priority,
+          image_url: imageUrl,
+          image_title: imageTitle,
         });
       }
     };
 
-    // 1. Static Pages
+    // 1. Static Core Landing Pages
     addUrl(`${SITE_URL}`, new Date(), 'daily', '1.0');
     addUrl(`${SITE_URL}/deals`, new Date(), 'hourly', '0.9');
     addUrl(`${SITE_URL}/compare`, new Date(), 'weekly', '0.8');
@@ -66,24 +78,24 @@ export async function GET() {
     addUrl(`${SITE_URL}/contact`, new Date(), 'monthly', '0.5');
     addUrl(`${SITE_URL}/search`, new Date(), 'weekly', '0.5');
 
-    // 2. Categories / Departments
+    // 2. Published Categories & Departments
     categories.forEach((c: { slug?: string; updated_at?: string }) => {
       if (c.slug) {
         addUrl(`${SITE_URL}/category/${c.slug}`, c.updated_at, 'weekly', '0.8');
       }
     });
 
-    // 3. Published Products
-    products.forEach((p: { slug?: string; updated_at?: string }) => {
+    // 3. Published Catalog Products with Image SEO
+    products.forEach((p: { slug?: string; title?: string; thumbnail_url?: string; updated_at?: string }) => {
       if (p.slug) {
-        addUrl(`${SITE_URL}/products/${p.slug}`, p.updated_at, 'daily', '0.8');
+        addUrl(`${SITE_URL}/products/${p.slug}`, p.updated_at, 'daily', '0.9', p.thumbnail_url, p.title);
       }
     });
 
     // 4. Published Articles & Buying Guides
     articles.forEach((a: { slug?: string; updated_at?: string }) => {
       if (a.slug) {
-        addUrl(`${SITE_URL}/guides/${a.slug}`, a.updated_at, 'weekly', '0.7');
+        addUrl(`${SITE_URL}/guides/${a.slug}`, a.updated_at, 'weekly', '0.8');
       }
     });
 
@@ -101,9 +113,9 @@ export async function GET() {
       }
     });
 
-    // Build XML Content
+    // Build Valid Google XML Content with Image Namespace
     let xml = `<?xml version="1.0" encoding="UTF-8"?>\n`;
-    xml += `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`;
+    xml += `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">\n`;
 
     for (const item of urlMap.values()) {
       xml += `  <url>\n`;
@@ -111,6 +123,14 @@ export async function GET() {
       xml += `    <lastmod>${item.lastmod}</lastmod>\n`;
       xml += `    <changefreq>${item.changefreq}</changefreq>\n`;
       xml += `    <priority>${item.priority}</priority>\n`;
+      if (item.image_url) {
+        xml += `    <image:image>\n`;
+        xml += `      <image:loc>${escapeXml(item.image_url)}</image:loc>\n`;
+        if (item.image_title) {
+          xml += `      <image:title>${escapeXml(item.image_title)}</image:title>\n`;
+        }
+        xml += `    </image:image>\n`;
+      }
       xml += `  </url>\n`;
     }
 
