@@ -21,6 +21,7 @@ import {
   ChevronUp,
   Info,
   Mail,
+  Search,
 } from 'lucide-react';
 import SearchBar from '../common/SearchBar';
 import RegionSelector from './RegionSelector';
@@ -44,6 +45,7 @@ export default function Header({
   announcementEnabled = true,
 }: HeaderProps) {
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
+  const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
   const [departmentsExpanded, setDepartmentsExpanded] = useState(true);
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
 
@@ -210,8 +212,8 @@ export default function Header({
             <span className="logo-brand-dot">.</span>
           </Link>
 
-          {/* Search Bar */}
-          <div style={{ flex: '1 1 320px', maxWidth: '420px', minWidth: '180px', margin: '0 0.75rem' }}>
+          {/* Full Search Bar (Desktop) */}
+          <div className="desktop-search-container">
             <SearchBar />
           </div>
 
@@ -242,12 +244,37 @@ export default function Header({
             </ul>
           </nav>
 
-          {/* Right Utilities: Regional Storefront & Currency Selector & Universal Burger Menu */}
+          {/* Right Utilities: Mobile Search Icon + Single Currency Selector + Regional Selector (Desktop) + Burger Menu (Mobile) */}
           <div className="header-actions">
-            <CurrencySelector />
-            <RegionSelector />
+            {/* Mobile Search Icon Trigger */}
+            <button
+              type="button"
+              className="mobile-search-trigger-btn"
+              onClick={() => setMobileSearchOpen(!mobileSearchOpen)}
+              aria-label="Search"
+              style={{
+                background: 'transparent',
+                border: 'none',
+                padding: '0.35rem',
+                cursor: 'pointer',
+                color: 'var(--text-primary)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <Search size={20} />
+            </button>
 
-            {/* Universal Burger Menu Trigger Button */}
+            {/* SINGLE Currency Selector (Applies across Mobile Icon & Desktop Label modes) */}
+            <CurrencySelector />
+
+            {/* Desktop Regional Storefront Selector */}
+            <div className="desktop-region-container">
+              <RegionSelector />
+            </div>
+
+            {/* Universal Burger Menu Trigger Button (Visible <=1024px, Hidden >1024px) */}
             <button
               className="burger-menu-btn"
               onClick={() => setMobileDrawerOpen(!mobileDrawerOpen)}
@@ -258,6 +285,21 @@ export default function Header({
             </button>
           </div>
         </div>
+
+        {/* Mobile Search Overlay Bar */}
+        {mobileSearchOpen && (
+          <div
+            className="mobile-search-overlay-bar"
+            style={{
+              background: 'var(--bg-surface)',
+              borderTop: '1px solid var(--border)',
+              padding: '0.75rem 1rem',
+              boxShadow: 'var(--shadow)',
+            }}
+          >
+            <SearchBar />
+          </div>
+        )}
       </div>
 
       {/* 03. Category Navigation Strip with Direct 1-to-1 Dropdowns */}

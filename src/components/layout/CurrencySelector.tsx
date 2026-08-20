@@ -44,6 +44,7 @@ export default function CurrencySelector({ onCurrencyChange, compact = false }: 
     <div style={{ position: 'relative', display: 'inline-block' }}>
       <button
         onClick={() => setIsOpen(!isOpen)}
+        className="currency-selector-btn"
         style={{
           display: 'flex',
           alignItems: 'center',
@@ -62,9 +63,11 @@ export default function CurrencySelector({ onCurrencyChange, compact = false }: 
         }}
         aria-label="Select Currency"
       >
-        <DollarSign size={13} color="var(--green-gold)" />
-        <span>{current.code}</span>
-        <span style={{ color: 'var(--text-muted)', fontSize: '0.6875rem' }}>({current.symbol})</span>
+        <DollarSign size={16} color="var(--green-gold)" />
+        <span className="currency-selector-text" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}>
+          <span>{current.code}</span>
+          <span style={{ color: 'var(--text-muted)', fontSize: '0.6875rem' }}>({current.symbol})</span>
+        </span>
         <ChevronDown size={13} color="var(--text-muted)" />
       </button>
 

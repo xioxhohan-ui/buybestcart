@@ -888,6 +888,25 @@ section,
   .admin-mobile-toggle {
     display: none !important;
   }
+  .burger-menu-btn {
+    display: none !important;
+  }
+  .mobile-search-trigger-btn {
+    display: none !important;
+  }
+  .desktop-search-container {
+    display: flex !important;
+    flex: 1 1 320px;
+    max-width: 420px;
+    min-width: 180px;
+    margin: 0 0.75rem;
+  }
+  .desktop-region-container {
+    display: block !important;
+  }
+  .currency-selector-text {
+    display: inline-flex !important;
+  }
 }
 @media (min-width: 1025px) and (max-width: 1199px) {
   .nav-links {
@@ -909,6 +928,21 @@ section,
 /* ---- 05. PORTRAIT LAPTOPS & IPAD PRO LANDSCAPE (821px – 1024px) ---- */
 @media (max-width: 1024px) {
   .nav-links {
+    display: none !important;
+  }
+  .burger-menu-btn {
+    display: inline-flex !important;
+  }
+  .mobile-search-trigger-btn {
+    display: inline-flex !important;
+  }
+  .desktop-search-container {
+    display: none !important;
+  }
+  .desktop-region-container {
+    display: none !important;
+  }
+  .currency-selector-text {
     display: none !important;
   }
   .admin-desktop-sidebar {
