@@ -5,11 +5,20 @@ export const revalidate = 0;
 
 const SITE_URL = 'https://buybestcart.shop';
 
+interface UrlEntry {
+  loc: string;
+  lastmod: string;
+  changefreq: string;
+  priority: string;
+  imageUrl?: string;
+  imageTitle?: string;
+}
+
 export async function GET() {
   try {
     const supabase = createServerClient();
 
-    const fetchSafe = async <T,>(queryPromise: PromiseLike<{ data: T[] | null }>): Promise<{ data: T[] | null }> => {
+    const fetchSafe = async <T>(queryPromise: PromiseLike<{ data: T[] | null }>): Promise<{ data: T[] | null }> => {
       try {
         return await queryPromise;
       } catch {
@@ -17,36 +26,71 @@ export async function GET() {
       }
     };
 
-    // Fetch database items safely with timeouts/fallbacks
-    const [productsRes, categoriesRes, articlesRes, comparisonsRes, brandsRes] = await Promise.all([
-      fetchSafe(supabase.from('products').select('slug, title, thumbnail_url, updated_at')),
-      fetchSafe(supabase.from('categories').select('slug, updated_at').eq('is_active', true)),
-      fetchSafe(supabase.from('articles').select('slug, updated_at').eq('status', 'published')),
-      fetchSafe(supabase.from('comparisons').select('slug, updated_at').eq('is_active', true)),
-      fetchSafe(supabase.from('brands').select('slug, updated_at').eq('is_active', true)),
+    // Fetch database items safely with strict status filters for public content
+    const [productsRes, categoriesRes, articlesRes, comparisonsRes] = await Promise.all([
+      fetchSafe(
+        supabase
+          .from('products')
+          .select('slug, title, thumbnail_url, updated_at')
+          .in('status', ['active', 'featured', 'published'])
+      ),
+      fetchSafe(
+        supabase
+          .from('categories')
+          .select('slug, updated_at')
+          .eq('is_active', true)
+      ),
+      fetchSafe(
+        supabase
+          .from('articles')
+          .select('slug, updated_at, modified_date')
+          .eq('status', 'published')
+      ),
+      fetchSafe(
+        supabase
+          .from('comparisons')
+          .select('slug, updated_at')
+          .eq('status', 'published')
+      ),
     ]);
 
     const products = productsRes.data || [];
     const categories = categoriesRes.data || [];
     const articles = articlesRes.data || [];
     const comparisons = comparisonsRes.data || [];
-    const brands = brandsRes.data || [];
 
-    const urlMap = new Map<
-      string,
-      { loc: string; lastmod: string; changefreq: string; priority: string; image_url?: string; image_title?: string }
-    >();
+    const urlMap = new Map<string, UrlEntry>();
 
     const addUrl = (
-      url: string,
+      urlPath: string,
       lastmodDate: string | Date | undefined,
       changefreq: string,
       priority: string,
       imageUrl?: string,
       imageTitle?: string
     ) => {
-      const cleanUrl = url.replace(/https?:\/\/(www\.)?bestbuycart\.com/g, SITE_URL).replace(/\/$/, '');
-      const loc = cleanUrl || SITE_URL;
+      if (!urlPath) return;
+
+      // Ensure proper full URL with SITE_URL domain and no trailing slash (except root)
+      let cleanPath = urlPath
+        .replace(/^https?:\/\/[^\/]+/, '')
+        .replace(/\/$/, '');
+
+      if (!cleanPath.startsWith('/')) {
+        cleanPath = '/' + cleanPath;
+      }
+
+      const loc = cleanPath === '/' ? SITE_URL : `${SITE_URL}${cleanPath}`;
+
+      // Filter out admin, private, api, affiliate, or search routes
+      if (
+        cleanPath.startsWith('/shohan') ||
+        cleanPath.startsWith('/api') ||
+        cleanPath.startsWith('/go') ||
+        cleanPath.startsWith('/search')
+      ) {
+        return;
+      }
 
       let isoDate: string;
       try {
@@ -55,61 +99,61 @@ export async function GET() {
         isoDate = new Date().toISOString();
       }
 
+      // Deduplicate: preserve first entry or update if richer data
       if (!urlMap.has(loc)) {
         urlMap.set(loc, {
           loc,
           lastmod: isoDate,
           changefreq,
           priority,
-          image_url: imageUrl,
-          image_title: imageTitle,
+          imageUrl: imageUrl || undefined,
+          imageTitle: imageTitle || undefined,
         });
       }
     };
 
-    // 1. Static Core Landing Pages
-    addUrl(`${SITE_URL}`, new Date(), 'daily', '1.0');
-    addUrl(`${SITE_URL}/deals`, new Date(), 'hourly', '0.9');
-    addUrl(`${SITE_URL}/compare`, new Date(), 'weekly', '0.8');
-    addUrl(`${SITE_URL}/guides`, new Date(), 'daily', '0.8');
-    addUrl(`${SITE_URL}/how-we-rank`, new Date(), 'monthly', '0.7');
-    addUrl(`${SITE_URL}/about`, new Date(), 'monthly', '0.6');
-    addUrl(`${SITE_URL}/affiliate-disclosure`, new Date(), 'monthly', '0.5');
-    addUrl(`${SITE_URL}/contact`, new Date(), 'monthly', '0.5');
-    addUrl(`${SITE_URL}/search`, new Date(), 'weekly', '0.5');
+    // 1. Static Core Landing Pages (Canonical HTTP 200)
+    addUrl('/', new Date(), 'daily', '1.0');
+    addUrl('/deals', new Date(), 'hourly', '0.9');
+    addUrl('/compare', new Date(), 'weekly', '0.8');
+    addUrl('/guides', new Date(), 'daily', '0.8');
+    addUrl('/how-we-rank', new Date(), 'monthly', '0.7');
+    addUrl('/about', new Date(), 'monthly', '0.6');
+    addUrl('/affiliate-disclosure', new Date(), 'monthly', '0.5');
+    addUrl('/contact', new Date(), 'monthly', '0.5');
 
     // 2. Published Categories & Departments
     categories.forEach((c: { slug?: string; updated_at?: string }) => {
       if (c.slug) {
-        addUrl(`${SITE_URL}/category/${c.slug}`, c.updated_at, 'weekly', '0.8');
+        addUrl(`/category/${c.slug}`, c.updated_at, 'weekly', '0.8');
       }
     });
 
     // 3. Published Catalog Products with Image SEO
     products.forEach((p: { slug?: string; title?: string; thumbnail_url?: string; updated_at?: string }) => {
       if (p.slug) {
-        addUrl(`${SITE_URL}/products/${p.slug}`, p.updated_at, 'daily', '0.9', p.thumbnail_url, p.title);
+        addUrl(
+          `/products/${p.slug}`,
+          p.updated_at,
+          'daily',
+          '0.9',
+          p.thumbnail_url,
+          p.title
+        );
       }
     });
 
     // 4. Published Articles & Buying Guides
-    articles.forEach((a: { slug?: string; updated_at?: string }) => {
+    articles.forEach((a: { slug?: string; updated_at?: string; modified_date?: string }) => {
       if (a.slug) {
-        addUrl(`${SITE_URL}/guides/${a.slug}`, a.updated_at, 'weekly', '0.8');
+        addUrl(`/guides/${a.slug}`, a.modified_date || a.updated_at, 'weekly', '0.8');
       }
     });
 
-    // 5. Comparisons
+    // 5. Published Comparisons
     comparisons.forEach((comp: { slug?: string; updated_at?: string }) => {
       if (comp.slug) {
-        addUrl(`${SITE_URL}/compare/${comp.slug}`, comp.updated_at, 'weekly', '0.7');
-      }
-    });
-
-    // 6. Active Brands
-    brands.forEach((b: { slug?: string; updated_at?: string }) => {
-      if (b.slug) {
-        addUrl(`${SITE_URL}/brands/${b.slug}`, b.updated_at, 'monthly', '0.6');
+        addUrl(`/compare/${comp.slug}`, comp.updated_at, 'weekly', '0.7');
       }
     });
 
@@ -123,11 +167,11 @@ export async function GET() {
       xml += `    <lastmod>${item.lastmod}</lastmod>\n`;
       xml += `    <changefreq>${item.changefreq}</changefreq>\n`;
       xml += `    <priority>${item.priority}</priority>\n`;
-      if (item.image_url) {
+      if (item.imageUrl) {
         xml += `    <image:image>\n`;
-        xml += `      <image:loc>${escapeXml(item.image_url)}</image:loc>\n`;
-        if (item.image_title) {
-          xml += `      <image:title>${escapeXml(item.image_title)}</image:title>\n`;
+        xml += `      <image:loc>${escapeXml(item.imageUrl)}</image:loc>\n`;
+        if (item.imageTitle) {
+          xml += `      <image:title>${escapeXml(item.imageTitle)}</image:title>\n`;
         }
         xml += `    </image:image>\n`;
       }
@@ -140,7 +184,7 @@ export async function GET() {
       status: 200,
       headers: {
         'Content-Type': 'application/xml; charset=utf-8',
-        'Cache-Control': 'public, max-age=3600, s-maxage=3600, stale-while-revalidate=86400',
+        'Cache-Control': 'public, max-age=0, s-maxage=600, stale-while-revalidate=3600',
       },
     });
   } catch (err) {
@@ -172,6 +216,7 @@ export async function GET() {
       status: 200,
       headers: {
         'Content-Type': 'application/xml; charset=utf-8',
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
       },
     });
   }

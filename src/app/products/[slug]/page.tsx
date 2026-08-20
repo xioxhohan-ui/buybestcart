@@ -23,11 +23,11 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
   const supabase = createServerClient();
   const { data: product } = await supabase
     .from('products')
-    .select('title, short_description, thumbnail_url, seo_title, seo_description, canonical_url, og_image')
+    .select('title, short_description, thumbnail_url, seo_title, seo_description, canonical_url, og_image, status')
     .eq('slug', slug)
     .single();
 
-  if (!product) {
+  if (!product || !['active', 'featured', 'published'].includes(product.status)) {
     return { title: 'Product Not Found | Best Buy Cart' };
   }
 
@@ -89,7 +89,7 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
     .eq('slug', slug)
     .single();
 
-  if (!product) {
+  if (!product || !['active', 'featured', 'published'].includes(product.status)) {
     notFound();
   }
 

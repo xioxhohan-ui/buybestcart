@@ -16,11 +16,11 @@ export async function generateMetadata({ params }: GuidePageProps): Promise<Meta
   const supabase = createServerClient();
   const { data: article } = await supabase
     .from('articles')
-    .select('title, excerpt, featured_image, seo_title, seo_description, canonical_url, og_image')
+    .select('title, excerpt, featured_image, seo_title, seo_description, canonical_url, og_image, status')
     .eq('slug', slug)
     .single();
 
-  if (!article) return { title: 'Guide Not Found | Best Buy Cart' };
+  if (!article || article.status !== 'published') return { title: 'Guide Not Found | Best Buy Cart' };
 
   const title = article.seo_title || `${article.title} | Best Buy Cart Editorial`;
   const description = article.seo_description || article.excerpt || `Read the complete buying guide and lab recommendations for ${article.title}.`;
@@ -80,7 +80,7 @@ export default async function GuideDetailPage({ params }: GuidePageProps) {
     .eq('slug', slug)
     .single();
 
-  if (!article) {
+  if (!article || article.status !== 'published') {
     notFound();
   }
 
