@@ -24,6 +24,7 @@ import {
 } from 'lucide-react';
 import SearchBar from '../common/SearchBar';
 import RegionSelector from './RegionSelector';
+import CurrencySelector from './CurrencySelector';
 import CategoryNavStrip from './CategoryNavStrip';
 import AnnouncementBar from './AnnouncementBar';
 
@@ -241,8 +242,9 @@ export default function Header({
             </ul>
           </nav>
 
-          {/* Right Utilities: Regional Storefront Selector & Universal Burger Menu */}
+          {/* Right Utilities: Regional Storefront & Currency Selector & Universal Burger Menu */}
           <div className="header-actions">
+            <CurrencySelector />
             <RegionSelector />
 
             {/* Universal Burger Menu Trigger Button */}
