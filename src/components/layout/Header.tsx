@@ -44,6 +44,7 @@ export default function Header({
 }: HeaderProps) {
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
   const [departmentsExpanded, setDepartmentsExpanded] = useState(true);
+  const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
 
   useEffect(() => {
     if (mobileDrawerOpen) {
@@ -77,15 +78,116 @@ export default function Header({
   }, []);
 
   const mobileNavCategories = [
-    { label: 'Electronics', href: '/category/electronics', icon: Cpu },
-    { label: 'Computers & Laptops', href: '/category/computers-laptops', icon: Laptop },
-    { label: 'Gaming & VR', href: '/category/gaming', icon: Gamepad2 },
-    { label: 'Home & Kitchen', href: '/category/home-kitchen', icon: Home },
-    { label: 'Smart Home & Security', href: '/category/smart-home', icon: ShieldCheck },
-    { label: 'Beauty & Grooming', href: '/category/beauty', icon: Sparkles },
-    { label: 'Health & Wellness', href: '/category/health-wellness', icon: HeartPulse },
-    { label: 'Fitness & Sports', href: '/category/sports', icon: Dumbbell },
-    { label: 'Outdoors & Camping', href: '/category/outdoors', icon: Tent },
+    {
+      id: 'electronics',
+      label: 'Electronics & Audio',
+      href: '/category/electronics',
+      icon: Cpu,
+      subcategories: [
+        { name: 'Smartphones (iPhone & Galaxy)', href: '/category/electronics' },
+        { name: 'Noise-Cancelling Headphones', href: '/category/electronics' },
+        { name: 'True Wireless Earbuds', href: '/category/electronics' },
+        { name: '4K & Ultrawide Monitors', href: '/category/electronics' },
+        { name: 'Fast GaN Wall Chargers', href: '/category/electronics' },
+      ],
+    },
+    {
+      id: 'computers',
+      label: 'Computers & Laptops',
+      href: '/category/computers-laptops',
+      icon: Laptop,
+      subcategories: [
+        { name: 'Apple MacBooks (M3 / Pro)', href: '/category/computers-laptops' },
+        { name: 'Windows Productivity Laptops', href: '/category/computers-laptops' },
+        { name: 'GeForce RTX Gaming Laptops', href: '/category/computers-laptops' },
+        { name: 'Mechanical Keyboards & Mice', href: '/category/computers-laptops' },
+        { name: 'Mesh Wi-Fi 6E & 7 Routers', href: '/category/computers-laptops' },
+      ],
+    },
+    {
+      id: 'gaming',
+      label: 'Gaming & VR',
+      href: '/category/gaming',
+      icon: Gamepad2,
+      subcategories: [
+        { name: 'Consoles (PS5, Xbox, Switch)', href: '/category/gaming' },
+        { name: 'Standalone VR Headsets', href: '/category/gaming' },
+        { name: 'Ergonomic Gaming Chairs', href: '/category/gaming' },
+        { name: 'Pro Wireless Controllers', href: '/category/gaming' },
+      ],
+    },
+    {
+      id: 'home',
+      label: 'Home & Kitchen',
+      href: '/category/home-kitchen',
+      icon: Home,
+      subcategories: [
+        { name: 'LiDAR Robot Vacuums', href: '/category/home-kitchen' },
+        { name: 'Espresso & Coffee Machines', href: '/category/home-kitchen' },
+        { name: 'Dual-Zone Air Fryers', href: '/category/home-kitchen' },
+        { name: 'High-Speed Food Processors', href: '/category/home-kitchen' },
+      ],
+    },
+    {
+      id: 'smarthome',
+      label: 'Smart Home & Security',
+      href: '/category/smart-home',
+      icon: ShieldCheck,
+      subcategories: [
+        { name: 'Smart Video Doorbells', href: '/category/smart-home' },
+        { name: 'Wireless Security Cameras', href: '/category/smart-home' },
+        { name: 'Fingerprint Smart Locks', href: '/category/smart-home' },
+        { name: 'Color Smart Lighting', href: '/category/smart-home' },
+      ],
+    },
+    {
+      id: 'beauty',
+      label: 'Beauty & Grooming',
+      href: '/category/beauty',
+      icon: Sparkles,
+      subcategories: [
+        { name: 'Electric Foil Shavers', href: '/category/beauty' },
+        { name: 'Ionic Hair Dryers & Stylers', href: '/category/beauty' },
+        { name: 'LED Light Therapy Masks', href: '/category/beauty' },
+        { name: 'Sonic Toothbrushes', href: '/category/beauty' },
+      ],
+    },
+    {
+      id: 'health',
+      label: 'Health & Wellness',
+      href: '/category/health-wellness',
+      icon: HeartPulse,
+      subcategories: [
+        { name: 'HEPA Air Purifiers', href: '/category/health-wellness' },
+        { name: 'Percussion Massage Guns', href: '/category/health-wellness' },
+        { name: 'Fitness & Health Rings', href: '/category/health-wellness' },
+        { name: 'Smart Body Composition Scales', href: '/category/health-wellness' },
+      ],
+    },
+    {
+      id: 'sports',
+      label: 'Fitness & Sports',
+      href: '/category/sports',
+      icon: Dumbbell,
+      subcategories: [
+        { name: 'Adjustable Dumbbells', href: '/category/sports' },
+        { name: 'Compact Folding Treadmills', href: '/category/sports' },
+        { name: 'Smart Exercise Bikes', href: '/category/sports' },
+        { name: 'Non-Slip Yoga & Gym Mats', href: '/category/sports' },
+      ],
+    },
+    {
+      id: 'outdoors',
+      label: 'Outdoors & Camping',
+      href: '/category/outdoors',
+      icon: Tent,
+      subcategories: [
+        { name: 'Weatherproof Backpacking Tents', href: '/category/outdoors' },
+        { name: 'Portable Solar Power Stations', href: '/category/outdoors' },
+        { name: 'Lightweight Hiking Backpacks', href: '/category/outdoors' },
+        { name: 'Insulated Tumblers & Coolers', href: '/category/outdoors' },
+      ],
+    },
   ];
 
   return (
@@ -258,29 +360,96 @@ export default function Header({
                 </button>
 
                 {departmentsExpanded && (
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '0.4rem' }}>
-                    {mobileNavCategories.map((cat, idx) => {
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                    {mobileNavCategories.map((cat) => {
                       const Icon = cat.icon;
+                      const isExpanded = expandedCategory === cat.id;
                       return (
-                        <Link
-                          key={idx}
-                          href={cat.href}
-                          onClick={() => setMobileDrawerOpen(false)}
+                        <div
+                          key={cat.id}
                           style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '0.625rem',
-                            padding: '0.625rem 0.75rem',
                             background: 'var(--bg-subtle)',
                             borderRadius: 'var(--radius-sm)',
-                            fontSize: '0.8125rem',
-                            fontWeight: 600,
-                            color: 'var(--text-primary)',
+                            border: '1px solid var(--border)',
+                            overflow: 'hidden',
                           }}
                         >
-                          <Icon size={15} color="var(--green-accent)" />
-                          <span>{cat.label}</span>
-                        </Link>
+                          <div
+                            style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'space-between',
+                              padding: '0.625rem 0.75rem',
+                            }}
+                          >
+                            <Link
+                              href={cat.href}
+                              onClick={() => setMobileDrawerOpen(false)}
+                              style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '0.625rem',
+                                fontSize: '0.8125rem',
+                                fontWeight: 700,
+                                color: 'var(--text-primary)',
+                                textDecoration: 'none',
+                                flex: 1,
+                              }}
+                            >
+                              <Icon size={15} color="var(--green-accent)" />
+                              <span>{cat.label}</span>
+                            </Link>
+                            {cat.subcategories && cat.subcategories.length > 0 && (
+                              <button
+                                onClick={() => setExpandedCategory(isExpanded ? null : cat.id)}
+                                style={{
+                                  background: 'transparent',
+                                  border: 'none',
+                                  padding: '0.2rem 0.4rem',
+                                  cursor: 'pointer',
+                                  color: 'var(--text-muted)',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                }}
+                                aria-label={`Toggle ${cat.label} subcategories`}
+                              >
+                                {isExpanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+                              </button>
+                            )}
+                          </div>
+
+                          {/* Subcategories Accordion List */}
+                          {isExpanded && cat.subcategories && (
+                            <div
+                              style={{
+                                borderTop: '1px solid var(--border)',
+                                background: 'var(--bg-surface)',
+                                padding: '0.5rem 0.75rem 0.625rem 2.25rem',
+                                display: 'flex',
+                                flexDirection: 'column',
+                                gap: '0.4rem',
+                              }}
+                            >
+                              {cat.subcategories.map((sub, sIdx) => (
+                                <Link
+                                  key={sIdx}
+                                  href={sub.href}
+                                  onClick={() => setMobileDrawerOpen(false)}
+                                  style={{
+                                    fontSize: '0.75rem',
+                                    fontWeight: 600,
+                                    color: 'var(--text-secondary)',
+                                    textDecoration: 'none',
+                                    display: 'block',
+                                    lineHeight: 1.4,
+                                  }}
+                                >
+                                  • {sub.name}
+                                </Link>
+                              ))}
+                            </div>
+                          )}
+                        </div>
                       );
                     })}
                   </div>
