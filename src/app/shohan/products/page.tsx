@@ -642,6 +642,108 @@ export default function AdminProductsPage() {
             </div>
 
             <form onSubmit={handleSave} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+              {/* Amazon Affiliate Link Auto-Scanner & Live Price Auto-Fetcher */}
+              <div style={{ background: 'var(--green-light)', border: '1px solid var(--green-border)', borderRadius: 'var(--radius-md)', padding: '1.25rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+                  <div style={{ fontSize: '0.875rem', fontWeight: 800, color: 'var(--green-deep)', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                    <Sparkles size={16} />
+                    <span>Amazon Link Auto-Scanner & Live Price Fetcher</span>
+                  </div>
+                  <span style={{ fontSize: '0.7rem', fontWeight: 700, color: 'var(--green-deep)', background: 'rgba(255,255,255,0.7)', padding: '0.15rem 0.5rem', borderRadius: '4px' }}>
+                    Auto-Populates Price & ASIN
+                  </span>
+                </div>
+
+                <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '0.75rem' }}>
+                  <input
+                    type="text"
+                    placeholder="Paste Amazon Product Link or ASIN (e.g. https://www.amazon.com/dp/B0CHX1W1XY or B0CHX1W1XY)..."
+                    value={formData.amazon_url}
+                    onChange={(e) => {
+                      const inputUrl = e.target.value;
+                      setFormData((prev) => {
+                        // Extract ASIN from URL using regex (matches /dp/ASIN or /gp/product/ASIN or raw 10-char ASIN)
+                        const asinMatch = inputUrl.match(/(?:dp|gp\/product)\/([A-Z0-9]{10})/i) || inputUrl.match(/\b([A-Z0-9]{10})\b/i);
+                        const extractedAsin = asinMatch ? asinMatch[1].toUpperCase() : prev.asin;
+                        const cleanAffiliateUrl = extractedAsin
+                          ? `https://www.amazon.com/dp/${extractedAsin}?tag=bestbuycart-20`
+                          : inputUrl;
+                        return {
+                          ...prev,
+                          amazon_url: cleanAffiliateUrl,
+                          asin: extractedAsin,
+                        };
+                      });
+                    }}
+                    style={{ flex: 1, padding: '0.55rem', borderRadius: 'var(--radius-sm)', border: '1px solid var(--green-border)', fontSize: '0.8125rem', background: '#FFFFFF' }}
+                  />
+                </div>
+
+                {/* Live Button Preview */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
+                  <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-muted)' }}>Button CTA Preview:</span>
+                  <div
+                    style={{
+                      background: 'var(--amber-deal)',
+                      color: '#000000',
+                      fontWeight: 800,
+                      fontSize: '0.8125rem',
+                      padding: '0.5rem 1rem',
+                      borderRadius: 'var(--radius-sm)',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '0.5rem',
+                      boxShadow: 'var(--shadow-sm)',
+                    }}
+                  >
+                    <span>Check Price & Availability on Amazon</span>
+                    <span style={{ background: '#000000', color: '#FFFFFF', padding: '0.15rem 0.4rem', borderRadius: '4px', fontSize: '0.75rem' }}>
+                      ${formData.price || '348.00'}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Department / Category Selector & Brand Selector */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.8125rem', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '0.35rem' }}>
+                    Select Department / Category *
+                  </label>
+                  <select
+                    required
+                    value={formData.category_id}
+                    onChange={(e) => setFormData({ ...formData, category_id: e.target.value })}
+                    style={{ width: '100%', padding: '0.55rem', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-strong)', fontSize: '0.8125rem', background: 'var(--bg-surface)', fontWeight: 600 }}
+                  >
+                    <option value="">-- Choose Department / Category --</option>
+                    {categories.map((cat) => (
+                      <option key={cat.id} value={cat.id}>
+                        {cat.name} ({cat.slug})
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.8125rem', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '0.35rem' }}>
+                    Select Brand / Manufacturer
+                  </label>
+                  <select
+                    value={formData.brand_id}
+                    onChange={(e) => setFormData({ ...formData, brand_id: e.target.value })}
+                    style={{ width: '100%', padding: '0.55rem', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-strong)', fontSize: '0.8125rem', background: 'var(--bg-surface)', fontWeight: 600 }}
+                  >
+                    <option value="">-- Choose Brand --</option>
+                    {brands.map((b) => (
+                      <option key={b.id} value={b.id}>
+                        {b.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
               {/* Product Title & ASIN */}
               <div style={{ display: 'grid', gridTemplateColumns: '1.6fr 1fr', gap: '1rem' }}>
                 <div>
