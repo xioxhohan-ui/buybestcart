@@ -135,17 +135,18 @@ export default function Header({
             </ul>
           </nav>
 
-          {/* Right Utilities: Regional Storefront Selector & Hamburger */}
+          {/* Right Utilities: Regional Storefront Selector & Universal Burger Menu */}
           <div className="header-actions">
             <RegionSelector />
 
-            {/* Mobile Hamburger Button */}
+            {/* Universal Burger Menu Trigger Button */}
             <button
-              className="mobile-menu-btn"
+              className="burger-menu-btn"
               onClick={() => setMobileDrawerOpen(!mobileDrawerOpen)}
-              aria-label="Toggle mobile menu"
+              aria-label="Toggle Navigation Menu"
             >
               {mobileDrawerOpen ? <X size={18} /> : <Menu size={18} />}
+              <span className="burger-menu-label" style={{ fontSize: '0.75rem', fontWeight: 700, fontFamily: 'var(--font-display)', letterSpacing: '0.04em' }}>MENU</span>
             </button>
           </div>
         </div>
@@ -154,7 +155,7 @@ export default function Header({
       {/* 03. Category Navigation Strip with Direct 1-to-1 Dropdowns */}
       <CategoryNavStrip />
 
-      {/* 04. Mobile Navigation Drawer */}
+      {/* 04. Universal Navigation Side Drawer */}
       {mobileDrawerOpen && (
         <>
           {/* Backdrop overlay */}
@@ -196,8 +197,9 @@ export default function Header({
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'space-between',
-              padding: '1rem 1.25rem',
+              padding: '1.125rem 1.25rem',
               borderBottom: '1px solid var(--border)',
+              background: 'var(--bg-subtle)',
             }}>
               <span style={{ fontFamily: 'var(--font-serif)', fontSize: '1.25rem', fontWeight: 700 }}>
                 {siteName}<span style={{ color: 'var(--green-accent)' }}>.</span>
@@ -205,7 +207,7 @@ export default function Header({
               <button
                 onClick={() => setMobileDrawerOpen(false)}
                 style={{
-                  background: 'transparent',
+                  background: 'var(--bg-surface)',
                   border: '1px solid var(--border-strong)',
                   borderRadius: 'var(--radius-sm)',
                   padding: '0.4rem',
@@ -223,7 +225,7 @@ export default function Header({
 
             <div style={{ padding: '1.25rem' }}>
               {/* Compact Drawer Search Bar */}
-              <div style={{ marginBottom: '1.25rem' }}>
+              <div style={{ marginBottom: '1.5rem' }}>
                 <SearchBar />
               </div>
 
@@ -244,9 +246,9 @@ export default function Header({
                   }}
                 >
                   <span style={{ fontSize: '0.75rem', fontWeight: 800, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-                    DEPARTMENTS
+                    ALL DEPARTMENTS & HUBS
                   </span>
-                  <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                  <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 700 }}>
                     {departmentsExpanded ? '▲' : '▼'}
                   </span>
                 </button>
@@ -281,31 +283,67 @@ export default function Header({
                 )}
               </div>
 
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', borderTop: '1px solid var(--border)', paddingTop: '1.25rem' }}>
+              {/* Editorial & Quick Utilities */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem', borderTop: '1px solid var(--border)', paddingTop: '1.25rem', marginBottom: '1.5rem' }}>
+                <div style={{ fontSize: '0.75rem', fontWeight: 800, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '0.25rem' }}>
+                  QUICK DISCOVERY
+                </div>
                 <Link
                   href="/deals"
                   onClick={() => setMobileDrawerOpen(false)}
                   className="btn btn-primary"
-                  style={{ justifyContent: 'center' }}
+                  style={{ justifyContent: 'center', fontSize: '0.8125rem' }}
                 >
-                  Today&apos;s Highlighted Deals
+                  Today&apos;s Highlighted Deals 🔥
                 </Link>
                 <Link
                   href="/guides"
                   onClick={() => setMobileDrawerOpen(false)}
                   className="btn btn-secondary"
-                  style={{ justifyContent: 'center' }}
+                  style={{ justifyContent: 'center', fontSize: '0.8125rem' }}
                 >
-                  2026 Buying Guides & Reviews
+                  2026 Buying Guides & Reviews 📚
                 </Link>
                 <Link
                   href="/compare"
                   onClick={() => setMobileDrawerOpen(false)}
                   className="btn btn-secondary"
-                  style={{ justifyContent: 'center' }}
+                  style={{ justifyContent: 'center', fontSize: '0.8125rem' }}
                 >
-                  Compare Flagships Side-by-Side
+                  Compare Flagships Side-by-Side ⚖️
                 </Link>
+                <Link
+                  href="/how-we-rank"
+                  onClick={() => setMobileDrawerOpen(false)}
+                  style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.5rem 0.75rem', fontSize: '0.8125rem', fontWeight: 600, color: 'var(--text-secondary)' }}
+                >
+                  <span>Our Testing Methodology 🛡️</span>
+                </Link>
+                <Link
+                  href="/about"
+                  onClick={() => setMobileDrawerOpen(false)}
+                  style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.5rem 0.75rem', fontSize: '0.8125rem', fontWeight: 600, color: 'var(--text-secondary)' }}
+                >
+                  <span>About the Publication ℹ️</span>
+                </Link>
+                <Link
+                  href="/contact"
+                  onClick={() => setMobileDrawerOpen(false)}
+                  style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.5rem 0.75rem', fontSize: '0.8125rem', fontWeight: 600, color: 'var(--text-secondary)' }}
+                >
+                  <span>Contact Editorial Staff ✉️</span>
+                </Link>
+              </div>
+
+              {/* Regional Amazon Endpoint Selector inside Drawer */}
+              <div style={{ borderTop: '1px solid var(--border)', paddingTop: '1.25rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                <div style={{ fontSize: '0.75rem', fontWeight: 800, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                  AMAZON ENDPOINT REGION
+                </div>
+                <div style={{ background: 'var(--bg-subtle)', padding: '0.75rem', borderRadius: 'var(--radius-sm)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <span style={{ fontSize: '0.8125rem', fontWeight: 600, color: 'var(--text-secondary)' }}>Current Storefront:</span>
+                  <RegionSelector />
+                </div>
               </div>
             </div>
           </div>

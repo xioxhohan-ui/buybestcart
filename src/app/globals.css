@@ -277,21 +277,23 @@ h4 {
   white-space: nowrap;
 }
 
-.mobile-menu-btn {
-  display: none !important;
+.burger-menu-btn {
+  display: inline-flex;
   align-items: center;
-  justify-content: center;
-  background: transparent;
+  gap: 0.4rem;
+  background: var(--bg-surface);
   border: 1px solid var(--border-strong);
   border-radius: var(--radius-sm);
-  padding: 0.45rem;
+  padding: 0.4rem 0.65rem;
   color: var(--text-primary);
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all 0.18s ease;
+  font-family: var(--font-display);
 }
 
-.mobile-menu-btn:hover {
-  background: var(--bg-subtle);
+.burger-menu-btn:hover {
+  background: var(--green-light);
+  border-color: var(--green-border);
   color: var(--green-accent);
 }
 
@@ -883,9 +885,6 @@ section,
 
 /* ---- 04. MEDIUM LAPTOPS & SMALL DESKTOPS (1025px – 1199px) ---- */
 @media (min-width: 1025px) and (max-width: 1199px) {
-  .mobile-menu-btn {
-    display: none !important;
-  }
   .nav-links {
     display: flex !important;
     gap: 0.75rem;
@@ -906,9 +905,6 @@ section,
 @media (max-width: 1024px) {
   .nav-links {
     display: none !important;
-  }
-  .mobile-menu-btn {
-    display: inline-flex !important;
   }
   .footer-grid {
     grid-template-columns: 1fr 1fr;
@@ -991,6 +987,12 @@ section,
   }
   .logo-brand {
     font-size: 1.1rem;
+  }
+  .burger-menu-label {
+    display: none;
+  }
+  .burger-menu-btn {
+    padding: 0.4rem;
   }
 
   /* Search Bar compact */
