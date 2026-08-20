@@ -4,12 +4,13 @@
   "build_status": "SUCCESS (43/43 Next.js static & dynamic routes)",
   "typescript_status": "0 Errors (npx tsc --noEmit)",
   "database_status": "HEALTHY (All PostgreSQL tables, RPC functions, triggers, columns, and RLS policies synchronized)",
+  "routes_health_status": "100% HEALTHY (42/42 Public & Admin Routes Returning HTTP 200 OK)",
   "summary": {
-    "total_audited_areas": 11,
-    "total_findings": 10,
-    "fixed_in_session": 10,
+    "total_audited_areas": 12,
+    "total_findings": 11,
+    "fixed_in_session": 11,
     "critical": 0,
-    "high": 3,
+    "high": 4,
     "medium": 4,
     "low": 3
   },
@@ -46,6 +47,16 @@
     },
     {
       "id": "BUG-004",
+      "severity": "High",
+      "status": "FIXED",
+      "category": "Server / Route Conflict",
+      "component": "public/robots.txt vs src/app/robots.ts",
+      "title": "Conflicting Static Public File and Dynamic Route on /robots.txt",
+      "description": "Next.js crashed with HTTP 500 ('A conflicting public file and page file was found for path /robots.txt') because public/robots.txt and src/app/robots.ts co-existed.",
+      "fix": "Deleted duplicate public/robots.txt so dynamic MetadataRoute in src/app/robots.ts serves /robots.txt cleanly with HTTP 200."
+    },
+    {
+      "id": "BUG-005",
       "severity": "Medium",
       "status": "FIXED",
       "category": "Database / Stored Procedure (RPC)",
@@ -55,7 +66,7 @@
       "fix": "Created increment_clicks and increment_views PL/pgSQL stored procedures in PostgreSQL and granted execute permissions to public roles."
     },
     {
-      "id": "BUG-005",
+      "id": "BUG-006",
       "severity": "Medium",
       "status": "FIXED",
       "category": "Database / FAQs & Articles Schema",
@@ -65,7 +76,7 @@
       "fix": "Added category column to public.faqs and added type/content/published_at columns with bi-directional sync trigger in public.articles."
     },
     {
-      "id": "BUG-006",
+      "id": "BUG-007",
       "severity": "Medium",
       "status": "FIXED",
       "category": "API / Query Injection",
@@ -75,7 +86,7 @@
       "fix": "Added regex sanitization rawQ.replace(/[,()\"%_\\\\]/g, ' ').replace(/\\s+/g, ' ').trim() to ensure safe query execution."
     },
     {
-      "id": "BUG-007",
+      "id": "BUG-008",
       "severity": "Medium",
       "status": "FIXED",
       "category": "Frontend / Search Page Query Sanitization",
@@ -85,7 +96,7 @@
       "fix": "Added delimiter sanitization on q before running .or() query in search/page.tsx."
     },
     {
-      "id": "BUG-008",
+      "id": "BUG-009",
       "severity": "Low",
       "status": "FIXED",
       "category": "Frontend / Credentials Fallback",
@@ -95,7 +106,7 @@
       "fix": "Added valid active Supabase publishable anon key fallbacks in both client.ts and server.ts."
     },
     {
-      "id": "BUG-009",
+      "id": "BUG-010",
       "severity": "Low",
       "status": "FIXED",
       "category": "Database / Deals & Comparisons Schema",
@@ -105,7 +116,7 @@
       "fix": "Executed migration adding all referenced columns to deals and comparisons tables."
     },
     {
-      "id": "BUG-010",
+      "id": "BUG-011",
       "severity": "Low",
       "status": "FIXED",
       "category": "Frontend / Memory & Lifecycle",

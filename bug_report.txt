@@ -4,6 +4,7 @@ BUYBESTCART V2 — COMPREHENSIVE FULL-STACK BUG AUDIT & RESOLUTION REPORT
 Date: 2026-08-20
 Target: https://buybestcart.shop
 Status: 43/43 Next.js Routes Compiled (0 Errors)
+Route Health: 42/42 Public & Admin Routes Verified (HTTP 200 OK)
 TypeScript: 0 Type Errors (tsc --noEmit)
 Database: 100% Operational (PostgreSQL Tables, RPC Functions, Triggers, RLS Verified)
 
@@ -26,44 +27,53 @@ Description: Saving a product only modified the primary products row, leaving cu
 Fix: Updated handleSave to delete old child rows and insert new specifications, features, and gallery images, and updated fetchData to join and load them.
 
 ------------------------------------------------------------------------------
-[BUG-004] (Medium - FIXED) Missing increment_clicks and increment_views RPC Functions
+[BUG-004] (High - FIXED) Conflicting Static File and Dynamic Route on /robots.txt
+Location: public/robots.txt vs src/app/robots.ts
+Description: Next.js crashed with HTTP 500 on /robots.txt due to conflicting static public/robots.txt and dynamic metadata route src/app/robots.ts.
+Fix: Deleted duplicate public/robots.txt so dynamic MetadataRoute in src/app/robots.ts serves /robots.txt cleanly with HTTP 200.
+
+------------------------------------------------------------------------------
+[BUG-005] (Medium - FIXED) Missing increment_clicks and increment_views RPC Functions
 Location: Supabase PostgreSQL & src/app/go/[slug]/route.ts
 Description: When users clicked Amazon affiliate redirect links (/go/[slug]), supabase.rpc('increment_clicks') failed because the function did not exist in PostgreSQL.
 Fix: Created increment_clicks and increment_views PL/pgSQL stored procedures in PostgreSQL and granted execute permissions to public roles.
 
 ------------------------------------------------------------------------------
-[BUG-005] (Medium - FIXED) Missing Category in FAQs and Format Aliases in Articles
+[BUG-006] (Medium - FIXED) Missing Category in FAQs and Format Aliases in Articles
 Location: Supabase PostgreSQL public.faqs & public.articles
 Description: Admin FAQ editor inserted 'category' column which was absent in PostgreSQL, and Article manager submitted 'type'/'content' aliases.
 Fix: Added category column to public.faqs and added type/content/published_at columns with bi-directional sync trigger in public.articles.
 
 ------------------------------------------------------------------------------
-[BUG-006] (Medium - FIXED) PostgREST Query Syntax Error on Special Characters
+[BUG-007] (Medium - FIXED) PostgREST Query Syntax Error on Special Characters
 Location: src/app/api/search/route.ts
 Description: Raw user query strings passed into .or() filter caused HTTP 500 when queries contained commas, parentheses, quotes, or wildcards.
 Fix: Added regex input sanitization rawQ.replace(/[,()"%_\\]/g, ' ').replace(/\s+/g, ' ').trim().
 
 ------------------------------------------------------------------------------
-[BUG-007] (Medium - FIXED) Unsanitized Direct URL Query String on Public Search Page
+[BUG-008] (Medium - FIXED) Unsanitized Direct URL Query String on Public Search Page
 Location: src/app/search/page.tsx
 Description: Direct navigation to /search?q=a,b passed raw special characters into .or(), triggering PostgREST syntax errors.
 Fix: Added delimiter sanitization on q before running .or() query in search/page.tsx.
 
 ------------------------------------------------------------------------------
-[BUG-008] (Low - FIXED) Empty Anon Key Fallback on Client Runtime
+[BUG-009] (Low - FIXED) Empty Anon Key Fallback on Client Runtime
 Location: src/lib/supabase/client.ts & server.ts
 Description: If NEXT_PUBLIC_SUPABASE_ANON_KEY was missing from client runtime, client defaulted to empty string.
 Fix: Embedded active Supabase publishable anon key fallbacks in client.ts and server.ts.
 
 ------------------------------------------------------------------------------
-[BUG-009] (Low - FIXED) Missing Columns in Deals & Comparisons Tables
+[BUG-010] (Low - FIXED) Missing Columns in Deals & Comparisons Tables
 Location: Supabase PostgreSQL public.deals & public.comparisons
 Description: Deals and Comparisons tables were missing columns referenced by admin CRUD forms (deal_price, discount_percentage, start_date, end_date, product_a_id, product_b_id, winner_product_id, verdict, summary).
 Fix: Executed migration adding all referenced columns to deals and comparisons tables.
 
 ------------------------------------------------------------------------------
-[BUG-010] (Low - FIXED) Missing Timeout Cleanup & Continuous Background Polling
+[BUG-011] (Low - FIXED) Missing Timeout Cleanup & Continuous Background Polling
 Location: src/components/layout/CategoryNavStrip.tsx & src/app/shohan/logs/page.tsx
 Description: CategoryNavStrip had uncleaned hover timers, and the audit log feed polled every 5s on hidden tabs.
 Fix: Added useEffect timer cleanup and tab visibility guards.
+
+==============================================================================
+FINAL TEST RESULT: 42/42 PUBLIC & ADMIN ROUTES TESTED (100% SUCCESS)
 ==============================================================================

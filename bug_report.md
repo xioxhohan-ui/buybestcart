@@ -4,18 +4,19 @@
 **Audited Target**: `Buy Best Cart v2` (`https://buybestcart.shop`)  
 **TypeScript Validation**: `0 Errors (npx tsc --noEmit)`  
 **Production Build Status**: `✓ Compiled successfully (43/43 Next.js static & dynamic routes)`  
+**Server Route Health Check**: `100% Operational (42/42 Public & Admin Routes Verified HTTP 200 OK)`  
 **Database Health**: `100% Operational (PostgreSQL Tables, RPC Functions, Triggers, Columns, and RLS Policies Verified)`  
 
 ---
 
 ## 1. Executive Summary
 
-A comprehensive, end-to-end full-stack code and database audit was completed across the entire BuyBestCart platform, covering frontend pages, backend API routes, database schemas, stored procedures (RPC), triggers, Row-Level Security (RLS) policies, and SEO feeds.
+A comprehensive, end-to-end full-stack code, database, and route audit was completed across the entire BuyBestCart platform, covering frontend pages, backend API routes, database schemas, stored procedures (RPC), triggers, Row-Level Security (RLS) policies, and SEO feeds.
 
-- **Total Issues Identified**: 10
-- **Total Issues Resolved**: 10
+- **Total Issues Identified**: 11
+- **Total Issues Resolved**: 11
 - **Database Schema, RPC, Trigger & RLS Bugs**: 5 (All Resolved)
-- **Backend API & Credentials Bugs**: 2 (All Resolved)
+- **Server, Route & Credentials Bugs**: 3 (All Resolved)
 - **Frontend, Search & Lifecycle Bugs**: 3 (All Resolved)
 
 ---
@@ -43,60 +44,111 @@ A comprehensive, end-to-end full-stack code and database audit was completed acr
 
 ---
 
-### [BUG-004] (Medium - Database) Missing `increment_clicks` and `increment_views` RPC Stored Procedures
+### [BUG-004] (High - Server / Routing) Conflicting Static File and Dynamic Route on `/robots.txt`
+- **Location**: `public/robots.txt` vs [`src/app/robots.ts`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/src/app/robots.ts)
+- **Root Cause**: Next.js crashed with `HTTP 500` on `/robots.txt` due to a conflicting static file at `public/robots.txt` while `src/app/robots.ts` was present.
+- **Remediation**: Deleted conflicting `public/robots.txt` so `src/app/robots.ts` handles dynamic metadata serving cleanly (`HTTP 200 OK`).
+
+---
+
+### [BUG-005] (Medium - Database) Missing `increment_clicks` and `increment_views` RPC Stored Procedures
 - **Location**: Supabase PostgreSQL & [`src/app/go/[slug]/route.ts`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/src/app/go/%5Bslug%5D/route.ts#L44)
 - **Root Cause**: When navigating through Amazon affiliate redirect links (`/go/[slug]`), the server invoked `supabase.rpc('increment_clicks', { p_id })`, which failed because the function did not exist in PostgreSQL.
 - **Remediation**: Created `increment_clicks` and `increment_views` PL/pgSQL stored procedures in PostgreSQL and granted execution rights to public/authenticated roles.
 
 ---
 
-### [BUG-005] (Medium - Database) Missing Category Column in FAQs and Alias Columns in Articles
+### [BUG-006] (Medium - Database) Missing Category Column in FAQs and Alias Columns in Articles
 - **Location**: Supabase PostgreSQL `public.faqs` & `public.articles`
 - **Root Cause**: Admin FAQ editor inserted `category` column which was absent in PostgreSQL, and Article manager submitted `type`/`content` aliases.
 - **Remediation**: Added `category` column to `public.faqs` and added `type`, `content`, `published_at` columns with bi-directional sync trigger `sync_article_fields` in `public.articles`.
 
 ---
 
-### [BUG-006] (Medium - Backend API) PostgREST Query Syntax Error on Special Characters
+### [BUG-007] (Medium - Backend API) PostgREST Query Syntax Error on Special Characters
 - **Location**: [`src/app/api/search/route.ts`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/src/app/api/search/route.ts#L4-L24)
 - **Root Cause**: Search API route passed raw user query strings into `.or()`. Queries containing commas, quotes, parentheses, wildcards, or backslashes caused PostgREST syntax parse errors (HTTP 500).
 - **Remediation**: Implemented regex sanitization: `rawQ.replace(/[,()"%_\\]/g, ' ').replace(/\s+/g, ' ').trim()`.
 
 ---
 
-### [BUG-007] (Medium - Frontend) Unsanitized Direct URL Query String on Public Search Page
+### [BUG-008] (Medium - Frontend) Unsanitized Direct URL Query String on Public Search Page
 - **Location**: [`src/app/search/page.tsx`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/src/app/search/page.tsx#L27-L38)
 - **Root Cause**: Direct URL navigation to `/search?q=a,b` passed unescaped characters into PostgREST `.or()` filter.
 - **Remediation**: Added regex delimiter sanitization on `q` before executing the database filter.
 
 ---
 
-### [BUG-008] (Low - Frontend/Backend) Empty Anon Key Fallback on Client Runtime
+### [BUG-009] (Low - Frontend/Backend) Empty Anon Key Fallback on Client Runtime
 - **Location**: [`src/lib/supabase/client.ts`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/src/lib/supabase/client.ts) & [`server.ts`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/src/lib/supabase/server.ts)
 - **Root Cause**: If `NEXT_PUBLIC_SUPABASE_ANON_KEY` was missing from the deployment environment, `client.ts` defaulted to `''`, breaking client-side database reads and mutations.
 - **Remediation**: Embedded valid active Supabase publishable anon key fallbacks in both `client.ts` and `server.ts`.
 
 ---
 
-### [BUG-009] (Low - Database) Missing Columns in Deals & Comparisons Tables
+### [BUG-010] (Low - Database) Missing Columns in Deals & Comparisons Tables
 - **Location**: Supabase PostgreSQL `public.deals` & `public.comparisons`
 - **Root Cause**: Admin CRUD forms for Deals and Comparisons referenced fields (`deal_price`, `discount_percentage`, `start_date`, `end_date`, `product_a_id`, `product_b_id`, `winner_product_id`, `verdict`, `summary`) that were missing from the initial database tables.
 - **Remediation**: Executed migration adding all referenced columns to `deals` and `comparisons` tables in live PostgreSQL.
 
 ---
 
-### [BUG-010] (Low - Frontend) Missing Timeout Cleanup & Continuous Background Polling
+### [BUG-011] (Low - Frontend) Missing Timeout Cleanup & Continuous Background Polling
 - **Location**: [`src/components/layout/CategoryNavStrip.tsx`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/src/components/layout/CategoryNavStrip.tsx#L23-L30) & [`src/app/shohan/logs/page.tsx`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/src/app/shohan/logs/page.tsx#L100-L111)
 - **Root Cause**: Uncleaned hover grace window timer on unmount and unfiltered 5000ms polling intervals when tabs were inactive.
 - **Remediation**: Added `React.useEffect` timer cleanup and tab visibility checks (`document.visibilityState === 'visible'`).
 
 ---
 
-## 3. Verification Summary
+## 3. Comprehensive 42/42 Route Verification Results
 
-- **TypeScript Typecheck**: `0 Errors` (`npx tsc --noEmit`)
-- **Next.js Production Build**: `✓ Compiled successfully in 12.1s (43/43 static & dynamic routes)`
-- **Database Stored Procedures**: `increment_clicks` and `increment_views` live verified.
-- **Database Mutation Tests**: `INSERT` / `UPDATE` / `DELETE` + relational joins verified on `products`, `deals`, `comparisons`, `faqs`, `articles`, `messages`, `system_logs`.
-- **Public Product Page Test**: `HTTP 200 OK` on newly registered product (`sony-wh-ch520-wireless-on-ear-bluetooth-headphones-black`).
-- **Reports Generated**: [`bugs.json`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/bugs.json), [`bug_report.md`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/bug_report.md), [`bug_report.txt`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/bug_report.txt).
+```
+Testing all 42 application routes on local server...
+
+✅ [200 OK] /
+✅ [200 OK] /about
+✅ [200 OK] /affiliate-disclosure
+✅ [200 OK] /how-we-rank
+✅ [200 OK] /contact
+✅ [200 OK] /deals
+✅ [200 OK] /compare
+✅ [200 OK] /guides
+✅ [200 OK] /search?q=sony
+✅ [200 OK] /products/bose-quietcomfort-ultra-headphones
+✅ [200 OK] /products/apple-macbook-air-15-m3
+✅ [200 OK] /products/sony-wh-ch520-wireless-on-ear-bluetooth-headphones-black
+✅ [200 OK] /category/electronics
+✅ [200 OK] /category/computers-laptops
+✅ [200 OK] /sitemap.xml
+✅ [200 OK] /robots.txt
+✅ [200 OK] /shohan
+✅ [200 OK] /shohan/products
+✅ [200 OK] /shohan/categories
+✅ [200 OK] /shohan/brands
+✅ [200 OK] /shohan/deals
+✅ [200 OK] /shohan/articles
+✅ [200 OK] /shohan/guides
+✅ [200 OK] /shohan/comparisons
+✅ [200 OK] /shohan/reviews
+✅ [200 OK] /shohan/ads
+✅ [200 OK] /shohan/collections
+✅ [200 OK] /shohan/faqs
+✅ [200 OK] /shohan/media
+✅ [200 OK] /shohan/navigation
+✅ [200 OK] /shohan/homepage
+✅ [200 OK] /shohan/seo
+✅ [200 OK] /shohan/settings
+✅ [200 OK] /shohan/settings/api
+✅ [200 OK] /shohan/settings/homepage
+✅ [200 OK] /shohan/analytics
+✅ [200 OK] /shohan/affiliate
+✅ [200 OK] /shohan/affiliate-links
+✅ [200 OK] /shohan/system
+✅ [200 OK] /shohan/logs
+✅ [200 OK] /shohan/legal
+✅ [200 OK] /shohan/users
+
+==========================================
+FINAL RESULT: 42/42 ROUTES PASSED (100% OK)
+==========================================
+```
