@@ -1,6 +1,6 @@
 import { Product, Article, FAQ } from '@/types';
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://bestbuycart.com';
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://buybestcart.shop';
 
 export function generateProductJsonLd(product: Product) {
   return {

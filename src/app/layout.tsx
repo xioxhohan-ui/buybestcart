@@ -9,12 +9,16 @@ import { Analytics } from '@vercel/analytics/react';
 
 export async function generateMetadata(): Promise<Metadata> {
   const config = await getSiteConfiguration();
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://bestbuycart.com';
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://buybestcart.shop';
 
   return {
     title: `${config.site_name} — ${config.tagline}`,
     description: config.brand_description || config.hero_description,
     metadataBase: new URL(siteUrl),
+    keywords: ['buy best cart', 'buybestcart', 'best buy cart', 'amazon affiliate reviews', 'tech reviews 2026', 'buying guides', 'top rated tech', 'flagship comparisons'],
+    alternates: {
+      canonical: siteUrl,
+    },
     openGraph: {
       title: `${config.site_name} — ${config.tagline}`,
       description: config.brand_description || config.hero_description,
@@ -32,6 +36,13 @@ export async function generateMetadata(): Promise<Metadata> {
     robots: {
       index: true,
       follow: true,
+      googleBot: {
+        index: true,
+        follow: true,
+        'max-video-preview': -1,
+        'max-image-preview': 'large',
+        'max-snippet': -1,
+      },
     },
     verification: {
       google: 'VGCKTw_xZGWQqX0N2aH6sH0raK0U5G5OOm3TV7Ja9t8',
