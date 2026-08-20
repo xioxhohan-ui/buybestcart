@@ -1,4 +1,3 @@
-import { NextResponse } from 'next/server';
 import { createServerClient } from '@/lib/supabase/server';
 
 export const dynamic = 'force-dynamic';
@@ -19,16 +18,18 @@ export async function GET() {
     };
 
     // Fetch database items safely with timeouts/fallbacks
-    const [productsRes, categoriesRes, articlesRes, brandsRes] = await Promise.all([
+    const [productsRes, categoriesRes, articlesRes, comparisonsRes, brandsRes] = await Promise.all([
       fetchSafe(supabase.from('products').select('slug, updated_at').in('status', ['active', 'featured'])),
       fetchSafe(supabase.from('categories').select('slug, updated_at').eq('is_active', true)),
       fetchSafe(supabase.from('articles').select('slug, updated_at').eq('status', 'published')),
+      fetchSafe(supabase.from('comparisons').select('slug, updated_at').eq('is_active', true)),
       fetchSafe(supabase.from('brands').select('slug, updated_at').eq('is_active', true)),
     ]);
 
     const products = productsRes.data || [];
     const categories = categoriesRes.data || [];
     const articles = articlesRes.data || [];
+    const comparisons = comparisonsRes.data || [];
     const brands = brandsRes.data || [];
 
     const urlMap = new Map<string, { loc: string; lastmod: string; changefreq: string; priority: string }>();
@@ -65,28 +66,35 @@ export async function GET() {
     addUrl(`${SITE_URL}/contact`, new Date(), 'monthly', '0.5');
     addUrl(`${SITE_URL}/search`, new Date(), 'weekly', '0.5');
 
-    // 2. Categories
+    // 2. Categories / Departments
     categories.forEach((c: { slug?: string; updated_at?: string }) => {
       if (c.slug) {
         addUrl(`${SITE_URL}/category/${c.slug}`, c.updated_at, 'weekly', '0.8');
       }
     });
 
-    // 3. Products
+    // 3. Published Products
     products.forEach((p: { slug?: string; updated_at?: string }) => {
       if (p.slug) {
         addUrl(`${SITE_URL}/products/${p.slug}`, p.updated_at, 'daily', '0.8');
       }
     });
 
-    // 4. Articles
+    // 4. Published Articles & Buying Guides
     articles.forEach((a: { slug?: string; updated_at?: string }) => {
       if (a.slug) {
         addUrl(`${SITE_URL}/guides/${a.slug}`, a.updated_at, 'weekly', '0.7');
       }
     });
 
-    // 5. Brands
+    // 5. Comparisons
+    comparisons.forEach((comp: { slug?: string; updated_at?: string }) => {
+      if (comp.slug) {
+        addUrl(`${SITE_URL}/compare/${comp.slug}`, comp.updated_at, 'weekly', '0.7');
+      }
+    });
+
+    // 6. Active Brands
     brands.forEach((b: { slug?: string; updated_at?: string }) => {
       if (b.slug) {
         addUrl(`${SITE_URL}/brands/${b.slug}`, b.updated_at, 'monthly', '0.6');
@@ -118,7 +126,6 @@ export async function GET() {
   } catch (err) {
     console.error('Error generating sitemap XML:', err);
 
-    // Fallback XML in case of unexpected exception (NEVER RETURN HTML)
     const fallbackXml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
