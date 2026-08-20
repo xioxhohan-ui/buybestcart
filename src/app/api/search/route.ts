@@ -4,7 +4,7 @@ import { createServerClient } from '@/lib/supabase/server';
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const rawQ = searchParams.get('q') || '';
-  const q = rawQ.replace(/[,()"]/g, ' ').trim();
+  const q = rawQ.replace(/[,()"%_\\]/g, ' ').replace(/\s+/g, ' ').trim();
   const limit = parseInt(searchParams.get('limit') || '20', 10);
 
   if (!q) {
