@@ -26,8 +26,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const sitemapMap = new Map<string, MetadataRoute.Sitemap[number]>();
 
   const addRoute = (url: string, lastModified: Date, changeFrequency: 'always' | 'hourly' | 'daily' | 'weekly' | 'monthly' | 'yearly' | 'never', priority: number) => {
+    // Force replace any legacy domain bestbuycart.com with buybestcart.shop
+    const sanitizedUrl = url.replace(/https?:\/\/(www\.)?bestbuycart\.com/g, SITE_URL);
     // Ensure clean absolute URL without trailing slash (except root)
-    const cleanUrl = url === `${SITE_URL}/` ? url : url.replace(/\/$/, '');
+    const cleanUrl = sanitizedUrl === `${SITE_URL}/` ? sanitizedUrl : sanitizedUrl.replace(/\/$/, '');
     if (!sitemapMap.has(cleanUrl)) {
       sitemapMap.set(cleanUrl, {
         url: cleanUrl,
