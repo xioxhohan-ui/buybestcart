@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { MARKETPLACES } from '@/lib/affiliate';
 import { getStoredRegion, setStoredRegion } from '@/lib/region';
+import { ChevronDown, Globe } from 'lucide-react';
 
 interface RegionSelectorProps {
   compact?: boolean;
@@ -48,10 +49,10 @@ export default function RegionSelector({ compact = false }: RegionSelectorProps)
         }}
         aria-label="Select Amazon Marketplace Region"
       >
-        <span style={{ fontSize: '0.875rem' }}>{current.flag_emoji}</span>
+        <Globe size={13} color="var(--green-accent)" />
         <span>{current.country_code}</span>
         <span style={{ color: 'var(--text-muted)', fontSize: '0.6875rem', fontWeight: 600 }}>({current.currency})</span>
-        <span style={{ fontSize: '0.55rem', color: 'var(--text-muted)', marginLeft: '0.1rem' }}>▼</span>
+        <ChevronDown size={13} color="var(--text-muted)" />
       </button>
 
       {isOpen && (
@@ -101,7 +102,7 @@ export default function RegionSelector({ compact = false }: RegionSelectorProps)
                 }}
               >
                 <span style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  <span>{mkt.flag_emoji}</span>
+                  <span style={{ fontSize: '0.7rem', fontWeight: 800, padding: '0.1rem 0.35rem', borderRadius: '3px', background: 'var(--bg-subtle)', color: 'var(--text-secondary)' }}>{code}</span>
                   <span>{mkt.country}</span>
                 </span>
                 <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{mkt.currency}</span>

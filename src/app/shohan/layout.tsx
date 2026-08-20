@@ -29,6 +29,9 @@ import {
   ScrollText,
   ChevronLeft,
   ChevronRight,
+  Menu,
+  X,
+  ExternalLink,
 } from 'lucide-react';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -246,10 +249,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               </div>
               <button
                 onClick={() => setMobileDrawerOpen(false)}
-                style={{ background: 'transparent', border: '1px solid #334155', borderRadius: '4px', padding: '0.35rem', color: '#ffffff', cursor: 'pointer' }}
+                style={{ background: 'transparent', border: '1px solid #334155', borderRadius: '4px', padding: '0.35rem', color: '#ffffff', cursor: 'pointer', display: 'flex', alignItems: 'center' }}
                 aria-label="Close menu"
               >
-                ✕
+                <X size={16} />
               </button>
             </div>
 
@@ -257,8 +260,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
             <div style={{ padding: '1rem', borderTop: '1px solid #1e293b', fontSize: '0.75rem', color: '#64748b' }}>
               <div>Master Admin v2.0.0</div>
-              <Link href="/" target="_blank" style={{ color: '#94a3b8', textDecoration: 'underline', marginTop: '0.2rem', display: 'inline-block' }}>
-                ↗ Public Live Site
+              <Link href="/" target="_blank" style={{ color: '#94a3b8', textDecoration: 'underline', marginTop: '0.2rem', display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}>
+                <span>Public Live Site</span>
+                <ExternalLink size={12} />
               </Link>
             </div>
           </aside>
@@ -301,17 +305,18 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               }}
               aria-label="Toggle Admin Navigation Menu"
             >
-              <span>☰</span>
+              <Menu size={14} />
               <span>MENU</span>
             </button>
             <span className="admin-status-badge" style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--success)', background: 'var(--success-light)', padding: '0.2rem 0.55rem', borderRadius: 'var(--radius-full)' }}>
-              ● Connected
+              Connected
             </span>
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-            <Link href="/" className="btn btn-secondary btn-sm" target="_blank" style={{ fontSize: '0.75rem', padding: '0.3rem 0.6rem' }}>
-              Public Site ↗
+            <Link href="/" className="btn btn-secondary btn-sm" target="_blank" style={{ fontSize: '0.75rem', padding: '0.3rem 0.6rem', display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}>
+              <span>Public Site</span>
+              <ExternalLink size={12} />
             </Link>
             <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: 'var(--primary)', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: '0.8125rem' }}>
               S

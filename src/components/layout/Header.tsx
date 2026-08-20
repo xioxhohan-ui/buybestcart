@@ -17,6 +17,10 @@ import {
   HeartPulse,
   Dumbbell,
   Tent,
+  ChevronDown,
+  ChevronUp,
+  Info,
+  Mail,
 } from 'lucide-react';
 import SearchBar from '../common/SearchBar';
 import RegionSelector from './RegionSelector';
@@ -248,8 +252,8 @@ export default function Header({
                   <span style={{ fontSize: '0.75rem', fontWeight: 800, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
                     ALL DEPARTMENTS & HUBS
                   </span>
-                  <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 700 }}>
-                    {departmentsExpanded ? '▲' : '▼'}
+                  <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', display: 'flex', alignItems: 'center' }}>
+                    {departmentsExpanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
                   </span>
                 </button>
 
@@ -292,46 +296,52 @@ export default function Header({
                   href="/deals"
                   onClick={() => setMobileDrawerOpen(false)}
                   className="btn btn-primary"
-                  style={{ justifyContent: 'center', fontSize: '0.8125rem' }}
+                  style={{ justifyContent: 'center', fontSize: '0.8125rem', gap: '0.4rem' }}
                 >
-                  Today&apos;s Highlighted Deals 🔥
+                  <Flame size={14} />
+                  <span>Today&apos;s Highlighted Deals</span>
                 </Link>
                 <Link
                   href="/guides"
                   onClick={() => setMobileDrawerOpen(false)}
                   className="btn btn-secondary"
-                  style={{ justifyContent: 'center', fontSize: '0.8125rem' }}
+                  style={{ justifyContent: 'center', fontSize: '0.8125rem', gap: '0.4rem' }}
                 >
-                  2026 Buying Guides & Reviews 📚
+                  <BookOpen size={14} />
+                  <span>2026 Buying Guides & Reviews</span>
                 </Link>
                 <Link
                   href="/compare"
                   onClick={() => setMobileDrawerOpen(false)}
                   className="btn btn-secondary"
-                  style={{ justifyContent: 'center', fontSize: '0.8125rem' }}
+                  style={{ justifyContent: 'center', fontSize: '0.8125rem', gap: '0.4rem' }}
                 >
-                  Compare Flagships Side-by-Side ⚖️
+                  <Scale size={14} />
+                  <span>Compare Flagships Side-by-Side</span>
                 </Link>
                 <Link
                   href="/how-we-rank"
                   onClick={() => setMobileDrawerOpen(false)}
                   style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.5rem 0.75rem', fontSize: '0.8125rem', fontWeight: 600, color: 'var(--text-secondary)' }}
                 >
-                  <span>Our Testing Methodology 🛡️</span>
+                  <ShieldCheck size={15} color="var(--green-accent)" />
+                  <span>Our Testing Methodology</span>
                 </Link>
                 <Link
                   href="/about"
                   onClick={() => setMobileDrawerOpen(false)}
                   style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.5rem 0.75rem', fontSize: '0.8125rem', fontWeight: 600, color: 'var(--text-secondary)' }}
                 >
-                  <span>About the Publication ℹ️</span>
+                  <Info size={15} color="var(--green-accent)" />
+                  <span>About the Publication</span>
                 </Link>
                 <Link
                   href="/contact"
                   onClick={() => setMobileDrawerOpen(false)}
                   style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.5rem 0.75rem', fontSize: '0.8125rem', fontWeight: 600, color: 'var(--text-secondary)' }}
                 >
-                  <span>Contact Editorial Staff ✉️</span>
+                  <Mail size={15} color="var(--green-accent)" />
+                  <span>Contact Editorial Staff</span>
                 </Link>
               </div>
 
