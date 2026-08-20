@@ -90,8 +90,8 @@ export const DEFAULT_SITE_CONFIG: SiteConfiguration = {
   browser_theme_color: '#1C1917',
   og_default_image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=1200&auto=format&fit=crop&q=80',
   default_social_image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=1200&auto=format&fit=crop&q=80',
-  contact_email: 'contact@bestbuycart.com',
-  support_email: 'editorial@bestbuycart.com',
+  contact_email: 'contact@buybestcart.shop',
+  support_email: 'editorial@buybestcart.shop',
   social_links: {
     facebook: 'https://facebook.com/bestbuycart',
     instagram: 'https://instagram.com/bestbuycart',

@@ -18,7 +18,7 @@ export default function AdminSEOPage() {
     guide_template: 'The Definitive {category} Buying Guide ({year}) | Best Buy Cart',
     comparison_template: '{product_a} vs {product_b} — Head-to-Head Showdown | Best Buy Cart',
     default_og_image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=1200&auto=format&fit=crop&q=80',
-    canonical_base: 'https://bestbuycart.com',
+    canonical_base: 'https://buybestcart.shop',
     robots_default: 'index, follow',
   });
   const [saved, setSaved] = useState(false);

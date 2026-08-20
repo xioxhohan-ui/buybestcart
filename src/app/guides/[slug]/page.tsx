@@ -24,7 +24,9 @@ export async function generateMetadata({ params }: GuidePageProps): Promise<Meta
 
   const title = article.seo_title || `${article.title} | Best Buy Cart Editorial`;
   const description = article.seo_description || article.excerpt || `Read the complete buying guide and lab recommendations for ${article.title}.`;
-  const canonicalUrl = article.canonical_url || `https://bestbuycart.com/guides/${slug}`;
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://buybestcart.shop';
+  const rawCanonical = article.canonical_url ? article.canonical_url.replace('https://bestbuycart.com', siteUrl) : null;
+  const canonicalUrl = rawCanonical || `${siteUrl}/guides/${slug}`;
   const ogImageUrl = article.og_image || article.featured_image || 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=1200&auto=format&fit=crop&q=80';
 
   return {

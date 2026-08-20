@@ -335,7 +335,7 @@ export default function AdminProductsPage() {
       who_should_avoid: formData.who_should_avoid,
       seo_title: formData.seo_title || `${formData.title} — Price, Specs & Reviews | Best Buy Cart`,
       seo_description: formData.seo_description || formData.short_description || `Read our in-depth lab testing and review of the ${formData.title} with verified Amazon pricing.`,
-      canonical_url: formData.canonical_url || `https://bestbuycart.com/products/${generatedSlug}`,
+      canonical_url: formData.canonical_url || `https://buybestcart.shop/products/${generatedSlug}`,
       og_image: formData.og_image || formData.thumbnail_url,
       updated_at: new Date().toISOString(),
     };
@@ -688,7 +688,7 @@ export default function AdminProductsPage() {
                     Google Search Result Snippet Preview:
                   </div>
                   <div style={{ fontSize: '0.8125rem', color: '#202124', marginBottom: '0.15rem' }}>
-                    https://bestbuycart.com › products › <strong style={{ color: '#1A0DAB' }}>{effectiveSlug}</strong>
+                    https://buybestcart.shop › products › <strong style={{ color: '#1A0DAB' }}>{effectiveSlug}</strong>
                   </div>
                   <div style={{ fontSize: '1.125rem', color: '#1A0DAB', fontWeight: 500, lineHeight: 1.3, marginBottom: '0.25rem', textDecoration: 'underline', cursor: 'pointer' }}>
                     {effectiveSeoTitle}
@@ -756,7 +756,7 @@ export default function AdminProductsPage() {
                     </label>
                     <input
                       type="url"
-                      placeholder="https://bestbuycart.com/products/..."
+                      placeholder="https://buybestcart.shop/products/..."
                       value={formData.canonical_url}
                       onChange={(e) => setFormData({ ...formData, canonical_url: e.target.value })}
                       style={{ width: '100%', padding: '0.4rem', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-strong)', fontSize: '0.75rem', background: '#FFFFFF' }}

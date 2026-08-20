@@ -33,7 +33,9 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
 
   const title = product.seo_title || `${product.title} — Price, Specs & Reviews | Best Buy Cart`;
   const description = product.seo_description || product.short_description || `Read our in-depth testing and verified Amazon pricing for ${product.title}.`;
-  const canonicalUrl = product.canonical_url || `https://bestbuycart.com/products/${slug}`;
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://buybestcart.shop';
+  const rawCanonical = product.canonical_url ? product.canonical_url.replace('https://bestbuycart.com', siteUrl) : null;
+  const canonicalUrl = rawCanonical || `${siteUrl}/products/${slug}`;
   const ogImageUrl = product.og_image || product.thumbnail_url || 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=1200&auto=format&fit=crop&q=80';
 
   return {

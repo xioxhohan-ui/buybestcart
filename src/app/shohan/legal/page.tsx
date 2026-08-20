@@ -31,7 +31,7 @@ const DEFAULT_POLICIES: LegalPolicies = {
   how_we_rank:
     'Rankings (#1 Top Pick, #2 Runner-Up, Best Budget) are determined through an objective weighted matrix combining laboratory test benchmarks, verified customer review sentiment, and long-term durability assessments.',
   contact_info:
-    'For editorial inquiries, testing corrections, or partner relationships, contact our staff at editorial@bestbuycart.com or by mail at Best Buy Cart Media Inc.',
+    'For editorial inquiries, testing corrections, or partner relationships, contact our staff at editorial@buybestcart.shop or by mail at Best Buy Cart Media Inc.',
 };
 
 export default function AdminLegalPagesCMS() {

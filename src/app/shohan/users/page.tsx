@@ -16,7 +16,7 @@ interface AdminUser {
 const SAMPLE_TEAM: AdminUser[] = [
   {
     id: 'u-1',
-    email: 'shohan@bestbuycart.com',
+    email: 'shohan@buybestcart.shop',
     full_name: 'Shohan (Master Admin)',
     role: 'Super Administrator',
     is_active: true,
@@ -24,7 +24,7 @@ const SAMPLE_TEAM: AdminUser[] = [
   },
   {
     id: 'u-2',
-    email: 'editorial@bestbuycart.com',
+    email: 'editorial@buybestcart.shop',
     full_name: 'Lead Audio & Tech Editor',
     role: 'Senior Reviewer',
     is_active: true,
@@ -32,7 +32,7 @@ const SAMPLE_TEAM: AdminUser[] = [
   },
   {
     id: 'u-3',
-    email: 'deals@bestbuycart.com',
+    email: 'deals@buybestcart.shop',
     full_name: 'Deals & Affiliate Manager',
     role: 'Affiliate Specialist',
     is_active: true,
@@ -194,7 +194,7 @@ export default function AdminUsersPage() {
                 <input
                   type="email"
                   required
-                  placeholder="e.g. alex@bestbuycart.com"
+                  placeholder="e.g. alex@buybestcart.shop"
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   style={{ width: '100%', padding: '0.625rem', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-strong)' }}
