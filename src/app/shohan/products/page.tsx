@@ -29,7 +29,7 @@ import {
 import { formatPrice } from '@/lib/region';
 import Link from 'next/link';
 
-export const DEPARTMENTS = [
+const DEPARTMENTS = [
   'Electronics',
   'Computers & Accessories',
   'Phones & Accessories',
