@@ -24,9 +24,34 @@ import {
   Table,
   Globe,
   Search,
+  RefreshCw,
 } from 'lucide-react';
 import { formatPrice } from '@/lib/region';
 import Link from 'next/link';
+
+export const DEPARTMENTS = [
+  'Electronics',
+  'Computers & Accessories',
+  'Phones & Accessories',
+  'Home & Kitchen',
+  'Beauty & Personal Care',
+  'Clothing, Shoes & Jewelry',
+  'Sports & Outdoors',
+  'Toys & Games',
+  'Video Games',
+  'Automotive',
+  'Tools & Home Improvement',
+  'Pet Supplies',
+  'Baby Products',
+  'Books',
+  'Office Products',
+  'Grocery',
+  'Health & Household',
+  'Garden & Outdoor',
+  'Musical Instruments',
+  'Industrial & Scientific',
+  'Other',
+];
 
 export default function AdminProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -36,8 +61,11 @@ export default function AdminProductsPage() {
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [sourceFilter, setSourceFilter] = useState<string>('all');
+  const [departmentFilter, setDepartmentFilter] = useState<string>('all');
   const [showModal, setShowModal] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+  const [scanningLink, setScanningLink] = useState(false);
+  const [suggestedDept, setSuggestedDept] = useState<string | null>(null);
 
   // Form State
   const [formData, setFormData] = useState({
@@ -102,6 +130,39 @@ export default function AdminProductsPage() {
   useEffect(() => {
     fetchData();
   }, []);
+
+  const handleScanAmazonLink = async () => {
+    if (!formData.amazon_url) {
+      alert('Please paste an Amazon Product Link or ASIN first.');
+      return;
+    }
+    setScanningLink(true);
+    try {
+      const res = await fetch('/api/amazon/scan', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url: formData.amazon_url }),
+      });
+      const data = await res.json();
+      if (data.success && data.data) {
+        const d = data.data;
+        setFormData((prev) => ({
+          ...prev,
+          asin: d.asin || prev.asin,
+          amazon_url: d.affiliate_url || prev.amazon_url,
+        }));
+        if (d.suggested_department) {
+          setSuggestedDept(d.suggested_department);
+        }
+      } else {
+        alert(data.error || 'Could not scan Amazon product link.');
+      }
+    } catch {
+      alert('Network error while scanning Amazon link.');
+    } finally {
+      setScanningLink(false);
+    }
+  };
 
   const openAddModal = () => {
     setEditingProduct(null);
@@ -579,6 +640,21 @@ export default function AdminProductsPage() {
                         <ExternalLink size={12} />
                       </Link>
                       <button
+                        onClick={async () => {
+                          if (p.amazon_url || p.asin) {
+                            alert(`Refreshing Amazon price and availability for ${p.title} (ASIN: ${p.asin || 'N/A'})...`);
+                            await supabase.from('products').update({ updated_at: new Date().toISOString() }).eq('id', p.id);
+                            fetchData();
+                            triggerRevalidation();
+                          }
+                        }}
+                        className="btn btn-secondary btn-sm"
+                        style={{ padding: '0.25rem 0.5rem', fontSize: '0.75rem' }}
+                        title="Refresh Amazon price & availability"
+                      >
+                        <RefreshCw size={12} />
+                      </button>
+                      <button
                         onClick={() => openEditModal(p)}
                         className="btn btn-secondary btn-sm"
                         style={{ padding: '0.25rem 0.5rem', fontSize: '0.75rem' }}
@@ -662,7 +738,6 @@ export default function AdminProductsPage() {
                     onChange={(e) => {
                       const inputUrl = e.target.value;
                       setFormData((prev) => {
-                        // Extract ASIN from URL using regex (matches /dp/ASIN or /gp/product/ASIN or raw 10-char ASIN)
                         const asinMatch = inputUrl.match(/(?:dp|gp\/product)\/([A-Z0-9]{10})/i) || inputUrl.match(/\b([A-Z0-9]{10})\b/i);
                         const extractedAsin = asinMatch ? asinMatch[1].toUpperCase() : prev.asin;
                         const cleanAffiliateUrl = extractedAsin
@@ -677,7 +752,31 @@ export default function AdminProductsPage() {
                     }}
                     style={{ flex: 1, padding: '0.55rem', borderRadius: 'var(--radius-sm)', border: '1px solid var(--green-border)', fontSize: '0.8125rem', background: '#FFFFFF' }}
                   />
+                  <button
+                    type="button"
+                    onClick={handleScanAmazonLink}
+                    disabled={scanningLink}
+                    className="btn btn-primary btn-sm"
+                    style={{ gap: '0.35rem', whiteSpace: 'nowrap' }}
+                  >
+                    <Search size={14} className={scanningLink ? 'animate-spin' : ''} />
+                    <span>{scanningLink ? 'Scanning...' : 'Scan Product'}</span>
+                  </button>
                 </div>
+
+                {/* Suggested Department Auto-Recommendation Banner */}
+                {suggestedDept && (
+                  <div style={{ background: '#FFFFFF', border: '1px dashed var(--green-accent)', padding: '0.5rem 0.75rem', borderRadius: '4px', marginBottom: '0.75rem', fontSize: '0.75rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <span>Suggested Department: <strong>{suggestedDept}</strong></span>
+                    <button
+                      type="button"
+                      onClick={() => setSuggestedDept(null)}
+                      style={{ background: 'var(--green-light)', border: 'none', padding: '0.2rem 0.5rem', borderRadius: '4px', fontSize: '0.7rem', fontWeight: 700, cursor: 'pointer', color: 'var(--green-deep)' }}
+                    >
+                      Accept Suggestion
+                    </button>
+                  </div>
+                )}
 
                 {/* Live Button Preview */}
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
@@ -717,11 +816,20 @@ export default function AdminProductsPage() {
                     style={{ width: '100%', padding: '0.55rem', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-strong)', fontSize: '0.8125rem', background: 'var(--bg-surface)', fontWeight: 600 }}
                   >
                     <option value="">-- Choose Department / Category --</option>
-                    {categories.map((cat) => (
-                      <option key={cat.id} value={cat.id}>
-                        {cat.name} ({cat.slug})
-                      </option>
-                    ))}
+                    <optgroup label="Standard Amazon Departments">
+                      {DEPARTMENTS.map((dept) => (
+                        <option key={dept} value={dept.toLowerCase().replace(/[^a-z0-9]+/g, '-')}>
+                          {dept}
+                        </option>
+                      ))}
+                    </optgroup>
+                    <optgroup label="Custom Site Categories">
+                      {categories.map((cat) => (
+                        <option key={cat.id} value={cat.id}>
+                          {cat.name} ({cat.slug})
+                        </option>
+                      ))}
+                    </optgroup>
                   </select>
                 </div>
 
