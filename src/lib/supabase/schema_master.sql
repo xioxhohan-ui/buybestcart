@@ -82,13 +82,23 @@ CREATE TABLE IF NOT EXISTS public.products (
   editorial_score NUMERIC(3, 1) DEFAULT 9.2,
   is_featured BOOLEAN DEFAULT FALSE,
   is_editor_choice BOOLEAN DEFAULT FALSE,
+  badge_text TEXT DEFAULT 'Top Pick',
   deal_status TEXT DEFAULT 'none' CHECK (deal_status IN ('none', 'limited_deal', 'top_deal', 'lightning_deal')),
   status TEXT DEFAULT 'active' CHECK (status IN ('draft', 'active', 'featured', 'archived')),
   content_source TEXT DEFAULT 'manual',
   pros TEXT[] DEFAULT '{}',
   cons TEXT[] DEFAULT '{}',
   editor_verdict TEXT,
+  best_for TEXT,
+  why_we_like_it TEXT,
   buying_advice TEXT,
+  who_should_buy TEXT,
+  who_should_avoid TEXT,
+  video_url TEXT,
+  video_title TEXT,
+  video_thumbnail TEXT,
+  video_type TEXT DEFAULT 'youtube',
+  rating_breakdown JSONB DEFAULT '{}',
   seo_title TEXT,
   seo_description TEXT,
   canonical_url TEXT,
@@ -98,6 +108,28 @@ CREATE TABLE IF NOT EXISTS public.products (
   clicks_count INT DEFAULT 0,
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- 4b. MESSAGES & CONTACT FORM INQUIRIES
+CREATE TABLE IF NOT EXISTS public.messages (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  name TEXT NOT NULL,
+  email TEXT NOT NULL,
+  subject TEXT,
+  message TEXT NOT NULL,
+  status TEXT DEFAULT 'unread' CHECK (status IN ('unread', 'read', 'archived', 'replied')),
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- 4c. SYSTEM LOGS & AUDIT TRAIL
+CREATE TABLE IF NOT EXISTS public.system_logs (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  level TEXT DEFAULT 'info',
+  category TEXT DEFAULT 'general',
+  message TEXT NOT NULL,
+  metadata JSONB DEFAULT '{}',
+  created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
 -- 5. PRODUCT SPECIFICATIONS (DYNAMIC KEY-VALUE BENCHMARKS)
