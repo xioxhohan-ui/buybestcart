@@ -1,0 +1,38 @@
+==============================================================================
+BUYBESTCART V2 — COMPREHENSIVE BUG AUDIT & RESOLUTION REPORT
+==============================================================================
+Date: 2026-08-20
+Target: https://buybestcart.shop
+Status: 43/43 Next.js Routes Compiled (0 Errors)
+TypeScript: 0 Type Errors (tsc --noEmit)
+
+------------------------------------------------------------------------------
+[BUG-001] (Medium - FIXED) PostgREST Query Syntax Error on Special Characters
+Location: src/app/api/search/route.ts
+Description: Raw user query strings passed into .or() filter caused HTTP 500 when queries contained commas, parentheses, or quotes.
+Fix: Added regex input sanitization rawQ.replace(/[,()"]/g, ' ').trim().
+
+------------------------------------------------------------------------------
+[BUG-002] (Medium - FIXED) Unfiltered Product Query in Dynamic Sitemap
+Location: src/app/sitemap.xml/route.ts
+Description: Products table query in sitemap.xml lacked a status filter, risking exposure of draft/archived items to search crawlers.
+Fix: Added .in('status', ['active', 'featured', 'published']) constraint.
+
+------------------------------------------------------------------------------
+[BUG-003] (Low - FIXED) Missing Timeout Cleanup on Component Unmount
+Location: src/components/layout/CategoryNavStrip.tsx
+Description: Navigation hover grace window timeoutRef had no useEffect unmount cleanup.
+Fix: Added useEffect hook calling clearTimeout(timeoutRef.current) on unmount.
+
+------------------------------------------------------------------------------
+[BUG-004] (Low - FIXED) Background Polling on Inactive Browser Tabs
+Location: src/app/shohan/logs/page.tsx
+Description: Real-time log feed executed 5000ms polling even when browser tab was hidden.
+Fix: Added document.visibilityState === 'visible' condition to polling interval.
+
+------------------------------------------------------------------------------
+[BUG-005] (Low - FIXED) Missing Google Image XML Namespace & Tags in Sitemap
+Location: src/app/sitemap.xml/route.ts
+Description: Product images were missing <image:image> tags in sitemap.xml.
+Fix: Added xmlns:image namespace and <image:image> tags for catalog products.
+==============================================================================

@@ -100,9 +100,11 @@ export default function AdminLogsPage() {
   useEffect(() => {
     fetchRealtimeLogs();
 
-    // Auto Refresh every 5 seconds for Real-Time Live Feed
+    // Auto Refresh every 5 seconds for Real-Time Live Feed only when tab is visible
     const interval = setInterval(() => {
-      fetchRealtimeLogs();
+      if (typeof document !== 'undefined' && document.visibilityState === 'visible') {
+        fetchRealtimeLogs();
+      }
     }, 5000);
 
     return () => clearInterval(interval);

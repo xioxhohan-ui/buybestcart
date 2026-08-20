@@ -1,0 +1,66 @@
+{
+  "project": "BuyBestCart v2",
+  "audit_date": "2026-08-20",
+  "build_status": "SUCCESS (43/43 Next.js static & dynamic routes)",
+  "typescript_status": "0 Errors (tsc --noEmit)",
+  "summary": {
+    "total_findings": 5,
+    "fixed_in_session": 5,
+    "critical": 0,
+    "high": 0,
+    "medium": 2,
+    "low": 3
+  },
+  "bugs": [
+    {
+      "id": "BUG-001",
+      "severity": "Medium",
+      "status": "FIXED",
+      "category": "API / Query Injection",
+      "component": "src/app/api/search/route.ts",
+      "title": "Unsanitized Search Query Parameter in PostgREST .or() Filter",
+      "description": "The search endpoint passed raw query strings directly into supabase .or() filter (`title.ilike.%${q}%,short_description.ilike.%${q}%`). Special PostgREST delimiters such as commas, parentheses, or quotes would trigger PostgREST filter syntax parse errors (HTTP 500).",
+      "fix": "Added regex sanitization `rawQ.replace(/[,()\"]/g, ' ').trim()` to prevent query delimiter collisions."
+    },
+    {
+      "id": "BUG-002",
+      "severity": "Medium",
+      "status": "FIXED",
+      "category": "SEO / Sitemap Data Leak",
+      "component": "src/app/sitemap.xml/route.ts",
+      "title": "Unfiltered Product Query in Dynamic XML Sitemap",
+      "description": "The dynamic sitemap generator queried products without explicit status filtering, which risked exposing draft or archived items to search engine crawlers.",
+      "fix": "Added `.in('status', ['active', 'featured', 'published'])` constraint to ensure only public canonical products are included in sitemap.xml."
+    },
+    {
+      "id": "BUG-003",
+      "severity": "Low",
+      "status": "FIXED",
+      "category": "Performance / Memory Leak",
+      "component": "src/components/layout/CategoryNavStrip.tsx",
+      "title": "Missing Cleanup for Pending Navigation Timeout on Unmount",
+      "description": "CategoryNavStrip used a 200ms grace window for mouse hover transitions via timeoutRef without cleaning up pending timers when the component unmounted.",
+      "fix": "Implemented React.useEffect cleanup hook returning `() => clearTimeout(timeoutRef.current)` on unmount."
+    },
+    {
+      "id": "BUG-004",
+      "severity": "Low",
+      "status": "FIXED",
+      "category": "Network / Client Optimization",
+      "component": "src/app/shohan/logs/page.tsx",
+      "title": "Unchecked Background Polling on Inactive Browser Tabs",
+      "description": "The real-time audit log live feed polled the Supabase backend every 5 seconds even when the browser tab was minimized or hidden.",
+      "fix": "Added `document.visibilityState === 'visible'` check before triggering periodic background log queries."
+    },
+    {
+      "id": "BUG-005",
+      "severity": "Low",
+      "status": "FIXED",
+      "category": "SEO / Google Image Search",
+      "component": "src/app/sitemap.xml/route.ts",
+      "title": "Missing Google Image XML Namespace & Tags",
+      "description": "Product images were not declared in sitemap.xml with `<image:image>` tags, slowing down Google Image Search discovery.",
+      "fix": "Added `xmlns:image=\"http://www.google.com/schemas/sitemap-image/1.1\"` namespace and `<image:image><image:loc>...</image:loc></image:image>` tags for all catalog products."
+    }
+  ]
+}

@@ -3,21 +3,22 @@ import { createServerClient } from '@/lib/supabase/server';
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
-  const q = searchParams.get('q') || '';
+  const rawQ = searchParams.get('q') || '';
+  const q = rawQ.replace(/[,()"]/g, ' ').trim();
   const limit = parseInt(searchParams.get('limit') || '20', 10);
 
-  if (!q.trim()) {
+  if (!q) {
     return NextResponse.json({ products: [], total: 0 });
   }
 
   const supabase = createServerClient();
 
-  // Search products by title or short_description using ilike
+  // Search products by title or short_description using ilike safely
   const { data: products, error } = await supabase
     .from('products')
     .select('id, title, slug, thumbnail_url, price, currency, rating, review_count, brand:brands(name), category:categories(name, slug)')
     .or(`title.ilike.%${q}%,short_description.ilike.%${q}%`)
-    .in('status', ['active', 'featured'])
+    .in('status', ['active', 'featured', 'published'])
     .limit(limit);
 
   if (error) {

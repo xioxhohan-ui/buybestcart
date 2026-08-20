@@ -22,12 +22,19 @@ export default function CategoryNavStrip() {
   const [activeDepartment, setActiveDepartment] = useState<string | null>(null);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
+  React.useEffect(() => {
+    return () => {
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    };
+  }, []);
+
   const handleMouseEnter = (deptId: string) => {
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
     setActiveDepartment(deptId);
   };
 
   const handleMouseLeave = () => {
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
     timeoutRef.current = setTimeout(() => {
       setActiveDepartment(null);
     }, 200); // 200ms grace window for smooth diagonal cursor glide
