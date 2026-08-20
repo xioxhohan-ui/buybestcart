@@ -2,15 +2,39 @@
 
 import React, { useState } from 'react';
 import Breadcrumbs from '@/components/common/Breadcrumbs';
+import { Send, CheckCircle2, AlertCircle, Loader2 } from 'lucide-react';
 
 export default function ContactPage() {
   const [submitted, setSubmitted] = useState(false);
-  const [form, setForm] = useState({ name: '', email: '', subject: '', message: '' });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [form, setForm] = useState({ name: '', email: '', subject: 'Editorial Correction', message: '' });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (form.name && form.email && form.message) {
-      setSubmitted(true);
+    if (!form.name || !form.email || !form.message) return;
+
+    setIsSubmitting(true);
+    setErrorMessage(null);
+
+    try {
+      const res = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(form),
+      });
+
+      const data = await res.json();
+
+      if (res.ok && data.success) {
+        setSubmitted(true);
+      } else {
+        setErrorMessage(data.error || 'Failed to submit message. Please try again.');
+      }
+    } catch {
+      setErrorMessage('Network error occurred. Please check your connection and try again.');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -29,9 +53,11 @@ export default function ContactPage() {
 
       {submitted ? (
         <div style={{ background: 'var(--success-light)', border: '1px solid #bbf7d0', borderRadius: 'var(--radius-lg)', padding: '2.5rem', textAlign: 'center' }}>
-          <div style={{ fontSize: '2.5rem', marginBottom: '1rem' }}>✓</div>
+          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '1rem' }}>
+            <CheckCircle2 size={48} color="var(--success)" />
+          </div>
           <h2 style={{ color: 'var(--success)', marginBottom: '0.5rem' }}>Message Received!</h2>
-          <p style={{ color: '#166534' }}>
+          <p style={{ color: '#166534', fontSize: '0.9375rem' }}>
             Thank you for reaching out. Our editorial team will review your inquiry and respond to <strong>{form.email}</strong> within 1-2 business days.
           </p>
         </div>
@@ -49,6 +75,13 @@ export default function ContactPage() {
             boxShadow: 'var(--shadow-sm)',
           }}
         >
+          {errorMessage && (
+            <div style={{ background: '#fef2f2', border: '1px solid #fecaca', borderRadius: 'var(--radius-sm)', padding: '0.75rem 1rem', color: '#991b1b', fontSize: '0.875rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <AlertCircle size={16} />
+              <span>{errorMessage}</span>
+            </div>
+          )}
+
           <div>
             <label style={{ display: 'block', fontWeight: 600, fontSize: '0.875rem', marginBottom: '0.375rem' }}>
               Your Name *
@@ -64,6 +97,7 @@ export default function ContactPage() {
                 borderRadius: 'var(--radius)',
                 border: '1px solid var(--border-strong)',
                 background: 'var(--bg-main)',
+                fontSize: '0.875rem',
               }}
               placeholder="Alex Smith"
             />
@@ -84,6 +118,7 @@ export default function ContactPage() {
                 borderRadius: 'var(--radius)',
                 border: '1px solid var(--border-strong)',
                 background: 'var(--bg-main)',
+                fontSize: '0.875rem',
               }}
               placeholder="alex@example.com"
             />
@@ -102,6 +137,7 @@ export default function ContactPage() {
                 borderRadius: 'var(--radius)',
                 border: '1px solid var(--border-strong)',
                 background: 'var(--bg-main)',
+                fontSize: '0.875rem',
               }}
             >
               <option value="Editorial Correction">Editorial Feedback or Correction</option>
@@ -126,14 +162,25 @@ export default function ContactPage() {
                 borderRadius: 'var(--radius)',
                 border: '1px solid var(--border-strong)',
                 background: 'var(--bg-main)',
+                fontSize: '0.875rem',
                 resize: 'vertical',
               }}
               placeholder="How can we help you?"
             />
           </div>
 
-          <button type="submit" className="btn btn-primary" style={{ marginTop: '0.5rem' }}>
-            Send Message
+          <button type="submit" disabled={isSubmitting} className="btn btn-primary" style={{ marginTop: '0.5rem', justifyContent: 'center', gap: '0.5rem' }}>
+            {isSubmitting ? (
+              <>
+                <Loader2 size={16} className="animate-spin" />
+                <span>Sending Message...</span>
+              </>
+            ) : (
+              <>
+                <Send size={16} />
+                <span>Send Message</span>
+              </>
+            )}
           </button>
         </form>
       )}
