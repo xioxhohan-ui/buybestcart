@@ -131,12 +131,15 @@ export default function AdminProductsPage() {
     fetchData();
   }, []);
 
+  const [apiNotice, setApiNotice] = useState<string | null>(null);
+
   const handleScanAmazonLink = async () => {
     if (!formData.amazon_url) {
       alert('Please paste an Amazon Product Link or ASIN first.');
       return;
     }
     setScanningLink(true);
+    setApiNotice(null);
     try {
       const res = await fetch('/api/amazon/scan', {
         method: 'POST',
@@ -150,9 +153,18 @@ export default function AdminProductsPage() {
           ...prev,
           asin: d.asin || prev.asin,
           amazon_url: d.affiliate_url || prev.amazon_url,
+          title: d.title || prev.title,
+          manufacturer: d.brand || prev.manufacturer,
+          price: d.price || prev.price,
+          currency: d.currency || prev.currency,
+          availability: d.availability || prev.availability,
+          thumbnail_url: d.image_url || prev.thumbnail_url,
         }));
         if (d.suggested_department) {
           setSuggestedDept(d.suggested_department);
+        }
+        if (d.api_notice) {
+          setApiNotice(d.api_notice);
         }
       } else {
         alert(data.error || 'Could not scan Amazon product link.');
@@ -763,6 +775,13 @@ export default function AdminProductsPage() {
                     <span>{scanningLink ? 'Scanning...' : 'Scan Product'}</span>
                   </button>
                 </div>
+
+                {/* API Status Notice Banner */}
+                {apiNotice && (
+                  <div style={{ background: '#FFFBEB', border: '1px solid #FDE68A', padding: '0.625rem', borderRadius: '4px', marginBottom: '0.75rem', fontSize: '0.75rem', color: '#92400E', fontWeight: 600 }}>
+                    {apiNotice}
+                  </div>
+                )}
 
                 {/* Suggested Department Auto-Recommendation Banner */}
                 {suggestedDept && (
