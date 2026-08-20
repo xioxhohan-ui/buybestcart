@@ -38,11 +38,19 @@ export default function AdminLogsPage() {
 
   const fetchRealtimeLogs = async () => {
     try {
+      const fetchSafe = async (queryPromise: PromiseLike<{ data: unknown }>) => {
+        try {
+          return await queryPromise;
+        } catch {
+          return { data: null };
+        }
+      };
+
       const [messagesRes, systemLogsRes, clicksRes, searchRes] = await Promise.all([
-        supabase.from('messages').select('*').order('created_at', { ascending: false }).limit(30).catch(() => ({ data: null })),
-        supabase.from('system_logs').select('*').eq('category', 'contact_message').order('created_at', { ascending: false }).limit(30).catch(() => ({ data: null })),
-        supabase.from('affiliate_clicks').select('*').order('created_at', { ascending: false }).limit(30).catch(() => ({ data: null })),
-        supabase.from('search_logs').select('*').order('created_at', { ascending: false }).limit(30).catch(() => ({ data: null })),
+        fetchSafe(supabase.from('messages').select('*').order('created_at', { ascending: false }).limit(30)),
+        fetchSafe(supabase.from('system_logs').select('*').eq('category', 'contact_message').order('created_at', { ascending: false }).limit(30)),
+        fetchSafe(supabase.from('affiliate_clicks').select('*').order('created_at', { ascending: false }).limit(30)),
+        fetchSafe(supabase.from('search_logs').select('*').order('created_at', { ascending: false }).limit(30)),
       ]);
 
       const formattedMessages: ContactMessageItem[] = [];
