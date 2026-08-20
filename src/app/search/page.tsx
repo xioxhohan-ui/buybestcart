@@ -27,14 +27,17 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
   let products: Product[] = [];
 
   if (q.trim()) {
-    const { data } = await supabase
-      .from('products')
-      .select('*, brand:brands(*), category:categories(*)')
-      .or(`title.ilike.%${q}%,short_description.ilike.%${q}%`)
-      .in('status', ['active', 'featured'])
-      .limit(24);
+    const cleanQ = q.replace(/[,()"%_\\]/g, ' ').replace(/\s+/g, ' ').trim();
+    if (cleanQ) {
+      const { data } = await supabase
+        .from('products')
+        .select('*, brand:brands(*), category:categories(*)')
+        .or(`title.ilike.%${cleanQ}%,short_description.ilike.%${cleanQ}%`)
+        .in('status', ['active', 'featured'])
+        .limit(24);
 
-    products = (data as Product[]) || [];
+      products = (data as Product[]) || [];
+    }
   }
 
   const breadcrumbs = [

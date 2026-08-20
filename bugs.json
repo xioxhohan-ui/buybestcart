@@ -3,14 +3,14 @@
   "audit_date": "2026-08-20",
   "build_status": "SUCCESS (43/43 Next.js static & dynamic routes)",
   "typescript_status": "0 Errors (npx tsc --noEmit)",
-  "database_status": "HEALTHY (All PostgreSQL tables, columns, and RLS policies synchronized)",
+  "database_status": "HEALTHY (All PostgreSQL tables, RPC functions, columns, and RLS policies synchronized)",
   "summary": {
-    "total_audited_areas": 8,
-    "total_findings": 7,
-    "fixed_in_session": 7,
+    "total_audited_areas": 10,
+    "total_findings": 9,
+    "fixed_in_session": 9,
     "critical": 0,
-    "high": 2,
-    "medium": 2,
+    "high": 3,
+    "medium": 3,
     "low": 3
   },
   "bugs": [
@@ -36,17 +36,47 @@
     },
     {
       "id": "BUG-003",
+      "severity": "High",
+      "status": "FIXED",
+      "category": "Database / Relational Persistence",
+      "component": "src/app/shohan/products/page.tsx & PostgreSQL",
+      "title": "Relational Specifications, Features & Gallery Images Persistence",
+      "description": "Saving a product only modified the primary products row, leaving custom product_specifications, product_features, and product_images out of sync in PostgreSQL.",
+      "fix": "Updated handleSave to delete old child rows and insert new specifications, features, and gallery images, and updated fetchData to join and load them."
+    },
+    {
+      "id": "BUG-004",
+      "severity": "Medium",
+      "status": "FIXED",
+      "category": "Database / Stored Procedure (RPC)",
+      "component": "Supabase PostgreSQL & /go/[slug] Route",
+      "title": "Missing increment_clicks and increment_views RPC Functions",
+      "description": "When users clicked Amazon affiliate redirect links (/go/[slug]), supabase.rpc('increment_clicks') failed because the function did not exist in PostgreSQL.",
+      "fix": "Created increment_clicks and increment_views PL/pgSQL stored procedures in PostgreSQL and granted execute permissions to public roles."
+    },
+    {
+      "id": "BUG-005",
       "severity": "Medium",
       "status": "FIXED",
       "category": "API / Query Injection",
       "component": "src/app/api/search/route.ts",
       "title": "Unsanitized Search Query Parameter in PostgREST .or() Filter",
       "description": "Searching with commas, quotes, parentheses, wildcards, or backslashes caused PostgREST filter syntax errors (HTTP 500).",
-      "fix": "Added regex sanitization `rawQ.replace(/[,()\"%_\\\\]/g, ' ').replace(/\\s+/g, ' ').trim()` to ensure safe query execution."
+      "fix": "Added regex sanitization rawQ.replace(/[,()\"%_\\\\]/g, ' ').replace(/\\s+/g, ' ').trim() to ensure safe query execution."
     },
     {
-      "id": "BUG-004",
+      "id": "BUG-006",
       "severity": "Medium",
+      "status": "FIXED",
+      "category": "Frontend / Search Page Query Sanitization",
+      "component": "src/app/search/page.tsx",
+      "title": "Unsanitized Direct URL Query String on Public Search Page",
+      "description": "Direct navigation to /search?q=a,b passed raw special characters into .or(), triggering PostgREST syntax errors.",
+      "fix": "Added delimiter sanitization on q before running .or() query in search/page.tsx."
+    },
+    {
+      "id": "BUG-007",
+      "severity": "Low",
       "status": "FIXED",
       "category": "Frontend / Credentials Fallback",
       "component": "src/lib/supabase/client.ts & server.ts",
@@ -55,34 +85,24 @@
       "fix": "Added valid active Supabase publishable anon key fallbacks in both client.ts and server.ts."
     },
     {
-      "id": "BUG-005",
+      "id": "BUG-008",
       "severity": "Low",
       "status": "FIXED",
       "category": "Database / Deals & Comparisons Schema",
       "component": "Supabase PostgreSQL public.deals & public.comparisons",
       "title": "Missing Columns in Deals & Comparisons Tables",
-      "description": "Deals and Comparisons tables were missing columns referenced by admin CRUD pages (deal_price, discount_percentage, product_a_id, product_b_id, winner_product_id, verdict).",
+      "description": "Deals and Comparisons tables were missing columns referenced by admin CRUD forms (deal_price, discount_percentage, start_date, end_date, product_a_id, product_b_id, winner_product_id, verdict).",
       "fix": "Executed migration adding all referenced columns to deals and comparisons tables."
     },
     {
-      "id": "BUG-006",
+      "id": "BUG-009",
       "severity": "Low",
       "status": "FIXED",
       "category": "Frontend / Memory & Lifecycle",
-      "component": "src/components/layout/CategoryNavStrip.tsx",
-      "title": "Missing Timeout Cleanup on Component Unmount",
-      "description": "CategoryNavStrip used a 200ms grace window for mouse hover transitions without unmount cleanup.",
-      "fix": "Implemented React.useEffect cleanup hook calling clearTimeout(timeoutRef.current)."
-    },
-    {
-      "id": "BUG-007",
-      "severity": "Low",
-      "status": "FIXED",
-      "category": "Network / Real-Time Polling",
-      "component": "src/app/shohan/logs/page.tsx",
-      "title": "Continuous Background Polling on Inactive Browser Tabs",
-      "description": "Live audit logs polled backend every 5 seconds even when the tab was hidden or minimized.",
-      "fix": "Added document.visibilityState === 'visible' guard before executing periodic background fetches."
+      "component": "src/components/layout/CategoryNavStrip.tsx & src/app/shohan/logs/page.tsx",
+      "title": "Missing Unmount Cleanup & Continuous Background Polling",
+      "description": "CategoryNavStrip had uncleaned hover timers, and the audit log feed polled every 5s on hidden tabs.",
+      "fix": "Added useEffect timer cleanup and tab visibility guards."
     }
   ]
 }
