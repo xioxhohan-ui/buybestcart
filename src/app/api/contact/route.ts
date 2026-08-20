@@ -42,8 +42,7 @@ export async function POST(request: Request) {
     }
 
     // 3. Trigger real-time cache revalidation for admin logs and dashboard
-    await triggerRevalidation('/shohan/logs');
-    await triggerRevalidation('/shohan/dashboard');
+    await triggerRevalidation();
 
     return NextResponse.json({
       success: true,
