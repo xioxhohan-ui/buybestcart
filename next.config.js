@@ -73,6 +73,31 @@ const nextConfig = {
         destination: '/sitemap.xml',
         permanent: true,
       },
+      {
+        source: '/privacy',
+        destination: '/privacy-policy',
+        permanent: true,
+      },
+      {
+        source: '/terms-of-service',
+        destination: '/terms',
+        permanent: true,
+      },
+      {
+        source: '/terms-of-use',
+        destination: '/terms',
+        permanent: true,
+      },
+      {
+        source: '/disclaimer',
+        destination: '/affiliate-disclosure',
+        permanent: true,
+      },
+      {
+        source: '/disclosure',
+        destination: '/affiliate-disclosure',
+        permanent: true,
+      },
     ];
   },
 };

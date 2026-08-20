@@ -120,6 +120,8 @@ export async function GET() {
     addUrl('/how-we-rank', new Date(), 'monthly', '0.7');
     addUrl('/about', new Date(), 'monthly', '0.6');
     addUrl('/affiliate-disclosure', new Date(), 'monthly', '0.5');
+    addUrl('/privacy-policy', new Date(), 'yearly', '0.4');
+    addUrl('/terms', new Date(), 'yearly', '0.4');
     addUrl('/contact', new Date(), 'monthly', '0.5');
 
     // 2. Published Categories & Departments
