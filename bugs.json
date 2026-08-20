@@ -3,14 +3,14 @@
   "audit_date": "2026-08-20",
   "build_status": "SUCCESS (43/43 Next.js static & dynamic routes)",
   "typescript_status": "0 Errors (npx tsc --noEmit)",
-  "database_status": "HEALTHY (All PostgreSQL tables, RPC functions, columns, and RLS policies synchronized)",
+  "database_status": "HEALTHY (All PostgreSQL tables, RPC functions, triggers, columns, and RLS policies synchronized)",
   "summary": {
-    "total_audited_areas": 10,
-    "total_findings": 9,
-    "fixed_in_session": 9,
+    "total_audited_areas": 11,
+    "total_findings": 10,
+    "fixed_in_session": 10,
     "critical": 0,
     "high": 3,
-    "medium": 3,
+    "medium": 4,
     "low": 3
   },
   "bugs": [
@@ -58,6 +58,16 @@
       "id": "BUG-005",
       "severity": "Medium",
       "status": "FIXED",
+      "category": "Database / FAQs & Articles Schema",
+      "component": "Supabase PostgreSQL public.faqs & public.articles",
+      "title": "Missing Category in FAQs and Format Aliases in Articles",
+      "description": "Admin FAQ editor inserted 'category' column which was absent in PostgreSQL, and Article manager submitted 'type'/'content' aliases.",
+      "fix": "Added category column to public.faqs and added type/content/published_at columns with bi-directional sync trigger in public.articles."
+    },
+    {
+      "id": "BUG-006",
+      "severity": "Medium",
+      "status": "FIXED",
       "category": "API / Query Injection",
       "component": "src/app/api/search/route.ts",
       "title": "Unsanitized Search Query Parameter in PostgREST .or() Filter",
@@ -65,7 +75,7 @@
       "fix": "Added regex sanitization rawQ.replace(/[,()\"%_\\\\]/g, ' ').replace(/\\s+/g, ' ').trim() to ensure safe query execution."
     },
     {
-      "id": "BUG-006",
+      "id": "BUG-007",
       "severity": "Medium",
       "status": "FIXED",
       "category": "Frontend / Search Page Query Sanitization",
@@ -75,7 +85,7 @@
       "fix": "Added delimiter sanitization on q before running .or() query in search/page.tsx."
     },
     {
-      "id": "BUG-007",
+      "id": "BUG-008",
       "severity": "Low",
       "status": "FIXED",
       "category": "Frontend / Credentials Fallback",
@@ -85,7 +95,7 @@
       "fix": "Added valid active Supabase publishable anon key fallbacks in both client.ts and server.ts."
     },
     {
-      "id": "BUG-008",
+      "id": "BUG-009",
       "severity": "Low",
       "status": "FIXED",
       "category": "Database / Deals & Comparisons Schema",
@@ -95,7 +105,7 @@
       "fix": "Executed migration adding all referenced columns to deals and comparisons tables."
     },
     {
-      "id": "BUG-009",
+      "id": "BUG-010",
       "severity": "Low",
       "status": "FIXED",
       "category": "Frontend / Memory & Lifecycle",

@@ -169,6 +169,8 @@ CREATE TABLE IF NOT EXISTS public.articles (
   slug TEXT NOT NULL UNIQUE,
   excerpt TEXT,
   body TEXT NOT NULL,
+  content TEXT,
+  type TEXT DEFAULT 'article',
   featured_image TEXT,
   author_id UUID REFERENCES public.profiles(id) ON DELETE SET NULL,
   category_id UUID REFERENCES public.categories(id) ON DELETE SET NULL,
@@ -181,6 +183,7 @@ CREATE TABLE IF NOT EXISTS public.articles (
   schema_type TEXT DEFAULT 'Article',
   status TEXT DEFAULT 'published' CHECK (status IN ('draft', 'review', 'scheduled', 'published', 'archived')),
   publish_date TIMESTAMPTZ DEFAULT NOW(),
+  published_at TIMESTAMPTZ DEFAULT NOW(),
   views_count INT DEFAULT 0,
   featured_product_ids UUID[] DEFAULT '{}',
   created_at TIMESTAMPTZ DEFAULT NOW(),
@@ -247,16 +250,13 @@ CREATE TABLE IF NOT EXISTS public.ad_slots (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- 11. AFFILIATE MARKETPLACES (11 AMAZON REGIONAL STORES)
+-- 11. AFFILIATE MARKETPLACES (11 AMAZON REGIONS)
 CREATE TABLE IF NOT EXISTS public.affiliate_marketplaces (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  name TEXT NOT NULL,
-  country TEXT NOT NULL,
-  country_code TEXT NOT NULL UNIQUE,
+  country_code VARCHAR(5) NOT NULL UNIQUE,
+  country_name TEXT NOT NULL,
   domain TEXT NOT NULL,
-  currency TEXT NOT NULL,
-  locale TEXT DEFAULT 'en_US',
-  language TEXT DEFAULT 'English',
+  currency VARCHAR(5) NOT NULL,
   partner_tag TEXT,
   tracking_id TEXT,
   api_region TEXT DEFAULT 'us-east-1',
@@ -287,6 +287,7 @@ CREATE TABLE IF NOT EXISTS public.faqs (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   question TEXT NOT NULL,
   answer TEXT NOT NULL,
+  category TEXT DEFAULT 'General',
   category_id UUID REFERENCES public.categories(id) ON DELETE SET NULL,
   product_id UUID REFERENCES public.products(id) ON DELETE SET NULL,
   priority INT DEFAULT 1,
