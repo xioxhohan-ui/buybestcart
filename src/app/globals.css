@@ -884,6 +884,11 @@ section,
 }
 
 /* ---- 04. MEDIUM LAPTOPS & SMALL DESKTOPS (1025px – 1199px) ---- */
+@media (min-width: 1025px) {
+  .admin-mobile-toggle {
+    display: none !important;
+  }
+}
 @media (min-width: 1025px) and (max-width: 1199px) {
   .nav-links {
     display: flex !important;
@@ -904,6 +909,9 @@ section,
 /* ---- 05. PORTRAIT LAPTOPS & IPAD PRO LANDSCAPE (821px – 1024px) ---- */
 @media (max-width: 1024px) {
   .nav-links {
+    display: none !important;
+  }
+  .admin-desktop-sidebar {
     display: none !important;
   }
   .footer-grid {
