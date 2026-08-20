@@ -116,7 +116,7 @@ export default function AdminProductsPage() {
   const fetchData = async () => {
     setLoading(true);
     const [prodRes, brandRes, catRes] = await Promise.all([
-      supabase.from('products').select('*, brand:brands(*), category:categories(*)').order('global_rank', { ascending: true, nullsFirst: false }),
+      supabase.from('products').select('*, brand:brands(*), category:categories(*)').order('created_at', { ascending: false }),
       supabase.from('brands').select('id, name, slug').order('name', { ascending: true }),
       supabase.from('categories').select('id, name, slug').order('name', { ascending: true }),
     ]);
@@ -421,7 +421,7 @@ export default function AdminProductsPage() {
 
       if (!error) {
         setShowModal(false);
-        fetchData();
+        await fetchData();
         triggerRevalidation();
       } else {
         alert(`Error updating product: ${error.message}`);
@@ -431,7 +431,7 @@ export default function AdminProductsPage() {
 
       if (!error) {
         setShowModal(false);
-        fetchData();
+        await fetchData();
         triggerRevalidation();
       } else {
         alert(`Error creating product: ${error.message}`);
@@ -442,16 +442,21 @@ export default function AdminProductsPage() {
   const handleDelete = async (id: string, title: string) => {
     if (confirm(`Are you sure you want to delete product "${title}"?`)) {
       await supabase.from('products').delete().eq('id', id);
-      fetchData();
+      await fetchData();
       triggerRevalidation();
     }
   };
 
   const filteredProducts = products.filter((p) => {
+    const titleStr = p.title || '';
+    const asinStr = p.asin || '';
+    const brandStr = p.brand?.name || p.manufacturer || '';
+    const searchLower = search.toLowerCase();
+
     const matchesSearch =
-      p.title.toLowerCase().includes(search.toLowerCase()) ||
-      (p.asin && p.asin.toLowerCase().includes(search.toLowerCase())) ||
-      (p.brand?.name && p.brand.name.toLowerCase().includes(search.toLowerCase()));
+      titleStr.toLowerCase().includes(searchLower) ||
+      asinStr.toLowerCase().includes(searchLower) ||
+      brandStr.toLowerCase().includes(searchLower);
 
     const matchesStatus = statusFilter === 'all' || p.status === statusFilter;
     const matchesSource = sourceFilter === 'all' || p.content_source === sourceFilter;
