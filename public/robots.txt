@@ -1,0 +1,11 @@
+User-agent: *
+Allow: /
+Disallow: /shohan/
+Disallow: /shohan/*
+Disallow: /api/
+Disallow: /api/*
+Disallow: /go/
+Disallow: /go/*
+Disallow: /search
+
+Sitemap: https://buybestcart.shop/sitemap.xml
