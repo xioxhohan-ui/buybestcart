@@ -5,7 +5,7 @@ import Footer from '@/components/layout/Footer';
 import SmoothProvider from '@/components/animation/SmoothProvider';
 import { generateWebSiteJsonLd } from '@/lib/seo';
 import { getSiteConfiguration } from '@/lib/settings';
-import { Analytics } from '@vercel/analytics/next';
+import { Analytics } from '@vercel/analytics/react';
 
 export async function generateMetadata(): Promise<Metadata> {
   const config = await getSiteConfiguration();
