@@ -25,6 +25,7 @@ import {
   Globe,
   Search,
   RefreshCw,
+  Link2,
 } from 'lucide-react';
 import { formatPrice } from '@/lib/region';
 import Link from 'next/link';
@@ -197,6 +198,7 @@ export default function AdminProductsPage() {
       currency: 'USD',
       availability: 'In Stock',
       amazon_url: '',
+      affiliate_url: '',
       rating: '4.8',
       review_count: '1200',
       editorial_score: '9.5',
