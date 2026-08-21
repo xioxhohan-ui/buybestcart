@@ -13,7 +13,7 @@ export default function PrivacyPolicyPage() {
   ];
 
   return (
-    <div className="container" style={{ padding: '1.5rem 1.25rem 4rem 1.25rem', maxWidth: '840px' }}>
+    <div className="container" style={{ paddingTop: '1.5rem', paddingBottom: '4rem', maxWidth: '840px' }}>
       <Breadcrumbs items={breadcrumbs} />
 
       <div style={{ marginBottom: '2.5rem' }}>

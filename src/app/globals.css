@@ -1306,3 +1306,66 @@ section,
     z-index: 200;
   }
 }
+
+/* Product Detail & Verdict Responsive Card */
+.product-detail-container {
+  padding: 2rem 1.5rem 5rem 1.5rem;
+}
+.verdict-section-card {
+  margin: 3.5rem 0;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 2.5rem;
+  box-shadow: var(--shadow-sm);
+}
+
+@media (max-width: 768px) {
+  .product-detail-container {
+    padding: 1rem 0.875rem 3.5rem 0.875rem !important;
+  }
+  .verdict-section-card {
+    margin: 2rem 0 !important;
+    padding: 1.25rem !important;
+    border-radius: var(--radius-sm) !important;
+  }
+}
+
+/* Admin Modals Responsive Framework */
+.admin-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+}
+
+.admin-modal-card {
+  background: var(--bg-surface);
+  border-radius: var(--radius-lg);
+  padding: 2rem;
+  max-width: 900px;
+  width: 100%;
+  max-height: 92vh;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  border: 1px solid var(--border);
+  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.2);
+}
+
+@media (max-width: 640px) {
+  .admin-modal-backdrop {
+    padding: 0.5rem;
+  }
+  .admin-modal-card {
+    padding: 1.125rem;
+    max-height: 96vh;
+    border-radius: var(--radius-md);
+  }
+}
+

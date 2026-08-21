@@ -326,8 +326,10 @@ export default function Header({
             style={{
               position: 'fixed',
               inset: 0,
-              background: 'rgba(0,0,0,0.45)',
-              zIndex: 'var(--z-backdrop-overlay, 900)' as unknown as number,
+              background: 'rgba(0,0,0,0.5)',
+              backdropFilter: 'blur(4px)',
+              WebkitBackdropFilter: 'blur(4px)',
+              zIndex: 900,
             }}
           />
           <div
@@ -340,10 +342,10 @@ export default function Header({
               left: 'auto',
               width: '85vw',
               maxWidth: '380px',
-              minWidth: '270px',
+              minWidth: '280px',
               height: '100vh',
               maxHeight: '100dvh',
-              zIndex: 'var(--z-mobile-drawer, 1000)' as unknown as number,
+              zIndex: 1000,
               background: 'var(--bg-surface)',
               boxShadow: '-6px 0 28px rgba(0,0,0,0.18)',
               overflowY: 'auto',
@@ -371,16 +373,18 @@ export default function Header({
                   background: 'var(--bg-surface)',
                   border: '1px solid var(--border-strong)',
                   borderRadius: 'var(--radius-sm)',
-                  padding: '0.4rem',
+                  width: '40px',
+                  height: '40px',
                   cursor: 'pointer',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
                   color: 'var(--text-primary)',
+                  touchAction: 'manipulation',
                 }}
                 aria-label="Close menu"
               >
-                <X size={18} />
+                <X size={20} />
               </button>
             </div>
 

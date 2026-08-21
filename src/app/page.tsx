@@ -145,7 +145,7 @@ export default async function HomePage() {
 
       {/* 05. EDITORS' TOP SELECTIONS (THE 2026 EDIT) */}
       <AnimatedSection animationType="fade-up" delay={0.1}>
-        <section className="container" id="featured-picks" style={{ padding: '4rem 1.5rem 2rem 1.5rem' }}>
+        <section className="container" id="featured-picks" style={{ paddingTop: '4rem', paddingBottom: '2rem' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '2.5rem', flexWrap: 'wrap', gap: '1rem' }}>
             <div>
               <div className="editorial-eyebrow">THE 2026 EDIT</div>
@@ -184,7 +184,7 @@ export default async function HomePage() {
       {/* 09. TODAY'S HIGHLIGHTED DEALS */}
       {dealsProducts && dealsProducts.length > 0 && (
         <AnimatedSection animationType="fade-up">
-          <section className="container" style={{ padding: '4rem 1.5rem' }}>
+          <section className="container" style={{ paddingTop: '4rem', paddingBottom: '4rem' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '2.5rem', flexWrap: 'wrap', gap: '1rem' }}>
               <div>
                 <div className="editorial-eyebrow" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}>
@@ -211,7 +211,7 @@ export default async function HomePage() {
 
       {/* 11. IN-DEPTH BUYING GUIDES ARCHIVE */}
       <AnimatedSection animationType="fade-up">
-        <section className="container" style={{ padding: '3rem 1.5rem 5rem 1.5rem' }}>
+        <section className="container" style={{ paddingTop: '3rem', paddingBottom: '5rem' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '2.5rem', flexWrap: 'wrap', gap: '1rem' }}>
             <div>
               <div className="editorial-eyebrow">EDITORIAL ARCHIVE</div>
@@ -254,7 +254,7 @@ export default async function HomePage() {
       </AnimatedSection>
 
       {/* 12. EDITORIAL STANDARDS & TESTING METHODOLOGY */}
-      <section style={{ background: 'var(--bg-surface)', borderTop: '1px solid var(--border)', borderBottom: '1px solid var(--border)', padding: '5rem 1.5rem' }}>
+      <section style={{ background: 'var(--bg-surface)', borderTop: '1px solid var(--border)', borderBottom: '1px solid var(--border)', paddingTop: '4rem', paddingBottom: '4rem' }}>
         <div className="container">
           <div style={{ textAlign: 'center', maxWidth: '720px', margin: '0 auto 3.5rem auto' }}>
             <div className="editorial-eyebrow" style={{ justifyContent: 'center' }}>OUR EDITORIAL STANDARD</div>

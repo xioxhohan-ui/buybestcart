@@ -28,7 +28,7 @@ export default async function CategoriesIndexPage() {
   ];
 
   return (
-    <div className="container" style={{ padding: '1.5rem 1.25rem 4rem 1.25rem' }}>
+    <div className="container" style={{ paddingTop: '1.5rem', paddingBottom: '4rem' }}>
       <Breadcrumbs items={breadcrumbs} />
 
       <div style={{ marginBottom: '3rem', maxWidth: '760px' }}>
@@ -42,7 +42,7 @@ export default async function CategoriesIndexPage() {
         </p>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1.5rem' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 280px), 1fr))', gap: '1.5rem' }}>
         {categoryList.map((cat) => (
           <Link
             key={cat.id}

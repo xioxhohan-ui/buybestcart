@@ -92,7 +92,7 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
   ];
 
   return (
-    <div className="container" style={{ padding: '1.5rem 1.25rem 4rem 1.25rem' }}>
+    <div className="container" style={{ paddingTop: '1.5rem', paddingBottom: '4rem' }}>
       <Breadcrumbs items={breadcrumbs} />
 
       {/* Category Header */}

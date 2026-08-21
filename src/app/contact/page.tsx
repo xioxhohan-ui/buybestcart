@@ -41,7 +41,7 @@ export default function ContactPage() {
   const breadcrumbs = [{ name: 'Contact', url: '/contact' }];
 
   return (
-    <div className="container" style={{ padding: '1.5rem 1.25rem 4rem 1.25rem', maxWidth: '680px' }}>
+    <div className="container" style={{ paddingTop: '1.5rem', paddingBottom: '4rem', maxWidth: '680px' }}>
       <Breadcrumbs items={breadcrumbs} />
 
       <div style={{ marginBottom: '2.5rem' }}>

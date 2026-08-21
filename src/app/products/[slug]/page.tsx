@@ -137,7 +137,7 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
   const specsToRender = product.specifications && product.specifications.length > 0 ? product.specifications : defaultSpecs;
 
   return (
-    <div className="container" style={{ padding: '2rem 1.5rem 5rem 1.5rem' }}>
+    <div className="container product-detail-container">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
@@ -296,7 +296,7 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
       </div>
 
       {/* Editor's Verdict, Best For, and In-Depth Assessment */}
-      <section style={{ margin: '3.5rem 0', background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: 'var(--radius-md)', padding: '2.5rem', boxShadow: 'var(--shadow-sm)' }}>
+      <section className="verdict-section-card">
         <div className="editorial-eyebrow">EDITORIAL ASSESSMENT</div>
         <h2 style={{ marginBottom: '1rem' }}>Buy Best Cart Verdict & Testing Notes</h2>
         <p style={{ fontSize: '1.0625rem', lineHeight: 1.7, color: 'var(--text-secondary)', marginBottom: '2rem' }}>

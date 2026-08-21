@@ -49,7 +49,7 @@ export default function CategoryShowcaseGrid({ categories }: CategoryShowcaseGri
         ];
 
   return (
-    <section className="container" style={{ padding: '5rem 1.5rem' }}>
+    <section className="container" style={{ paddingTop: '4rem', paddingBottom: '4rem' }}>
       <div
         style={{
           display: 'flex',

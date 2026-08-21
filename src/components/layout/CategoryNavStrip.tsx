@@ -77,7 +77,8 @@ export default function CategoryNavStrip() {
           justifyContent: 'space-between',
           flexWrap: 'wrap',
           gap: '0.4rem 0.75rem',
-          padding: '0.45rem 1.5rem',
+          paddingTop: '0.45rem',
+          paddingBottom: '0.45rem',
         }}
       >
         {/* Department Buttons Strip */}

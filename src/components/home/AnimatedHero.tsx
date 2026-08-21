@@ -124,19 +124,18 @@ export default function AnimatedHero({
 
           {/* Editorial Serif Headline */}
           <h1
-            ref={headingLine1Ref}
-            style={{ marginBottom: '0.25rem', color: 'var(--text-primary)', opacity: 0 }}
+            style={{ marginBottom: '1.5rem', color: 'var(--text-primary)' }}
           >
-            {heading}
-          </h1>
-          <h1 style={{ marginBottom: '1.5rem' }}>
+            <span ref={headingLine1Ref} style={{ display: 'block', marginBottom: '0.25rem', opacity: 0 }}>
+              {heading}
+            </span>
             <span
               ref={headingLine2Ref}
               style={{
                 fontStyle: 'italic',
                 fontWeight: 600,
                 color: 'var(--green-accent)',
-                display: 'inline-block',
+                display: 'block',
                 opacity: 0,
               }}
             >
