@@ -20,7 +20,7 @@ export async function GET(
     .or(`slug.eq.${slug},asin.eq.${slug}`)
     .maybeSingle();
 
-  let destinationUrl = 'https://www.amazon.com?tag=bestbuycart-20';
+  let destinationUrl = buildAmazonAffiliateUrl({ countryCode: region });
 
   if (product) {
     if (product.affiliate_url && product.affiliate_url.trim().startsWith('http')) {
