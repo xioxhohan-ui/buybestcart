@@ -396,6 +396,9 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
               </div>
             )}
           </div>
+        )}
+      </section>
+
       {/* Product Video Review Embed (if attached) */}
       {product.video_url && (
         <section style={{ margin: '3.5rem 0', background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: 'var(--radius-md)', padding: '2rem', boxShadow: 'var(--shadow-sm)' }}>
