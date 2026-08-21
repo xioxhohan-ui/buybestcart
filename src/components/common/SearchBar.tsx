@@ -109,7 +109,7 @@ export default function SearchBar() {
                   />
                 )}
                 <div>
-                  <div style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--text-primary)' }}>
+                  <div className="product-search-item-title">
                     {product.title}
                   </div>
                   {product.category && (

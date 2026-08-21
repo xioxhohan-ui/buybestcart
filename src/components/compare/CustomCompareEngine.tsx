@@ -285,7 +285,7 @@ export default function CustomCompareEngine({
                       <div style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)' }}>
                         {product.brand?.name || product.manufacturer || 'Tech'}
                       </div>
-                      <div style={{ fontWeight: 800, fontSize: '0.9375rem', color: 'var(--text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', marginBottom: '0.25rem' }} title={product.title}>
+                      <div className="product-compare-title" style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', marginBottom: '0.25rem' }} title={product.title}>
                         {product.title}
                       </div>
                       <div style={{ color: 'var(--primary)', fontWeight: 800, fontSize: '1.0625rem' }}>
@@ -422,7 +422,7 @@ export default function CustomCompareEngine({
                                 style={{ width: '40px', height: '40px', objectFit: 'contain', background: '#FFF', borderRadius: '4px', border: '1px solid var(--border)', padding: '2px', flexShrink: 0 }}
                               />
                               <div style={{ flex: 1, minWidth: 0 }}>
-                                <div style={{ fontSize: '0.8125rem', fontWeight: 700, color: 'var(--text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                <div className="product-search-item-title" style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                                   {prod.title}
                                 </div>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.75rem', color: 'var(--text-muted)' }}>
@@ -496,7 +496,7 @@ export default function CustomCompareEngine({
 
                     {/* Title */}
                     <Link href={`/products/${p.slug}`} style={{ textDecoration: 'none' }}>
-                      <div style={{ fontSize: '0.9375rem', fontWeight: 800, color: 'var(--text-primary)', lineHeight: 1.4, marginBottom: '0.5rem', minHeight: '2.8rem' }}>
+                      <div className="product-compare-title" style={{ minHeight: '2.8rem', marginBottom: '0.5rem' }}>
                         {p.title}
                       </div>
                     </Link>

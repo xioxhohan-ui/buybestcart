@@ -200,7 +200,7 @@ export default async function ComparisonDetailPage({ params }: ComparisonPagePro
                         style={{ width: '90px', height: '90px', objectFit: 'contain', margin: '0 auto 0.75rem auto' }}
                       />
                     )}
-                    <div style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '0.25rem' }}>
+                    <div className="product-compare-title" style={{ marginBottom: '0.25rem' }}>
                       {productA.title}
                     </div>
                     {productA.price && (
@@ -220,7 +220,7 @@ export default async function ComparisonDetailPage({ params }: ComparisonPagePro
                         style={{ width: '90px', height: '90px', objectFit: 'contain', margin: '0 auto 0.75rem auto' }}
                       />
                     )}
-                    <div style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '0.25rem' }}>
+                    <div className="product-compare-title" style={{ marginBottom: '0.25rem' }}>
                       {productB.title}
                     </div>
                     {productB.price && (

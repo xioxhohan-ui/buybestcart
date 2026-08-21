@@ -767,7 +767,7 @@ export default function AdminProductsPage() {
                     </span>
                   </td>
                   <td>
-                    <div style={{ fontWeight: 700, fontSize: '0.9375rem', color: 'var(--text-primary)' }}>
+                    <div className="product-table-title" style={{ fontSize: '0.9375rem', fontWeight: 650 }}>
                       {p.title}
                     </div>
                     <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '0.75rem', marginTop: '0.2rem', flexWrap: 'wrap' }}>

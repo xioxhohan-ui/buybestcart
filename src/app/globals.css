@@ -50,6 +50,7 @@
   --font-serif: 'Playfair Display', 'Newsreader', Georgia, serif;
   --font-display: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-product-title: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-mono: 'DM Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
 
   /* Soft Ambient Elevation */
@@ -503,17 +504,76 @@ h4 {
   margin-bottom: 0.35rem;
 }
 
-.product-card-title {
-  font-family: var(--font-serif);
-  font-size: 1.1875rem;
-  font-weight: 700;
+/* ==========================================================================
+   PRODUCT TITLE TYPOGRAPHY (Inter Minimal Modern Sans-Serif — Toolcookies Style)
+   ========================================================================== */
+.product-title,
+.product-card-title,
+.product-hero-title,
+.product-compare-title,
+.product-search-item-title {
+  font-family: var(--font-product-title) !important;
   color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Card Title (Catalog, Search, Deals, Category, Home) */
+.product-card-title {
+  font-family: var(--font-product-title) !important;
+  font-size: 1.0625rem;
+  font-weight: 600;
   line-height: 1.35;
+  letter-spacing: -0.018em;
+  color: var(--text-primary);
   margin-bottom: 0.625rem;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+  transition: color 0.15s ease;
+}
+
+.product-card:hover .product-card-title,
+.product-card-title:hover {
+  color: var(--green-accent);
+}
+
+/* Product Detail Hero Title (H1) */
+.product-hero-title {
+  font-family: var(--font-product-title) !important;
+  font-size: clamp(1.625rem, 3.2vw, 2.375rem);
+  font-weight: 700;
+  line-height: 1.22;
+  letter-spacing: -0.025em;
+  color: var(--text-primary);
+  margin-bottom: 0.85rem;
+}
+
+/* Product Comparison Matrix Title */
+.product-compare-title {
+  font-family: var(--font-product-title) !important;
+  font-size: 0.9375rem;
+  font-weight: 650;
+  line-height: 1.35;
+  letter-spacing: -0.018em;
+  color: var(--text-primary);
+  transition: color 0.15s ease;
+}
+
+.product-compare-title:hover {
+  color: var(--green-accent);
+}
+
+/* Search Dropdown / Live Modal Title */
+.product-search-item-title {
+  font-family: var(--font-product-title) !important;
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1.35;
+  letter-spacing: -0.015em;
+  color: var(--text-primary);
+  transition: color 0.15s ease;
 }
 
 .product-card-rating {

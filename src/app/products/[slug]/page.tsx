@@ -173,7 +173,7 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
             )}
           </div>
 
-          <h1 style={{ fontSize: 'clamp(1.75rem, 3.5vw, 2.5rem)', marginBottom: '0.75rem' }}>
+          <h1 className="product-hero-title">
             {product.title}
           </h1>
 
