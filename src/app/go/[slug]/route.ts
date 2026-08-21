@@ -31,13 +31,18 @@ export async function GET(
 
     // Record click analytics asynchronously (safe failover per Section 121)
     try {
+      const ua = request.headers.get('user-agent') || '';
+      const isMobile = /mobile|iphone|ipod|android.*mobile|windows.*phone/i.test(ua);
+      const isTablet = /ipad|android(?!.*mobile)|tablet/i.test(ua);
+      const deviceCategory = isMobile ? 'mobile' : isTablet ? 'tablet' : 'desktop';
+
       await supabase.from('affiliate_clicks').insert({
         product_id: product.id,
         asin: product.asin,
         cta_type: ctaType,
         country: region,
         page_url: request.headers.get('referer') || '',
-        device_category: 'desktop',
+        device_category: deviceCategory,
       });
 
       // Increment product clicks_count counter

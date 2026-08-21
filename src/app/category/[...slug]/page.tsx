@@ -86,7 +86,7 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
     .limit(4);
 
   const breadcrumbs = [
-    { name: 'Categories', url: '/' },
+    { name: 'Categories', url: '/category' },
     { name: category.name, url: `/category/${category.slug}` },
   ];
 

@@ -77,6 +77,7 @@ export default function AdminFAQsPage() {
         .eq('id', editingFaq.id);
 
       if (!error) {
+        await fetch('/api/revalidate', { method: 'POST' }).catch(() => {});
         setShowModal(false);
         fetchFaqs();
       } else {
@@ -86,6 +87,7 @@ export default function AdminFAQsPage() {
       const { error } = await supabase.from('faqs').insert(payload);
 
       if (!error) {
+        await fetch('/api/revalidate', { method: 'POST' }).catch(() => {});
         setShowModal(false);
         fetchFaqs();
       } else {
@@ -97,6 +99,7 @@ export default function AdminFAQsPage() {
   const handleDelete = async (id: string, q: string) => {
     if (confirm(`Delete FAQ "${q}"?`)) {
       await supabase.from('faqs').delete().eq('id', id);
+      await fetch('/api/revalidate', { method: 'POST' }).catch(() => {});
       fetchFaqs();
     }
   };

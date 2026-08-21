@@ -89,6 +89,7 @@ export default function AdminBrandsPage() {
         .eq('id', editingBrand.id);
 
       if (!error) {
+        await fetch('/api/revalidate', { method: 'POST' }).catch(() => {});
         setShowModal(false);
         fetchBrands();
       } else {
@@ -101,6 +102,7 @@ export default function AdminBrandsPage() {
       });
 
       if (!error) {
+        await fetch('/api/revalidate', { method: 'POST' }).catch(() => {});
         setShowModal(false);
         fetchBrands();
       } else {
@@ -112,6 +114,7 @@ export default function AdminBrandsPage() {
   const handleDelete = async (id: string, name: string) => {
     if (confirm(`Are you sure you want to delete brand "${name}"?`)) {
       await supabase.from('brands').delete().eq('id', id);
+      await fetch('/api/revalidate', { method: 'POST' }).catch(() => {});
       fetchBrands();
     }
   };

@@ -82,7 +82,7 @@ export default function AdminVisualHomepageManagerPage() {
     );
   };
 
-  const updateSectionField = (id: string, field: keyof HomepageSectionConfig, val: any) => {
+  const updateSectionField = (id: string, field: keyof HomepageSectionConfig, val: HomepageSectionConfig[keyof HomepageSectionConfig]) => {
     setSections(
       sections.map((s) => (s.id === id ? { ...s, [field]: val } : s))
     );
@@ -100,13 +100,14 @@ export default function AdminVisualHomepageManagerPage() {
       updated_at: new Date().toISOString(),
     });
 
-    setSaving(false);
     if (!error) {
+      await fetch('/api/revalidate', { method: 'POST' }).catch(() => {});
       setSaved(true);
       setTimeout(() => setSaved(false), 3000);
     } else {
       alert(`Error saving homepage layout: ${error.message}`);
     }
+    setSaving(false);
   };
 
   const handleReset = () => {

@@ -43,6 +43,7 @@ export default function AdminSEOPage() {
       value: templates,
       updated_at: new Date().toISOString(),
     });
+    await fetch('/api/revalidate', { method: 'POST' }).catch(() => {});
     setSaving(false);
     setSaved(true);
     setTimeout(() => setSaved(false), 3000);

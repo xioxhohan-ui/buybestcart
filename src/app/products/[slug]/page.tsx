@@ -396,8 +396,33 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
               </div>
             )}
           </div>
-        )}
-      </section>
+      {/* Product Video Review Embed (if attached) */}
+      {product.video_url && (
+        <section style={{ margin: '3.5rem 0', background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: 'var(--radius-md)', padding: '2rem', boxShadow: 'var(--shadow-sm)' }}>
+          <div className="editorial-eyebrow">VIDEO BENCHMARK</div>
+          <h2 style={{ marginBottom: '0.5rem' }}>{product.video_title || 'Hands-On Video Review & Unboxing'}</h2>
+          <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', marginBottom: '1.5rem' }}>
+            Watch in-depth audio acoustic tests, build breakdown, and live feature demonstrations.
+          </p>
+          <div style={{ position: 'relative', width: '100%', paddingTop: '56.25%', borderRadius: 'var(--radius-sm)', overflow: 'hidden', background: '#000000' }}>
+            <iframe
+              src={
+                product.video_url.includes('youtube.com/watch?v=')
+                  ? `https://www.youtube-nocookie.com/embed/${product.video_url.split('v=')[1]?.split('&')[0]}`
+                  : product.video_url.includes('youtu.be/')
+                  ? `https://www.youtube-nocookie.com/embed/${product.video_url.split('youtu.be/')[1]?.split('?')[0]}`
+                  : product.video_url.includes('vimeo.com/')
+                  ? `https://player.vimeo.com/video/${product.video_url.split('vimeo.com/')[1]?.split('?')[0]}`
+                  : product.video_url
+              }
+              title={product.video_title || 'Product Video Review'}
+              style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: 'none' }}
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              allowFullScreen
+            />
+          </div>
+        </section>
+      )}
 
       {/* Technical Specifications Table & Sidebar Ad */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))', gap: '2.5rem', margin: '3.5rem 0', alignItems: 'start' }}>

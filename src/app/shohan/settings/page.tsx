@@ -130,6 +130,7 @@ export default function AdminSettingsAndThemePage() {
       updated_at: now,
     });
 
+    await fetch('/api/revalidate', { method: 'POST' }).catch(() => {});
     setSaving(false);
     setSaved(true);
     setTimeout(() => setSaved(false), 3000);

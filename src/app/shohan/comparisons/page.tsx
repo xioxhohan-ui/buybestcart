@@ -100,6 +100,7 @@ export default function AdminComparisonsPage() {
         .eq('id', editingComparison.id);
 
       if (!error) {
+        await fetch('/api/revalidate', { method: 'POST' }).catch(() => {});
         setShowModal(false);
         fetchData();
       } else {
@@ -112,6 +113,7 @@ export default function AdminComparisonsPage() {
       });
 
       if (!error) {
+        await fetch('/api/revalidate', { method: 'POST' }).catch(() => {});
         setShowModal(false);
         fetchData();
       } else {
@@ -123,6 +125,7 @@ export default function AdminComparisonsPage() {
   const handleDelete = async (id: string, title: string) => {
     if (confirm(`Delete comparison showdown "${title}"?`)) {
       await supabase.from('comparisons').delete().eq('id', id);
+      await fetch('/api/revalidate', { method: 'POST' }).catch(() => {});
       fetchData();
     }
   };

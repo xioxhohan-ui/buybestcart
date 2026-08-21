@@ -154,7 +154,7 @@ export default async function HomePage() {
                 Hand-tested consumer hardware ranked by acoustics, build fidelity, and real-world value.
               </p>
             </div>
-            <Link href="/category/electronics" className="btn btn-secondary btn-sm">
+            <Link href="/category" className="btn btn-secondary btn-sm">
               All 9 Departments →
             </Link>
           </div>

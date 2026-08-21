@@ -5,6 +5,8 @@ export async function POST() {
   try {
     // 1. Revalidate Next.js cache routes for instant updates
     revalidatePath('/', 'layout');
+    revalidatePath('/category');
+    revalidatePath('/products');
     revalidatePath('/deals');
     revalidatePath('/compare');
     revalidatePath('/guides');
