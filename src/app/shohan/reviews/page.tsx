@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase/client';
 import { Product } from '@/types';
-import { Star, Plus, Trash2, Edit3, Award, CheckCircle2, Filter } from 'lucide-react';
+import { Star, Award, CheckCircle2, RefreshCw, X, ShieldCheck } from 'lucide-react';
 
 export default function AdminReviewsPage() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -11,10 +11,16 @@ export default function AdminReviewsPage() {
   const [search, setSearch] = useState('');
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [showModal, setShowModal] = useState(false);
+  const [saving, setSaving] = useState(false);
 
   const [formData, setFormData] = useState({
     rating: '4.8',
     editorial_score: '9.5',
+    badge_text: '',
+    best_for: '',
+    why_we_like_it: '',
+    who_should_buy: '',
+    who_should_avoid: '',
     editor_verdict: '',
     buying_advice: '',
     pros: '',
@@ -25,7 +31,7 @@ export default function AdminReviewsPage() {
     setLoading(true);
     const { data } = await supabase
       .from('products')
-      .select('id, title, slug, asin, price, rating, review_count, editorial_score, editor_verdict, buying_advice, pros, cons, is_editor_choice')
+      .select('id, title, slug, asin, price, rating, review_count, editorial_score, editor_verdict, buying_advice, pros, cons, is_editor_choice, badge_text, best_for, why_we_like_it, who_should_buy, who_should_avoid')
       .order('editorial_score', { ascending: false, nullsFirst: false });
     if (data) setProducts(data as Product[]);
     setLoading(false);
@@ -40,6 +46,11 @@ export default function AdminReviewsPage() {
     setFormData({
       rating: p.rating ? p.rating.toString() : '4.8',
       editorial_score: p.editorial_score ? p.editorial_score.toString() : '9.5',
+      badge_text: p.badge_text || '',
+      best_for: p.best_for || '',
+      why_we_like_it: p.why_we_like_it || '',
+      who_should_buy: p.who_should_buy || '',
+      who_should_avoid: p.who_should_avoid || '',
       editor_verdict: p.editor_verdict || '',
       buying_advice: p.buying_advice || '',
       pros: (p.pros || []).join('\n'),
@@ -52,27 +63,40 @@ export default function AdminReviewsPage() {
     e.preventDefault();
     if (!editingProduct) return;
 
-    const prosArray = formData.pros.split('\n').map((s) => s.trim()).filter(Boolean);
-    const consArray = formData.cons.split('\n').map((s) => s.trim()).filter(Boolean);
+    setSaving(true);
+    try {
+      const prosArray = formData.pros.split('\n').map((s) => s.trim()).filter(Boolean);
+      const consArray = formData.cons.split('\n').map((s) => s.trim()).filter(Boolean);
 
-    const { error } = await supabase
-      .from('products')
-      .update({
-        rating: parseFloat(formData.rating),
-        editorial_score: parseFloat(formData.editorial_score),
-        editor_verdict: formData.editor_verdict,
-        buying_advice: formData.buying_advice,
-        pros: prosArray,
-        cons: consArray,
-        updated_at: new Date().toISOString(),
-      })
-      .eq('id', editingProduct.id);
+      const { error } = await supabase
+        .from('products')
+        .update({
+          rating: parseFloat(formData.rating),
+          editorial_score: parseFloat(formData.editorial_score),
+          badge_text: formData.badge_text || null,
+          best_for: formData.best_for || null,
+          why_we_like_it: formData.why_we_like_it || null,
+          who_should_buy: formData.who_should_buy || null,
+          who_should_avoid: formData.who_should_avoid || null,
+          editor_verdict: formData.editor_verdict || null,
+          buying_advice: formData.buying_advice || null,
+          pros: prosArray,
+          cons: consArray,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', editingProduct.id);
 
-    if (!error) {
+      if (error) throw error;
+
+      await fetch('/api/revalidate', { method: 'POST' }).catch(() => {});
+
       setShowModal(false);
-      fetchReviews();
-    } else {
-      alert(`Error saving review: ${error.message}`);
+      await fetchReviews();
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Error saving review';
+      alert(`Save Failed: ${msg}`);
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -100,9 +124,13 @@ export default function AdminReviewsPage() {
             <span>Product Reviews & Lab Verdicts Manager</span>
           </h1>
           <p style={{ color: 'var(--text-muted)', fontSize: '0.875rem' }}>
-            Manage editorial lab scores (e.g. 9.8/10), pros & cons, buying advice, and testing assessments.
+            Manage editorial lab scores (e.g. 9.8/10), pros & cons, badges, buying advice, and testing assessments.
           </p>
         </div>
+        <button onClick={fetchReviews} className="btn btn-secondary btn-sm" style={{ gap: '0.35rem' }}>
+          <RefreshCw size={14} className={loading ? 'animate-spin' : ''} />
+          <span>Refresh</span>
+        </button>
       </div>
 
       {/* Filter */}
@@ -121,58 +149,59 @@ export default function AdminReviewsPage() {
         <table className="editorial-table">
           <thead>
             <tr>
-              <th>Product Title</th>
+              <th>Product</th>
               <th>Customer Rating</th>
-              <th>Editorial Score</th>
-              <th>Pros / Cons Count</th>
-              <th>Actions</th>
+              <th>Editorial Lab Score</th>
+              <th>Badge & Highlights</th>
+              <th>Status</th>
+              <th style={{ textAlign: 'right' }}>Actions</th>
             </tr>
           </thead>
           <tbody>
-            {loading ? (
-              <tr><td colSpan={5} style={{ textAlign: 'center', padding: '2.5rem' }}>Loading reviews...</td></tr>
-            ) : filtered.length === 0 ? (
-              <tr><td colSpan={5} style={{ textAlign: 'center', padding: '2.5rem' }}>No products found.</td></tr>
-            ) : (
-              filtered.map((p) => (
-                <tr key={p.id}>
-                  <td>
-                    <div style={{ fontWeight: 700, fontSize: '0.9375rem', color: 'var(--text-primary)' }}>
-                      {p.title}
-                    </div>
-                    <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-                      ASIN: {p.asin || 'N/A'} • {p.editor_verdict ? 'Verdict authored' : 'Draft assessment'}
-                    </div>
-                  </td>
-                  <td>
-                    <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem', color: 'var(--amber-deal)', fontWeight: 700, fontSize: '0.875rem' }}>
-                      <Star size={12} fill="currentColor" />
-                      <span>{p.rating ? p.rating.toFixed(1) : '4.8'}</span>
-                    </div>
-                  </td>
-                  <td>
-                    <span style={{ fontWeight: 800, color: 'var(--green-accent)', fontSize: '0.875rem', padding: '0.2rem 0.5rem', background: 'var(--green-light)', borderRadius: 'var(--radius-xs)', border: '1px solid var(--green-border)' }}>
-                      {p.editorial_score ? `${p.editorial_score}/10` : '9.0/10'}
-                    </span>
-                  </td>
-                  <td>
-                    <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
-                      {(p.pros || []).length} Pros / {(p.cons || []).length} Cons
-                    </span>
-                  </td>
-                  <td>
-                    <button
-                      onClick={() => openEditModal(p)}
-                      className="btn btn-secondary btn-sm"
-                      style={{ padding: '0.25rem 0.5rem', fontSize: '0.75rem', display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}
-                    >
-                      <Edit3 size={12} />
-                      <span>Edit Lab Verdict</span>
-                    </button>
-                  </td>
-                </tr>
-              ))
-            )}
+            {filtered.map((p) => (
+              <tr key={p.id}>
+                <td>
+                  <div style={{ fontWeight: 700, fontSize: '0.9375rem', color: 'var(--text-primary)' }}>
+                    {p.title}
+                  </div>
+                  <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
+                    ASIN: {p.asin || 'N/A'} • ${p.price || '0.00'}
+                  </div>
+                </td>
+                <td>
+                  <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem', fontWeight: 700, color: '#d97706' }}>
+                    <Star size={13} fill="currentColor" />
+                    <span>{p.rating ? p.rating.toFixed(1) : '4.8'}</span>
+                  </div>
+                </td>
+                <td>
+                  <span style={{ fontWeight: 800, color: 'var(--primary)' }}>
+                    {p.editorial_score ? `${p.editorial_score} / 10` : '9.5 / 10'}
+                  </span>
+                </td>
+                <td>
+                  <div style={{ fontSize: '0.8125rem' }}>
+                    {p.badge_text ? (
+                      <span style={{ background: 'var(--green-light)', color: 'var(--green-deep)', padding: '0.2rem 0.5rem', borderRadius: '4px', fontWeight: 700, fontSize: '0.75rem' }}>
+                        {p.badge_text}
+                      </span>
+                    ) : (
+                      <span style={{ color: 'var(--text-muted)', fontSize: '0.75rem' }}>None</span>
+                    )}
+                  </div>
+                </td>
+                <td>
+                  <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--success)' }}>
+                    ✓ Published
+                  </span>
+                </td>
+                <td style={{ textAlign: 'right' }}>
+                  <button onClick={() => openEditModal(p)} className="btn btn-secondary btn-sm">
+                    Edit Verdict
+                  </button>
+                </td>
+              </tr>
+            ))}
           </tbody>
         </table>
       </div>
@@ -183,12 +212,12 @@ export default function AdminReviewsPage() {
           style={{
             position: 'fixed',
             inset: 0,
-            background: 'rgba(0,0,0,0.6)',
+            background: 'rgba(0, 0, 0, 0.65)',
+            zIndex: 1000,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            zIndex: 1000,
-            padding: '1.5rem',
+            padding: '1.25rem',
           }}
           onClick={() => setShowModal(false)}
         >
@@ -250,6 +279,75 @@ export default function AdminReviewsPage() {
                 </div>
               </div>
 
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.8125rem', fontWeight: 700, marginBottom: '0.35rem' }}>
+                    Editorial Badge (e.g. Best Overall, Best Value)
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="e.g. Editor's Choice"
+                    value={formData.badge_text}
+                    onChange={(e) => setFormData({ ...formData, badge_text: e.target.value })}
+                    style={{ width: '100%', padding: '0.625rem', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-strong)' }}
+                  />
+                </div>
+
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.8125rem', fontWeight: 700, marginBottom: '0.35rem' }}>
+                    Best For (Short summary)
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="e.g. Frequent travelers & remote work"
+                    value={formData.best_for}
+                    onChange={(e) => setFormData({ ...formData, best_for: e.target.value })}
+                    style={{ width: '100%', padding: '0.625rem', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-strong)' }}
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label style={{ display: 'block', fontSize: '0.8125rem', fontWeight: 700, marginBottom: '0.35rem' }}>
+                  Why We Like It (Testing Highlight)
+                </label>
+                <input
+                  type="text"
+                  placeholder="e.g. Superior ANC performance and lightweight design."
+                  value={formData.why_we_like_it}
+                  onChange={(e) => setFormData({ ...formData, why_we_like_it: e.target.value })}
+                  style={{ width: '100%', padding: '0.625rem', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-strong)' }}
+                />
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.8125rem', fontWeight: 700, marginBottom: '0.35rem' }}>
+                    Who Should Buy
+                  </label>
+                  <textarea
+                    rows={2}
+                    placeholder="Commuters who need top acoustic isolation..."
+                    value={formData.who_should_buy}
+                    onChange={(e) => setFormData({ ...formData, who_should_buy: e.target.value })}
+                    style={{ width: '100%', padding: '0.625rem', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-strong)' }}
+                  />
+                </div>
+
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.8125rem', fontWeight: 700, marginBottom: '0.35rem' }}>
+                    Who Should Avoid
+                  </label>
+                  <textarea
+                    rows={2}
+                    placeholder="Users seeking ultra-budget or in-ear form factors..."
+                    value={formData.who_should_avoid}
+                    onChange={(e) => setFormData({ ...formData, who_should_avoid: e.target.value })}
+                    style={{ width: '100%', padding: '0.625rem', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-strong)' }}
+                  />
+                </div>
+              </div>
+
               <div>
                 <label style={{ display: 'block', fontSize: '0.8125rem', fontWeight: 700, marginBottom: '0.35rem' }}>
                   Editor&apos;s Final Verdict & Assessment
@@ -259,19 +357,6 @@ export default function AdminReviewsPage() {
                   placeholder="Testing summary, noise cancelling performance benchmarks, and overall evaluation..."
                   value={formData.editor_verdict}
                   onChange={(e) => setFormData({ ...formData, editor_verdict: e.target.value })}
-                  style={{ width: '100%', padding: '0.625rem', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-strong)' }}
-                />
-              </div>
-
-              <div>
-                <label style={{ display: 'block', fontSize: '0.8125rem', fontWeight: 700, marginBottom: '0.35rem' }}>
-                  Buying Advice (Who should buy / who should avoid)
-                </label>
-                <textarea
-                  rows={2}
-                  placeholder="Ideal for frequent flyers and audiophiles who prioritize acoustic clarity..."
-                  value={formData.buying_advice}
-                  onChange={(e) => setFormData({ ...formData, buying_advice: e.target.value })}
                   style={{ width: '100%', padding: '0.625rem', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-strong)' }}
                 />
               </div>
@@ -308,8 +393,8 @@ export default function AdminReviewsPage() {
                 <button type="button" onClick={() => setShowModal(false)} className="btn btn-secondary btn-sm">
                   Cancel
                 </button>
-                <button type="submit" className="btn btn-primary btn-sm">
-                  Save Review Changes
+                <button type="submit" disabled={saving} className="btn btn-primary btn-sm">
+                  {saving ? 'Saving...' : 'Save Review Changes'}
                 </button>
               </div>
             </form>

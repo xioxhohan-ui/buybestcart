@@ -66,6 +66,7 @@ export default async function Footer() {
               <li><Link href="/category/gaming" className="footer-link">Gaming & VR Gear</Link></li>
               <li><Link href="/category/home-kitchen" className="footer-link">Home & Kitchen</Link></li>
               <li><Link href="/category/smart-home" className="footer-link">Smart Living & Security</Link></li>
+              <li><Link href="/category" className="footer-link" style={{ color: 'var(--green-gold)', fontWeight: 600 }}>All Departments →</Link></li>
             </ul>
           </div>
 
@@ -73,6 +74,7 @@ export default async function Footer() {
           <div>
             <h4 className="footer-col-title">EDITORIAL</h4>
             <ul className="footer-links">
+              <li><Link href="/products" className="footer-link">All Tested Products</Link></li>
               <li><Link href="/deals" className="footer-link">Curated Deals</Link></li>
               <li><Link href="/guides" className="footer-link">Buying Guides</Link></li>
               <li><Link href="/compare" className="footer-link">Product Comparisons</Link></li>

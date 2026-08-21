@@ -8,20 +8,13 @@ import {
   Sparkles,
   RefreshCw,
   Video,
-  Image as ImageIcon,
   CheckCircle2,
-  AlertTriangle,
   ExternalLink,
   Download,
-  Link2,
-  SlidersHorizontal,
   Plus,
   Trash2,
   Edit,
-  Eye,
-  ShieldCheck,
-  Tag,
-  Radio,
+  X,
 } from 'lucide-react';
 
 interface AmazonProduct {
@@ -39,17 +32,19 @@ interface AmazonProduct {
   video_url?: string;
   video_title?: string;
   thumbnail_url?: string;
+  category_id?: string;
   status: 'published' | 'draft' | 'pending' | 'archived';
   last_synced_at: string;
 }
 
 export default function AdminAmazonPage() {
   const [products, setProducts] = useState<AmazonProduct[]>([]);
+  const [categories, setCategories] = useState<{ id: string; name: string }[]>([]);
   const [loading, setLoading] = useState(true);
   const [scanUrl, setScanUrl] = useState('');
   const [scanning, setScanning] = useState(false);
 
-  // Scanned / Comparative Data State
+  // Scanned Data State
   const [scannedData, setScannedData] = useState<{
     asin: string;
     title?: string;
@@ -65,35 +60,50 @@ export default function AdminAmazonPage() {
     api_notice?: string;
   } | null>(null);
 
-  // Form State for Editing/Publishing
+  // Form State for Editing/Publishing Modal
   const [editingItem, setEditingItem] = useState<Partial<AmazonProduct> | null>(null);
-  const [activeTab, setActiveTab] = useState<'scanner' | 'products' | 'videos' | 'marketplaces'>('scanner');
+  const [savingProduct, setSavingProduct] = useState(false);
+
+  // Video Embed State
+  const [videoProductId, setVideoProductId] = useState('');
+  const [videoUrl, setVideoUrl] = useState('');
+  const [videoTitle, setVideoTitle] = useState('');
+  const [videoSaving, setVideoSaving] = useState(false);
+
+  const [activeTab, setActiveTab] = useState<'scanner' | 'products' | 'videos'>('scanner');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [search, setSearch] = useState('');
 
   const fetchAmazonProducts = async () => {
     setLoading(true);
-    const { data } = await supabase
-      .from('products')
-      .select('*')
-      .order('created_at', { ascending: false });
+    const [prodRes, catRes] = await Promise.all([
+      supabase.from('products').select('*').order('created_at', { ascending: false }),
+      supabase.from('categories').select('id, name').order('name', { ascending: true }),
+    ]);
 
-    if (data) {
-      const formatted: AmazonProduct[] = data.map((p) => ({
+    if (catRes.data) {
+      setCategories(catRes.data);
+    }
+
+    if (prodRes.data) {
+      const formatted: AmazonProduct[] = prodRes.data.map((p) => ({
         id: p.id,
         asin: p.asin || 'B0CHX1W1XY',
         marketplace: 'US',
         title: p.title || 'Amazon Affiliate Product',
         brand: p.manufacturer || 'Top Brand',
-        price: p.current_price ? `$${p.current_price}` : '$348.00',
-        currency: 'USD',
-        availability: 'In Stock',
+        price: p.price ? `$${p.price}` : '$348.00',
+        currency: p.currency || 'USD',
+        availability: p.availability || 'In Stock',
         rating: p.rating || 4.8,
         amazon_url: p.amazon_url || `https://www.amazon.com/dp/${p.asin || 'B0CHX1W1XY'}?tag=bestbuycart-20`,
         affiliate_url: p.amazon_url || `https://www.amazon.com/dp/${p.asin || 'B0CHX1W1XY'}?tag=bestbuycart-20`,
+        video_url: p.video_url || '',
+        video_title: p.video_title || '',
         thumbnail_url: p.thumbnail_url || 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&auto=format&fit=crop&q=80',
-        status: p.is_published ? 'published' : 'draft',
-        last_synced_at: p.updated_at || new Date().toISOString(),
+        category_id: p.category_id,
+        status: p.status === 'active' || p.status === 'featured' ? 'published' : 'draft',
+        last_synced_at: p.updated_at || p.created_at || new Date().toISOString(),
       }));
       setProducts(formatted);
     }
@@ -130,34 +140,154 @@ export default function AdminAmazonPage() {
     }
   };
 
-  // Convert Scanned Data to Active Product Form
+  // Convert Scanned Data to Active Product Modal Form
   const handleUseScannedData = () => {
     if (!scannedData) return;
+
+    const matchedCat = categories.find((c) =>
+      scannedData.suggested_department
+        ? c.name.toLowerCase().includes(scannedData.suggested_department.toLowerCase().split(' ')[0])
+        : false
+    );
 
     const newItem: Partial<AmazonProduct> = {
       asin: scannedData.asin,
       marketplace: scannedData.marketplace,
       title: scannedData.title || `Amazon Product ${scannedData.asin}`,
       brand: scannedData.brand || 'Amazon Partner',
-      price: scannedData.price ? `${scannedData.currency === 'USD' ? '$' : ''}${scannedData.price}` : '$348.00',
+      price: scannedData.price || '348.00',
       currency: scannedData.currency || 'USD',
       availability: scannedData.availability || 'In Stock',
       rating: 4.8,
       amazon_url: scannedData.affiliate_url,
       affiliate_url: scannedData.affiliate_url,
       thumbnail_url: scannedData.image_url || 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&auto=format&fit=crop&q=80',
+      category_id: matchedCat?.id || categories[0]?.id || '',
       status: 'published',
-      last_synced_at: new Date().toISOString(),
     };
 
     setEditingItem(newItem);
-    alert('Scanned data loaded into Product Editor. Review parameters below and click Save.');
+  };
+
+  // Save Scanned / Edited Product to Supabase PostgreSQL
+  const handleSaveProduct = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingItem) return;
+
+    setSavingProduct(true);
+    try {
+      const isNew = !editingItem.id;
+      const rawPrice = editingItem.price ? parseFloat(editingItem.price.toString().replace(/[^0-9.]/g, '')) : 348.0;
+
+      const slug = isNew
+        ? (editingItem.title || 'amazon-product')
+            .toLowerCase()
+            .replace(/[^a-z0-9]+/g, '-')
+            .replace(/^-|-$/g, '') + `-${Date.now().toString().slice(-4)}`
+        : undefined;
+
+      const payload: Record<string, unknown> = {
+        asin: editingItem.asin,
+        title: editingItem.title,
+        manufacturer: editingItem.brand,
+        price: isNaN(rawPrice) ? 348.0 : rawPrice,
+        currency: editingItem.currency || 'USD',
+        availability: editingItem.availability || 'In Stock',
+        rating: editingItem.rating || 4.8,
+        amazon_url: editingItem.affiliate_url || editingItem.amazon_url,
+        thumbnail_url: editingItem.thumbnail_url,
+        category_id: editingItem.category_id || null,
+        status: editingItem.status === 'published' ? 'active' : 'draft',
+        updated_at: new Date().toISOString(),
+      };
+
+      if (isNew) {
+        payload.slug = slug;
+        payload.is_featured = true;
+        payload.is_editor_choice = false;
+        payload.created_at = new Date().toISOString();
+        const { error } = await supabase.from('products').insert([payload]);
+        if (error) throw error;
+      } else {
+        const { error } = await supabase.from('products').update(payload).eq('id', editingItem.id);
+        if (error) throw error;
+      }
+
+      await fetch('/api/revalidate', { method: 'POST' }).catch(() => {});
+
+      setEditingItem(null);
+      await fetchAmazonProducts();
+      alert(`Product ${isNew ? 'added to catalog' : 'updated'} successfully!`);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Error saving product';
+      alert(`Failed to save product: ${msg}`);
+    } finally {
+      setSavingProduct(false);
+    }
+  };
+
+  // Delete Product
+  const handleDeleteProduct = async (id: string, title: string) => {
+    if (!confirm(`Are you sure you want to remove "${title}" from the catalog?`)) return;
+
+    try {
+      const { error } = await supabase.from('products').delete().eq('id', id);
+      if (error) throw error;
+      await fetchAmazonProducts();
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Error deleting product';
+      alert(`Delete failed: ${msg}`);
+    }
+  };
+
+  // Save Video Embed
+  const handleSaveVideoEmbed = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!videoProductId || !videoUrl) {
+      alert('Please select a product and provide a valid video URL.');
+      return;
+    }
+
+    setVideoSaving(true);
+    try {
+      const { error } = await supabase
+        .from('products')
+        .update({
+          video_url: videoUrl,
+          video_title: videoTitle || 'Product Video Review',
+          video_type: videoUrl.includes('youtube') || videoUrl.includes('youtu.be') ? 'youtube' : 'direct',
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', videoProductId);
+
+      if (error) throw error;
+
+      await fetch('/api/revalidate', { method: 'POST' }).catch(() => {});
+      setVideoUrl('');
+      setVideoTitle('');
+      setVideoProductId('');
+      await fetchAmazonProducts();
+      alert('Video review attached to product catalog successfully!');
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Error attaching video';
+      alert(`Failed: ${msg}`);
+    } finally {
+      setVideoSaving(false);
+    }
   };
 
   // Export CSV
   const handleExportCSV = () => {
     const headers = ['ASIN', 'Title', 'Brand', 'Price', 'Affiliate URL', 'Status', 'Last Synced'];
-    const rows = products.map((p) => [p.asin, `"${p.title.replace(/"/g, '""')}"`, p.brand, p.price, p.affiliate_url, p.status, p.last_synced_at]);
+    const rows = products.map((p) => [
+      p.asin,
+      `"${p.title.replace(/"/g, '""')}"`,
+      p.brand,
+      p.price,
+      p.affiliate_url,
+      p.status,
+      p.last_synced_at,
+    ]);
     const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows.map((r) => r.join(','))].join('\n');
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement('a');
@@ -169,7 +299,8 @@ export default function AdminAmazonPage() {
   };
 
   const filteredProducts = products.filter((p) => {
-    const matchesSearch = p.title.toLowerCase().includes(search.toLowerCase()) || p.asin.toLowerCase().includes(search.toLowerCase());
+    const matchesSearch =
+      p.title.toLowerCase().includes(search.toLowerCase()) || p.asin.toLowerCase().includes(search.toLowerCase());
     const matchesStatus = statusFilter === 'all' || p.status === statusFilter;
     return matchesSearch && matchesStatus;
   });
@@ -264,7 +395,7 @@ export default function AdminAmazonPage() {
               <input
                 type="text"
                 required
-                placeholder="e.g. https://www.amazon.com/dp/B0CHX1W1XY or raw ASIN..."
+                placeholder="e.g. https://www.amazon.com/dp/B0CX23V2ZH or raw ASIN..."
                 value={scanUrl}
                 onChange={(e) => setScanUrl(e.target.value)}
                 style={{ flex: 1, minWidth: '280px', padding: '0.65rem 0.85rem', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-strong)', fontSize: '0.875rem' }}
@@ -414,6 +545,9 @@ export default function AdminAmazonPage() {
                           <button onClick={() => setEditingItem(prod)} className="btn btn-secondary btn-sm" style={{ padding: '0.25rem 0.4rem' }}>
                             <Edit size={12} />
                           </button>
+                          <button onClick={() => handleDeleteProduct(prod.id, prod.title)} className="btn btn-secondary btn-sm" style={{ padding: '0.25rem 0.4rem', color: 'var(--error)' }}>
+                            <Trash2 size={12} />
+                          </button>
                         </div>
                       </td>
                     </tr>
@@ -433,27 +567,221 @@ export default function AdminAmazonPage() {
             <span>Product Video & Unboxing Embed Manager</span>
           </h2>
           <p style={{ color: 'var(--text-muted)', fontSize: '0.875rem', marginBottom: '1.5rem' }}>
-            Embed YouTube, Vimeo, or direct MP4 video reviews on product detail pages.
+            Embed YouTube, Vimeo, or direct MP4 video reviews on product detail pages in PostgreSQL.
           </p>
 
-          <form style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1rem' }}>
-            <div>
-              <label style={{ display: 'block', fontSize: '0.8125rem', fontWeight: 700, marginBottom: '0.35rem' }}>Video URL (YouTube / Vimeo / MP4)</label>
-              <input type="url" placeholder="https://www.youtube.com/watch?v=..." style={{ width: '100%', padding: '0.55rem', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-strong)', fontSize: '0.8125rem' }} />
+          <form onSubmit={handleSaveVideoEmbed} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1rem' }}>
+            <div style={{ gridColumn: '1 / -1' }}>
+              <label style={{ display: 'block', fontSize: '0.8125rem', fontWeight: 700, marginBottom: '0.35rem' }}>
+                Select Target Product *
+              </label>
+              <select
+                required
+                value={videoProductId}
+                onChange={(e) => setVideoProductId(e.target.value)}
+                style={{ width: '100%', padding: '0.55rem', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-strong)', fontSize: '0.8125rem', background: 'var(--bg-main)' }}
+              >
+                <option value="">-- Choose Product --</option>
+                {products.map((p) => (
+                  <option key={p.id} value={p.id}>
+                    {p.title} (ASIN: {p.asin}) {p.video_url ? '✓ [Has Video]' : ''}
+                  </option>
+                ))}
+              </select>
             </div>
 
             <div>
-              <label style={{ display: 'block', fontSize: '0.8125rem', fontWeight: 700, marginBottom: '0.35rem' }}>Video Headline / Title</label>
-              <input type="text" placeholder="e.g. Sony WH-1000XM5 Full 1-Month Review & ANC Test" style={{ width: '100%', padding: '0.55rem', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-strong)', fontSize: '0.8125rem' }} />
+              <label style={{ display: 'block', fontSize: '0.8125rem', fontWeight: 700, marginBottom: '0.35rem' }}>
+                Video URL (YouTube / Vimeo / MP4) *
+              </label>
+              <input
+                type="url"
+                required
+                placeholder="https://www.youtube.com/watch?v=..."
+                value={videoUrl}
+                onChange={(e) => setVideoUrl(e.target.value)}
+                style={{ width: '100%', padding: '0.55rem', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-strong)', fontSize: '0.8125rem' }}
+              />
+            </div>
+
+            <div>
+              <label style={{ display: 'block', fontSize: '0.8125rem', fontWeight: 700, marginBottom: '0.35rem' }}>
+                Video Headline / Title
+              </label>
+              <input
+                type="text"
+                placeholder="e.g. Sony WH-1000XM5 Full 1-Month Review & ANC Test"
+                value={videoTitle}
+                onChange={(e) => setVideoTitle(e.target.value)}
+                style={{ width: '100%', padding: '0.55rem', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-strong)', fontSize: '0.8125rem' }}
+              />
             </div>
 
             <div style={{ gridColumn: '1 / -1' }}>
-              <button type="button" onClick={() => alert('Video embed saved for product catalog.')} className="btn btn-primary" style={{ gap: '0.35rem' }}>
+              <button type="submit" disabled={videoSaving} className="btn btn-primary" style={{ gap: '0.35rem' }}>
                 <Plus size={15} />
-                <span>Attach Video to Catalog</span>
+                <span>{videoSaving ? 'Saving Video...' : 'Attach Video to Catalog'}</span>
               </button>
             </div>
           </form>
+        </div>
+      )}
+
+      {/* EDIT / IMPORT PRODUCT MODAL */}
+      {editingItem && (
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            background: 'rgba(0, 0, 0, 0.65)',
+            zIndex: 1000,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '1.25rem',
+          }}
+        >
+          <div
+            style={{
+              background: 'var(--bg-surface)',
+              border: '1px solid var(--border)',
+              borderRadius: 'var(--radius-lg)',
+              maxWidth: '640px',
+              width: '100%',
+              maxHeight: '90vh',
+              overflowY: 'auto',
+              padding: '2rem',
+              boxShadow: 'var(--shadow-lg)',
+            }}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+              <h2 style={{ fontSize: '1.25rem', fontWeight: 800 }}>
+                {editingItem.id ? 'Edit Amazon Catalog Product' : 'Import Scanned Product into Catalog'}
+              </h2>
+              <button
+                onClick={() => setEditingItem(null)}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)' }}
+              >
+                <X size={20} />
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveProduct} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              <div>
+                <label style={{ display: 'block', fontSize: '0.8125rem', fontWeight: 700, marginBottom: '0.35rem' }}>
+                  Product Title *
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={editingItem.title || ''}
+                  onChange={(e) => setEditingItem({ ...editingItem, title: e.target.value })}
+                  style={{ width: '100%', padding: '0.6rem', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-strong)', fontSize: '0.875rem' }}
+                />
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.8125rem', fontWeight: 700, marginBottom: '0.35rem' }}>
+                    Amazon ASIN (10 Characters) *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={editingItem.asin || ''}
+                    onChange={(e) => setEditingItem({ ...editingItem, asin: e.target.value.toUpperCase() })}
+                    style={{ width: '100%', padding: '0.6rem', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-strong)', fontSize: '0.875rem', fontFamily: 'var(--font-mono)' }}
+                  />
+                </div>
+
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.8125rem', fontWeight: 700, marginBottom: '0.35rem' }}>
+                    Brand / Manufacturer
+                  </label>
+                  <input
+                    type="text"
+                    value={editingItem.brand || ''}
+                    onChange={(e) => setEditingItem({ ...editingItem, brand: e.target.value })}
+                    style={{ width: '100%', padding: '0.6rem', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-strong)', fontSize: '0.875rem' }}
+                  />
+                </div>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.8125rem', fontWeight: 700, marginBottom: '0.35rem' }}>
+                    Price ($ USD) *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={editingItem.price || ''}
+                    onChange={(e) => setEditingItem({ ...editingItem, price: e.target.value })}
+                    style={{ width: '100%', padding: '0.6rem', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-strong)', fontSize: '0.875rem' }}
+                  />
+                </div>
+
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.8125rem', fontWeight: 700, marginBottom: '0.35rem' }}>
+                    Category Department
+                  </label>
+                  <select
+                    value={editingItem.category_id || ''}
+                    onChange={(e) => setEditingItem({ ...editingItem, category_id: e.target.value })}
+                    style={{ width: '100%', padding: '0.6rem', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-strong)', fontSize: '0.875rem', background: 'var(--bg-main)' }}
+                  >
+                    <option value="">-- Select Category --</option>
+                    {categories.map((c) => (
+                      <option key={c.id} value={c.id}>
+                        {c.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label style={{ display: 'block', fontSize: '0.8125rem', fontWeight: 700, marginBottom: '0.35rem' }}>
+                  Image / Thumbnail URL
+                </label>
+                <input
+                  type="url"
+                  value={editingItem.thumbnail_url || ''}
+                  onChange={(e) => setEditingItem({ ...editingItem, thumbnail_url: e.target.value })}
+                  style={{ width: '100%', padding: '0.6rem', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-strong)', fontSize: '0.875rem' }}
+                />
+              </div>
+
+              <div>
+                <label style={{ display: 'block', fontSize: '0.8125rem', fontWeight: 700, marginBottom: '0.35rem' }}>
+                  Affiliate Link (Clean ASIN + Partner Tag)
+                </label>
+                <input
+                  type="url"
+                  value={editingItem.affiliate_url || editingItem.amazon_url || ''}
+                  onChange={(e) => setEditingItem({ ...editingItem, affiliate_url: e.target.value, amazon_url: e.target.value })}
+                  style={{ width: '100%', padding: '0.6rem', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-strong)', fontSize: '0.875rem' }}
+                />
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', marginTop: '1rem', paddingTop: '1rem', borderTop: '1px solid var(--border)' }}>
+                <button
+                  type="button"
+                  onClick={() => setEditingItem(null)}
+                  className="btn btn-secondary"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={savingProduct}
+                  className="btn btn-primary"
+                >
+                  {savingProduct ? 'Saving to Database...' : editingItem.id ? 'Update Product' : 'Publish Product'}
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
       )}
     </div>

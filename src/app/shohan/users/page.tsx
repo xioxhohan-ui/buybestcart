@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase/client';
-import { Users, Plus, Shield, CheckCircle2, UserCheck } from 'lucide-react';
+import { Users, Plus, Shield, CheckCircle2, UserCheck, Trash2, X, RefreshCw } from 'lucide-react';
 
 interface AdminUser {
   id: string;
@@ -13,7 +13,7 @@ interface AdminUser {
   created_at: string;
 }
 
-const SAMPLE_TEAM: AdminUser[] = [
+const DEFAULT_TEAM: AdminUser[] = [
   {
     id: 'u-1',
     email: 'shohan@buybestcart.shop',
@@ -41,30 +41,89 @@ const SAMPLE_TEAM: AdminUser[] = [
 ];
 
 export default function AdminUsersPage() {
-  const [team, setTeam] = useState<AdminUser[]>(SAMPLE_TEAM);
+  const [team, setTeam] = useState<AdminUser[]>(DEFAULT_TEAM);
+  const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
+  const [saving, setSaving] = useState(false);
   const [formData, setFormData] = useState({
     email: '',
     full_name: '',
     role: 'Editor',
   });
 
-  const handleAddUser = (e: React.FormEvent) => {
+  const fetchTeam = async () => {
+    setLoading(true);
+    try {
+      const { data } = await supabase
+        .from('settings')
+        .select('value')
+        .eq('key', 'admin_team')
+        .single();
+
+      if (data && Array.isArray(data.value) && data.value.length > 0) {
+        setTeam(data.value);
+      } else {
+        setTeam(DEFAULT_TEAM);
+      }
+    } catch (err) {
+      console.error('Error loading team:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchTeam();
+  }, []);
+
+  const saveTeamToDb = async (updatedTeam: AdminUser[]) => {
+    setSaving(true);
+    try {
+      const { error } = await supabase.from('settings').upsert({
+        key: 'admin_team',
+        category: 'security',
+        value: updatedTeam,
+        description: 'Admin team members and role authorization list',
+        updated_at: new Date().toISOString(),
+      });
+      if (error) throw error;
+      setTeam(updatedTeam);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Error updating team';
+      alert(`Failed to save: ${msg}`);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleAddUser = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.email) return;
 
     const newUser: AdminUser = {
       id: `u-${Date.now()}`,
-      email: formData.email,
-      full_name: formData.full_name,
+      email: formData.email.trim().toLowerCase(),
+      full_name: formData.full_name.trim() || 'Staff Editor',
       role: formData.role,
       is_active: true,
       created_at: new Date().toISOString().split('T')[0],
     };
 
-    setTeam([...team, newUser]);
+    const updated = [...team, newUser];
+    await saveTeamToDb(updated);
     setShowModal(false);
     setFormData({ email: '', full_name: '', role: 'Editor' });
+  };
+
+  const handleToggleStatus = async (id: string) => {
+    const updated = team.map((u) => (u.id === id ? { ...u, is_active: !u.is_active } : u));
+    await saveTeamToDb(updated);
+  };
+
+  const handleDeleteUser = async (id: string, name: string) => {
+    if (!confirm(`Remove "${name}" from authorized team members?`)) return;
+    const updated = team.filter((u) => u.id !== id);
+    await saveTeamToDb(updated);
   };
 
   return (
@@ -88,10 +147,16 @@ export default function AdminUsersPage() {
             Manage editorial staff, affiliate managers, and master admin privileges for <code>/shohan</code>.
           </p>
         </div>
-        <button onClick={() => setShowModal(true)} className="btn btn-primary btn-sm" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}>
-          <Plus size={14} />
-          <span>Invite Team Member</span>
-        </button>
+        <div style={{ display: 'flex', gap: '0.5rem' }}>
+          <button onClick={fetchTeam} className="btn btn-secondary btn-sm" style={{ gap: '0.35rem' }}>
+            <RefreshCw size={14} className={loading ? 'animate-spin' : ''} />
+            <span>Refresh</span>
+          </button>
+          <button onClick={() => setShowModal(true)} className="btn btn-primary btn-sm" style={{ gap: '0.35rem' }}>
+            <Plus size={14} />
+            <span>Invite Team Member</span>
+          </button>
+        </div>
       </div>
 
       {/* Users Table */}
@@ -103,6 +168,7 @@ export default function AdminUsersPage() {
               <th>Assigned Role</th>
               <th>Status</th>
               <th>Created Date</th>
+              <th style={{ textAlign: 'right' }}>Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -122,13 +188,38 @@ export default function AdminUsersPage() {
                   </span>
                 </td>
                 <td>
-                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem', fontSize: '0.75rem', fontWeight: 700, color: 'var(--success)' }}>
-                    <CheckCircle2 size={12} />
-                    <span>Active</span>
-                  </span>
+                  <button
+                    onClick={() => handleToggleStatus(u.id)}
+                    style={{
+                      border: 'none',
+                      background: 'none',
+                      cursor: 'pointer',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '0.25rem',
+                      fontSize: '0.75rem',
+                      fontWeight: 700,
+                      color: u.is_active ? 'var(--success)' : 'var(--text-muted)',
+                    }}
+                  >
+                    <CheckCircle2 size={13} />
+                    <span>{u.is_active ? 'Active' : 'Disabled'}</span>
+                  </button>
                 </td>
                 <td style={{ fontSize: '0.8125rem', color: 'var(--text-secondary)' }}>
                   {u.created_at}
+                </td>
+                <td style={{ textAlign: 'right' }}>
+                  {u.id !== 'u-1' && (
+                    <button
+                      onClick={() => handleDeleteUser(u.id, u.full_name || u.email)}
+                      className="btn btn-secondary btn-sm"
+                      style={{ padding: '0.25rem 0.4rem', color: 'var(--error)' }}
+                      title="Remove Member"
+                    >
+                      <Trash2 size={12} />
+                    </button>
+                  )}
                 </td>
               </tr>
             ))}
@@ -142,48 +233,47 @@ export default function AdminUsersPage() {
           style={{
             position: 'fixed',
             inset: 0,
-            background: 'rgba(0,0,0,0.6)',
+            background: 'rgba(0, 0, 0, 0.65)',
+            zIndex: 1000,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            zIndex: 1000,
-            padding: '1.5rem',
+            padding: '1.25rem',
           }}
-          onClick={() => setShowModal(false)}
         >
           <div
             style={{
               background: 'var(--bg-surface)',
-              borderRadius: 'var(--radius-lg)',
-              padding: '2rem',
-              maxWidth: '500px',
-              width: '100%',
               border: '1px solid var(--border)',
+              borderRadius: 'var(--radius-lg)',
+              maxWidth: '480px',
+              width: '100%',
+              padding: '2rem',
+              boxShadow: 'var(--shadow-lg)',
             }}
-            onClick={(e) => e.stopPropagation()}
           >
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', borderBottom: '1px solid var(--border)', paddingBottom: '0.75rem' }}>
-              <h2 style={{ fontSize: '1.25rem', margin: 0, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <Shield size={18} color="var(--green-accent)" />
-                <span>Invite New Editorial Staff</span>
-              </h2>
-              <button onClick={() => setShowModal(false)} style={{ background: 'none', border: 'none', fontSize: '1.25rem', cursor: 'pointer', color: 'var(--text-muted)' }}>
-                ✕
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+              <h2 style={{ fontSize: '1.25rem', fontWeight: 800 }}>Invite New Team Member</h2>
+              <button
+                onClick={() => setShowModal(false)}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)' }}
+              >
+                <X size={20} />
               </button>
             </div>
 
             <form onSubmit={handleAddUser} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               <div>
                 <label style={{ display: 'block', fontSize: '0.8125rem', fontWeight: 700, marginBottom: '0.35rem' }}>
-                  Full Name *
+                  Full Name
                 </label>
                 <input
                   type="text"
                   required
-                  placeholder="e.g. Alex Rivera"
+                  placeholder="e.g. Alex Morgan"
                   value={formData.full_name}
                   onChange={(e) => setFormData({ ...formData, full_name: e.target.value })}
-                  style={{ width: '100%', padding: '0.625rem', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-strong)' }}
+                  style={{ width: '100%', padding: '0.6rem', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-strong)', fontSize: '0.875rem' }}
                 />
               </div>
 
@@ -194,10 +284,10 @@ export default function AdminUsersPage() {
                 <input
                   type="email"
                   required
-                  placeholder="e.g. alex@buybestcart.shop"
+                  placeholder="name@buybestcart.shop"
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  style={{ width: '100%', padding: '0.625rem', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-strong)' }}
+                  style={{ width: '100%', padding: '0.6rem', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-strong)', fontSize: '0.875rem' }}
                 />
               </div>
 
@@ -208,20 +298,29 @@ export default function AdminUsersPage() {
                 <select
                   value={formData.role}
                   onChange={(e) => setFormData({ ...formData, role: e.target.value })}
-                  style={{ width: '100%', padding: '0.625rem', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-strong)' }}
+                  style={{ width: '100%', padding: '0.6rem', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-strong)', fontSize: '0.875rem', background: 'var(--bg-main)' }}
                 >
-                  <option value="Editor">Editorial Author (Write & Edit Reviews)</option>
-                  <option value="Affiliate Manager">Affiliate Manager (Manage Links & Deals)</option>
-                  <option value="Super Administrator">Super Administrator (Full System Access)</option>
+                  <option value="Super Administrator">Super Administrator (Full Access)</option>
+                  <option value="Senior Reviewer">Senior Reviewer (Editorial & Reviews)</option>
+                  <option value="Affiliate Specialist">Affiliate Specialist (Deals & Links)</option>
+                  <option value="Editor">Staff Editor (Articles & Guides)</option>
                 </select>
               </div>
 
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', marginTop: '1rem' }}>
-                <button type="button" onClick={() => setShowModal(false)} className="btn btn-secondary btn-sm">
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', marginTop: '1rem', paddingTop: '1rem', borderTop: '1px solid var(--border)' }}>
+                <button
+                  type="button"
+                  onClick={() => setShowModal(false)}
+                  className="btn btn-secondary"
+                >
                   Cancel
                 </button>
-                <button type="submit" className="btn btn-primary btn-sm">
-                  Send Admin Invitation
+                <button
+                  type="submit"
+                  disabled={saving}
+                  className="btn btn-primary"
+                >
+                  {saving ? 'Adding...' : 'Save & Authorize Member'}
                 </button>
               </div>
             </form>
