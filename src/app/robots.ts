@@ -1,22 +1,21 @@
 import { MetadataRoute } from 'next';
 
-const SITE_URL = 'https://buybestcart.shop';
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://buybestcart.shop';
 
 export default function robots(): MetadataRoute.Robots {
   return {
-    rules: {
-      userAgent: '*',
-      allow: '/',
-      disallow: [
-        '/shohan/',
-        '/shohan/*',
-        '/api/',
-        '/api/*',
-        '/go/',
-        '/go/*',
-        '/search',
-      ],
-    },
+    rules: [
+      {
+        userAgent: '*',
+        allow: '/',
+        disallow: [
+          '/api/',
+          '/go/',
+          '/search',
+          '/shohan/',
+        ],
+      },
+    ],
     sitemap: `${SITE_URL}/sitemap.xml`,
   };
 }

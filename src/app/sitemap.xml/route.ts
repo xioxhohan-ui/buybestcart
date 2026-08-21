@@ -3,7 +3,7 @@ import { createServerClient } from '@/lib/supabase/server';
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
-const SITE_URL = 'https://buybestcart.shop';
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://buybestcart.shop';
 
 interface UrlEntry {
   loc: string;
@@ -26,7 +26,7 @@ export async function GET() {
       }
     };
 
-    // Fetch database items safely with strict status filters for public content
+    // Fetch database items safely with strict status filters for public indexable content only
     const [productsRes, categoriesRes, articlesRes, comparisonsRes] = await Promise.all([
       fetchSafe(
         supabase
@@ -80,17 +80,20 @@ export async function GET() {
         cleanPath = '/' + cleanPath;
       }
 
-      const loc = cleanPath === '/' ? SITE_URL : `${SITE_URL}${cleanPath}`;
-
-      // Filter out admin, private, api, affiliate, or search routes
+      // STRICT SECURITY FILTER: Zero admin, private, internal, affiliate, or non-indexable routes
       if (
         cleanPath.startsWith('/shohan') ||
+        cleanPath.startsWith('/admin') ||
         cleanPath.startsWith('/api') ||
         cleanPath.startsWith('/go') ||
-        cleanPath.startsWith('/search')
+        cleanPath.startsWith('/auth') ||
+        cleanPath.startsWith('/search') ||
+        cleanPath.includes('?')
       ) {
         return;
       }
+
+      const loc = cleanPath === '/' ? SITE_URL : `${SITE_URL}${cleanPath}`;
 
       let isoDate: string;
       try {
@@ -112,7 +115,7 @@ export async function GET() {
       }
     };
 
-    // 1. Static Core Landing Pages (Canonical HTTP 200)
+    // 1. Static Core Public Landing Pages
     addUrl('/', new Date(), 'daily', '1.0');
     addUrl('/products', new Date(), 'daily', '0.9');
     addUrl('/category', new Date(), 'weekly', '0.8');
@@ -126,14 +129,14 @@ export async function GET() {
     addUrl('/terms', new Date(), 'yearly', '0.4');
     addUrl('/contact', new Date(), 'monthly', '0.5');
 
-    // 2. Published Categories & Departments
+    // 2. Published Categories
     categories.forEach((c: { slug?: string; updated_at?: string }) => {
       if (c.slug) {
         addUrl(`/category/${c.slug}`, c.updated_at, 'weekly', '0.8');
       }
     });
 
-    // 3. Published Catalog Products with Image SEO
+    // 3. Published Catalog Products with Google Image SEO
     products.forEach((p: { slug?: string; title?: string; thumbnail_url?: string; updated_at?: string }) => {
       if (p.slug) {
         addUrl(
@@ -154,7 +157,7 @@ export async function GET() {
       }
     });
 
-    // 5. Published Comparisons
+    // 5. Published Head-to-Head Comparisons
     comparisons.forEach((comp: { slug?: string; updated_at?: string }) => {
       if (comp.slug) {
         addUrl(`/compare/${comp.slug}`, comp.updated_at, 'weekly', '0.7');
@@ -203,10 +206,22 @@ export async function GET() {
     <priority>1.0</priority>
   </url>
   <url>
+    <loc>${SITE_URL}/products</loc>
+    <lastmod>${new Date().toISOString()}</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
     <loc>${SITE_URL}/deals</loc>
     <lastmod>${new Date().toISOString()}</lastmod>
     <changefreq>hourly</changefreq>
     <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>${SITE_URL}/compare</loc>
+    <lastmod>${new Date().toISOString()}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>${SITE_URL}/guides</loc>
