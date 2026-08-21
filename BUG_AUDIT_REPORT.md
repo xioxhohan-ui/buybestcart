@@ -13,10 +13,10 @@
 
 A deep, forensic end-to-end full-stack code, database, and route audit was performed across all layers of the **BuyBestCart** platform. Every identified issue was reproduced, root-caused, repaired directly in code and database schemas, and verified through automated end-to-end HTTP health checks and compiler runs.
 
-* **Total Issues Audited & Resolved**: 24
+* **Total Issues Audited & Resolved**: 25
 * **Critical / High Severity Issues**: 8 (All Resolved)
 * **Medium Severity Issues**: 11 (All Resolved)
-* **Low Severity / UX Issues**: 5 (All Resolved)
+* **Low Severity / UX Issues**: 6 (All Resolved)
 * **Remaining Unresolved Issues**: 0 (100% Resolved & Verified)
 
 ---
@@ -212,6 +212,14 @@ A deep, forensic end-to-end full-stack code, database, and route audit was perfo
 * **Root Cause**: `/deals` was displaying hardcoded deals without strict admin toggle control, and there was no intuitive switch in `/shohan/products` to selectively toggle products into the Deals section.
 * **Fix Applied**: Added `is_deal BOOLEAN DEFAULT false` column in PostgreSQL `public.products`, reset initial deals so `/deals` is empty by default with an informative empty state, added an interactive **Show in Deals** toggle switch in the admin product editor modal with visual feedback (`🔥 ON` / `OFF`), and added a 1-click quick deal toggle button in the admin catalog table rows.
 * **Affected Files**: [`src/app/deals/page.tsx`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/src/app/deals/page.tsx), [`src/app/shohan/products/page.tsx`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/src/app/shohan/products/page.tsx), [`src/types/index.ts`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/src/types/index.ts), Supabase PostgreSQL `public.products`.
+
+---
+
+### [AUDIT-025] Modern Minimal Inter Product Title Typography Engine (Toolcookies Style)
+* **Category**: Frontend UI / Global Design System & Typography
+* **Root Cause**: Product titles were previously inheriting serif display typography (`Playfair Display`) or inconsistent weights across different views, rather than a modern, clean, minimal aesthetic sans-serif standard.
+* **Fix Applied**: Established a unified **Inter** product title typography design standard (`--font-product-title: 'Inter', sans-serif; font-weight: 600; letter-spacing: -0.018em; line-height: 1.35;`) across product cards, product hero pages (`.product-hero-title`), comparison matrices (`.product-compare-title`), search dropdown items (`.product-search-item-title`), and admin catalog tables (`.product-table-title`).
+* **Affected Files**: [`src/app/globals.css`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/src/app/globals.css), [`src/app/products/[slug]/page.tsx`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/src/app/products/%5Bslug%5D/page.tsx), [`src/components/products/ProductCard.tsx`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/src/components/products/ProductCard.tsx), [`src/components/compare/CustomCompareEngine.tsx`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/src/components/compare/CustomCompareEngine.tsx), [`src/app/compare/[slug]/page.tsx`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/src/app/compare/%5Bslug%5D/page.tsx), [`src/components/common/SearchBar.tsx`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/src/components/common/SearchBar.tsx), [`src/app/shohan/products/page.tsx`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/src/app/shohan/products/page.tsx).
 
 ---
 
