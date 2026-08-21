@@ -83,6 +83,7 @@ export default function AdminProductsPage() {
     currency: 'USD',
     availability: 'In Stock',
     amazon_url: '',
+    affiliate_url: '',
     rating: '4.8',
     review_count: '1000',
     editorial_score: '9.6',
@@ -259,6 +260,7 @@ export default function AdminProductsPage() {
       currency: p.currency || 'USD',
       availability: p.availability || 'In Stock',
       amazon_url: p.amazon_url || '',
+      affiliate_url: p.affiliate_url || '',
       rating: p.rating ? p.rating.toString() : '4.8',
       review_count: p.review_count ? p.review_count.toString() : '1000',
       editorial_score: p.editorial_score ? p.editorial_score.toString() : '9.0',
@@ -375,6 +377,14 @@ export default function AdminProductsPage() {
     const prosArray = formData.pros.split('\n').map((s) => s.trim()).filter(Boolean);
     const consArray = formData.cons.split('\n').map((s) => s.trim()).filter(Boolean);
 
+    const trimmedAffiliateUrl = formData.affiliate_url?.trim() || '';
+    if (trimmedAffiliateUrl) {
+      if (!/^https?:\/\/.+/i.test(trimmedAffiliateUrl)) {
+        alert('Please enter a valid HTTP or HTTPS Affiliate Buy URL (e.g. https://www.amazon.com/dp/...) or leave it blank.');
+        return;
+      }
+    }
+
     const payload = {
       title: formData.title,
       slug: generatedSlug,
@@ -390,6 +400,7 @@ export default function AdminProductsPage() {
       currency: formData.currency,
       availability: formData.availability,
       amazon_url: formData.amazon_url,
+      affiliate_url: trimmedAffiliateUrl || null,
       rating: formData.rating ? parseFloat(formData.rating) : 4.8,
       review_count: formData.review_count ? parseInt(formData.review_count) : 1000,
       editorial_score: formData.editorial_score ? parseFloat(formData.editorial_score) : 9.0,
@@ -876,11 +887,67 @@ export default function AdminProductsPage() {
                       boxShadow: 'var(--shadow-sm)',
                     }}
                   >
-                    <span>Check Price & Availability on Amazon</span>
+                    <span>Buy on Amazon</span>
                     <span style={{ background: '#000000', color: '#FFFFFF', padding: '0.15rem 0.4rem', borderRadius: '4px', fontSize: '0.75rem' }}>
                       ${formData.price || '348.00'}
                     </span>
                   </div>
+                </div>
+              </div>
+
+              {/* DEDICATED AFFILIATE BUY LINK / BUY URL CARD */}
+              <div style={{ background: '#F8FAFC', border: '1px solid #CBD5E1', borderLeft: '4px solid #3B82F6', borderRadius: 'var(--radius-md)', padding: '1.25rem' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <Link2 size={16} color="#2563EB" />
+                    <span style={{ fontSize: '0.875rem', fontWeight: 800, color: 'var(--text-primary)', letterSpacing: '0.02em' }}>
+                      AFFILIATE BUY LINK / BUY URL
+                    </span>
+                  </div>
+                  <span style={{ fontSize: '0.7rem', fontWeight: 700, color: '#1D4ED8', background: '#DBEAFE', padding: '0.15rem 0.5rem', borderRadius: '4px' }}>
+                    Direct Buy CTA Destination
+                  </span>
+                </div>
+
+                <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginBottom: '0.75rem', lineHeight: 1.5 }}>
+                  Paste your custom affiliate or direct merchant buy URL below. When saved, the public <strong>Buy on Amazon</strong> CTA button will route directly to this link.
+                </p>
+
+                <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
+                  <div style={{ flex: 1, minWidth: '240px' }}>
+                    <input
+                      type="url"
+                      placeholder="https://www.amazon.com/dp/B0...?tag=yourtag-20 or custom partner URL..."
+                      value={formData.affiliate_url}
+                      onChange={(e) => setFormData({ ...formData, affiliate_url: e.target.value })}
+                      style={{
+                        width: '100%',
+                        padding: '0.55rem 0.75rem',
+                        borderRadius: 'var(--radius-sm)',
+                        border: '1px solid var(--border-strong)',
+                        fontSize: '0.8125rem',
+                        fontFamily: 'monospace',
+                        background: '#FFFFFF',
+                      }}
+                    />
+                  </div>
+
+                  {formData.affiliate_url ? (
+                    <a
+                      href={formData.affiliate_url.startsWith('http') ? formData.affiliate_url : `https://${formData.affiliate_url}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="btn btn-secondary btn-sm"
+                      style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', whiteSpace: 'nowrap' }}
+                    >
+                      <ExternalLink size={13} />
+                      <span>Preview Buy Button ↗</span>
+                    </a>
+                  ) : (
+                    <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontStyle: 'italic' }}>
+                      (Using regional Amazon ASIN routing by default)
+                    </span>
+                  )}
                 </div>
               </div>
 

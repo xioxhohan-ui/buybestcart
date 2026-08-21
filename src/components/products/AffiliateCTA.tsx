@@ -11,17 +11,22 @@ interface AffiliateCTAProps {
   label?: string;
   size?: 'sm' | 'md' | 'lg';
   fullWidth?: boolean;
+  affiliateUrl?: string;
 }
 
 export default function AffiliateCTA({
   productSlug,
   price,
-  label = 'Check Price on Amazon',
+  label = 'Buy on Amazon',
   size = 'md',
   fullWidth = false,
+  affiliateUrl,
 }: AffiliateCTAProps) {
   const region = typeof window !== 'undefined' ? getStoredRegion() : 'US';
-  const targetUrl = getProductRedirectUrl(productSlug, region, 'view_price');
+  const targetUrl =
+    affiliateUrl && affiliateUrl.trim().startsWith('http')
+      ? affiliateUrl.trim()
+      : getProductRedirectUrl(productSlug, region, 'view_price');
 
   const sizeClass = size === 'sm' ? 'btn-sm' : size === 'lg' ? 'btn-lg' : '';
 

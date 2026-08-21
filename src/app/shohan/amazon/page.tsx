@@ -195,6 +195,7 @@ export default function AdminAmazonPage() {
         availability: editingItem.availability || 'In Stock',
         rating: editingItem.rating || 4.8,
         amazon_url: editingItem.affiliate_url || editingItem.amazon_url,
+        affiliate_url: editingItem.affiliate_url || null,
         thumbnail_url: editingItem.thumbnail_url,
         category_id: editingItem.category_id || null,
         status: editingItem.status === 'published' ? 'active' : 'draft',

@@ -118,6 +118,7 @@ export default function ComparisonMatrixSection({ products }: ComparisonMatrixSe
                     productSlug={item.slug}
                     asin={item.asin}
                     price={item.price}
+                    affiliateUrl={item.affiliate_url}
                     label="Buy on Amazon"
                     size="sm"
                     fullWidth

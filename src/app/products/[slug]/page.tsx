@@ -274,6 +274,7 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
               productSlug={product.slug}
               asin={product.asin}
               price={product.price}
+              affiliateUrl={product.affiliate_url}
               label="Buy on Amazon"
               size="lg"
               fullWidth

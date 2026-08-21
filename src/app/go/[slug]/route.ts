@@ -16,18 +16,22 @@ export async function GET(
   // Find product by slug
   const { data: product } = await supabase
     .from('products')
-    .select('id, asin, title, amazon_url')
+    .select('id, asin, title, amazon_url, affiliate_url')
     .eq('slug', slug)
     .single();
 
   let destinationUrl = 'https://www.amazon.com?tag=bestbuycart-20';
 
   if (product) {
-    destinationUrl = buildAmazonAffiliateUrl({
-      asin: product.asin,
-      url: product.amazon_url,
-      countryCode: region,
-    });
+    if (product.affiliate_url && product.affiliate_url.trim().startsWith('http')) {
+      destinationUrl = product.affiliate_url.trim();
+    } else {
+      destinationUrl = buildAmazonAffiliateUrl({
+        asin: product.asin,
+        url: product.amazon_url,
+        countryCode: region,
+      });
+    }
 
     // Record click analytics asynchronously (safe failover per Section 121)
     try {

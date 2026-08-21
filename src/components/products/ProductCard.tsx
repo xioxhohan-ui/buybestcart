@@ -108,7 +108,8 @@ export default function ProductCard({ product, rank }: ProductCardProps) {
             productSlug={product.slug}
             asin={product.asin}
             price={product.price}
-            label="View on Amazon"
+            affiliateUrl={product.affiliate_url}
+            label="Buy on Amazon"
             size="sm"
             fullWidth
           />

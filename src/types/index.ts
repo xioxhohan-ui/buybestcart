@@ -148,6 +148,7 @@ export interface Product {
   list_price?: number;
   availability?: string;
   amazon_url?: string;
+  affiliate_url?: string;
   global_rank?: number;
   category_rank?: number;
   editorial_score?: number;
