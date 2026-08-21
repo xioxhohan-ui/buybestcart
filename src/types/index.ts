@@ -154,6 +154,8 @@ export interface Product {
   editorial_score?: number;
   is_featured: boolean;
   is_editor_choice: boolean;
+  is_deal?: boolean;
+  show_in_deals?: boolean;
   badge_text?: ProductBadge;
   deal_status: 'none' | 'limited_deal' | 'top_deal' | 'lightning_deal';
   status: ProductStatus;

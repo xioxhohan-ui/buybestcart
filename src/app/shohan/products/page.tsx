@@ -92,6 +92,7 @@ export default function AdminProductsPage() {
     category_rank: '1',
     is_featured: true,
     is_editor_choice: true,
+    is_deal: false,
     badge_text: 'Best Overall',
     deal_status: 'none' as Product['deal_status'],
     status: 'active' as ProductStatus,
@@ -212,6 +213,7 @@ export default function AdminProductsPage() {
       category_rank: '1',
       is_featured: true,
       is_editor_choice: false,
+      is_deal: false,
       badge_text: 'Best Overall',
       deal_status: 'none',
       status: 'active',
@@ -276,6 +278,7 @@ export default function AdminProductsPage() {
       category_rank: p.category_rank ? p.category_rank.toString() : '1',
       is_featured: p.is_featured,
       is_editor_choice: p.is_editor_choice,
+      is_deal: !!p.is_deal,
       badge_text: p.badge_text || 'Best Overall',
       deal_status: p.deal_status,
       status: p.status,
@@ -503,6 +506,7 @@ export default function AdminProductsPage() {
       category_rank: formData.category_rank ? parseInt(formData.category_rank) : null,
       is_featured: formData.is_featured,
       is_editor_choice: formData.is_editor_choice,
+      is_deal: formData.is_deal,
       badge_text: formData.badge_text,
       deal_status: formData.deal_status,
       status: formData.status,
@@ -800,13 +804,44 @@ export default function AdminProductsPage() {
                     </div>
                   </td>
                   <td>
-                    {p.badge_text ? (
-                      <span style={{ fontSize: '0.6875rem', fontWeight: 800, color: 'var(--green-accent)', background: 'var(--green-light)', padding: '0.15rem 0.4rem', borderRadius: 'var(--radius-xs)', border: '1px solid var(--green-border)', textTransform: 'uppercase' }}>
-                        {p.badge_text}
-                      </span>
-                    ) : (
-                      <span style={{ fontSize: '0.6875rem', color: 'var(--text-muted)' }}>Standard</span>
-                    )}
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem', alignItems: 'flex-start' }}>
+                      {p.badge_text ? (
+                        <span style={{ fontSize: '0.6875rem', fontWeight: 800, color: 'var(--green-accent)', background: 'var(--green-light)', padding: '0.15rem 0.4rem', borderRadius: 'var(--radius-xs)', border: '1px solid var(--green-border)', textTransform: 'uppercase' }}>
+                          {p.badge_text}
+                        </span>
+                      ) : (
+                        <span style={{ fontSize: '0.6875rem', color: 'var(--text-muted)' }}>Standard</span>
+                      )}
+
+                      {/* Quick 1-Click Toggle for Show in Deals */}
+                      <button
+                        type="button"
+                        onClick={async () => {
+                          const nextState = !p.is_deal;
+                          await supabase.from('products').update({ is_deal: nextState, updated_at: new Date().toISOString() }).eq('id', p.id);
+                          await fetchData();
+                          triggerRevalidation();
+                        }}
+                        style={{
+                          background: p.is_deal ? '#FFF7ED' : 'transparent',
+                          border: p.is_deal ? '1px solid #FDBA74' : '1px solid var(--border)',
+                          color: p.is_deal ? 'var(--amber-deal)' : 'var(--text-muted)',
+                          borderRadius: '4px',
+                          fontSize: '0.6875rem',
+                          fontWeight: 700,
+                          padding: '0.1rem 0.35rem',
+                          cursor: 'pointer',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '0.2rem',
+                          transition: 'all 0.15s ease',
+                        }}
+                        title={p.is_deal ? 'Click to remove from public /deals' : 'Click to feature on public /deals'}
+                      >
+                        <Flame size={10} />
+                        <span>{p.is_deal ? '🔥 Deals (ON)' : '+ Deals'}</span>
+                      </button>
+                    </div>
                   </td>
                   <td>
                     <span style={{ fontSize: '0.75rem', fontWeight: 700, color: p.status === 'active' || p.status === 'featured' ? 'var(--success)' : 'var(--text-muted)' }}>
@@ -1402,6 +1437,108 @@ export default function AdminProductsPage() {
                     <option value="lightning_deal">Lightning Deal</option>
                   </select>
                 </div>
+              </div>
+
+              {/* Show in Deals & Editorial Placement Toggles */}
+              <div
+                style={{
+                  background: formData.is_deal ? '#FFF7ED' : '#FAF9F6',
+                  border: formData.is_deal ? '1px solid #FED7AA' : '1px solid var(--border)',
+                  borderRadius: 'var(--radius-md)',
+                  padding: '1.15rem 1.25rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  gap: '1rem',
+                  transition: 'all 0.2s ease',
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
+                  <div
+                    style={{
+                      width: '40px',
+                      height: '40px',
+                      borderRadius: '50%',
+                      background: formData.is_deal ? '#FFF' : '#E7E5E4',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      color: formData.is_deal ? 'var(--amber-deal)' : 'var(--text-muted)',
+                      border: formData.is_deal ? '1px solid #FDBA74' : '1px solid var(--border)',
+                      flexShrink: 0,
+                    }}
+                  >
+                    <Flame size={20} />
+                  </div>
+                  <div>
+                    <div style={{ fontSize: '0.875rem', fontWeight: 800, color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+                      <span>Show in Deals (/deals)</span>
+                      <span
+                        style={{
+                          fontSize: '0.6875rem',
+                          fontWeight: 800,
+                          padding: '0.15rem 0.5rem',
+                          borderRadius: '999px',
+                          background: formData.is_deal ? 'var(--amber-deal)' : '#78716C',
+                          color: '#FFFFFF',
+                          letterSpacing: '0.02em',
+                        }}
+                      >
+                        {formData.is_deal ? '🔥 ON (Live on /deals)' : 'OFF (Hidden from /deals)'}
+                      </span>
+                    </div>
+                    <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', margin: '0.2rem 0 0 0', lineHeight: 1.4 }}>
+                      {formData.is_deal
+                        ? 'Active: This product is currently displayed on the public /deals page.'
+                        : 'Inactive: Product does not appear on /deals. Toggle ON anytime to feature it as a deal.'}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Toggle Switch */}
+                <label
+                  style={{
+                    position: 'relative',
+                    display: 'inline-block',
+                    width: '52px',
+                    height: '28px',
+                    cursor: 'pointer',
+                    flexShrink: 0,
+                  }}
+                >
+                  <input
+                    type="checkbox"
+                    checked={formData.is_deal}
+                    onChange={(e) => setFormData({ ...formData, is_deal: e.target.checked })}
+                    style={{ opacity: 0, width: 0, height: 0 }}
+                  />
+                  <span
+                    style={{
+                      position: 'absolute',
+                      top: 0,
+                      left: 0,
+                      right: 0,
+                      bottom: 0,
+                      backgroundColor: formData.is_deal ? 'var(--amber-deal)' : '#CBD5E1',
+                      borderRadius: '34px',
+                      transition: '0.25s ease',
+                    }}
+                  >
+                    <span
+                      style={{
+                        position: 'absolute',
+                        height: '22px',
+                        width: '22px',
+                        left: formData.is_deal ? '27px' : '3px',
+                        bottom: '3px',
+                        backgroundColor: 'white',
+                        borderRadius: '50%',
+                        transition: '0.25s ease',
+                        boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
+                      }}
+                    />
+                  </span>
+                </label>
               </div>
 
               {/* Multi-Image Gallery & Live Cycling Preview */}
