@@ -64,7 +64,7 @@ export default async function ComparePage() {
                     <div style={{ color: 'var(--primary)', fontWeight: 800, fontSize: '1.25rem', marginBottom: '0.75rem' }}>
                       {formatPrice(p.price, p.currency || 'USD')}
                     </div>
-                    <AffiliateCTA productSlug={p.slug} asin={p.asin} price={p.price} label="View on Amazon" size="sm" />
+                    <AffiliateCTA productSlug={p.slug} asin={p.asin} price={p.price} affiliateUrl={p.affiliate_url} label="Buy on Amazon" size="sm" />
                   </th>
                 ))}
               </tr>

@@ -158,6 +158,7 @@ export default async function ComparisonDetailPage({ params }: ComparisonPagePro
               productSlug={winner.slug}
               asin={winner.asin}
               price={winner.price}
+              affiliateUrl={winner.affiliate_url}
               label="Buy Winner on Amazon"
               size="sm"
             />
@@ -198,7 +199,7 @@ export default async function ComparisonDetailPage({ params }: ComparisonPagePro
                         {formatPrice(productA.price, productA.currency || 'USD')}
                       </div>
                     )}
-                    <AffiliateCTA productSlug={productA.slug} asin={productA.asin} price={productA.price} label="View on Amazon" size="sm" />
+                    <AffiliateCTA productSlug={productA.slug} asin={productA.asin} price={productA.price} affiliateUrl={productA.affiliate_url} label="Buy on Amazon" size="sm" />
                   </th>
                 )}
                 {productB && (
@@ -218,7 +219,7 @@ export default async function ComparisonDetailPage({ params }: ComparisonPagePro
                         {formatPrice(productB.price, productB.currency || 'USD')}
                       </div>
                     )}
-                    <AffiliateCTA productSlug={productB.slug} asin={productB.asin} price={productB.price} label="View on Amazon" size="sm" />
+                    <AffiliateCTA productSlug={productB.slug} asin={productB.asin} price={productB.price} affiliateUrl={productB.affiliate_url} label="Buy on Amazon" size="sm" />
                   </th>
                 )}
               </tr>

@@ -1,7 +1,23 @@
+import { revalidatePath } from 'next/cache';
+
 export async function triggerRevalidation() {
-  try {
-    await fetch('/api/revalidate', { method: 'POST' });
-  } catch (err) {
-    console.error('Revalidation trigger error:', err);
+  if (typeof window === 'undefined') {
+    try {
+      revalidatePath('/', 'layout');
+      revalidatePath('/category');
+      revalidatePath('/products');
+      revalidatePath('/deals');
+      revalidatePath('/compare');
+      revalidatePath('/guides');
+      revalidatePath('/sitemap.xml');
+    } catch {
+      // Server-side revalidation
+    }
+  } else {
+    try {
+      await fetch('/api/revalidate', { method: 'POST' }).catch(() => {});
+    } catch {
+      // Client-side revalidation
+    }
   }
 }

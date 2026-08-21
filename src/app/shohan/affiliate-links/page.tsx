@@ -101,8 +101,44 @@ export default function AdminAffiliateLinksPage() {
 
           {/* Generated Result Output */}
           <div style={{ marginTop: '1rem', background: 'var(--bg-main)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', padding: '1.25rem' }}>
+            {products.find((p) => p.id === selectedProduct)?.affiliate_url && (
+              <div style={{ marginBottom: '1.25rem', padding: '0.875rem', background: '#EFF6FF', border: '1px solid #BFDBFE', borderRadius: 'var(--radius-sm)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.35rem' }}>
+                  <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#1E40AF', textTransform: 'uppercase' }}>
+                    Custom Configured Affiliate Buy URL:
+                  </span>
+                  <span style={{ fontSize: '0.7rem', fontWeight: 700, color: '#1D4ED8', background: '#DBEAFE', padding: '0.15rem 0.5rem', borderRadius: '4px' }}>
+                    Primary CTA Priority
+                  </span>
+                </div>
+                <div style={{ wordBreak: 'break-all', fontFamily: 'var(--font-mono)', fontSize: '0.8125rem', color: '#1E3A8A', fontWeight: 600, marginBottom: '0.75rem' }}>
+                  {products.find((p) => p.id === selectedProduct)?.affiliate_url}
+                </div>
+                <div style={{ display: 'flex', gap: '0.5rem' }}>
+                  <a
+                    href={products.find((p) => p.id === selectedProduct)?.affiliate_url!}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="btn btn-primary btn-sm"
+                  >
+                    Test Configured Link ↗
+                  </a>
+                  <button
+                    onClick={() => {
+                      const url = products.find((p) => p.id === selectedProduct)?.affiliate_url || '';
+                      navigator.clipboard.writeText(url);
+                      alert('Copied configured affiliate URL to clipboard!');
+                    }}
+                    className="btn btn-secondary btn-sm"
+                  >
+                    Copy Configured Link
+                  </button>
+                </div>
+              </div>
+            )}
+
             <div style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '0.5rem' }}>
-              Generated Amazon Destination URL:
+              Generated Regional Amazon Destination URL ({selectedCountry}):
             </div>
             <div style={{ wordBreak: 'break-all', fontFamily: 'var(--font-mono)', fontSize: '0.875rem', color: 'var(--primary)', fontWeight: 600, marginBottom: '1rem' }}>
               {generatedUrl}
