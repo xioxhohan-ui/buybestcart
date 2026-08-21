@@ -70,7 +70,7 @@ export default function CategoryShowcaseGrid({ categories }: CategoryShowcaseGri
             Comprehensive testing archives organized by hardware and lifestyle categories.
           </p>
         </div>
-        <Link href="/category/electronics" className="btn btn-secondary btn-sm" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}>
+        <Link href="/category" className="btn btn-secondary btn-sm" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}>
           <span>All 9 Department Archives</span>
           <ArrowRight size={13} />
         </Link>

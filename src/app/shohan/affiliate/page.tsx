@@ -54,13 +54,14 @@ export default function AdminAffiliateEnginePage() {
       updated_at: new Date().toISOString(),
     });
 
-    setSaving(false);
     if (!error) {
+      await fetch('/api/revalidate', { method: 'POST' }).catch(() => {});
       setSaved(true);
       setTimeout(() => setSaved(false), 3000);
     } else {
       alert(`Error saving affiliate settings: ${error.message}`);
     }
+    setSaving(false);
   };
 
   return (
