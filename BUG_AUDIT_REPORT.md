@@ -13,9 +13,9 @@
 
 A deep, forensic end-to-end full-stack code, database, and route audit was performed across all layers of the **BuyBestCart** platform. Every identified issue was reproduced, root-caused, repaired directly in code and database schemas, and verified through automated end-to-end HTTP health checks and compiler runs.
 
-* **Total Issues Audited & Resolved**: 23
+* **Total Issues Audited & Resolved**: 24
 * **Critical / High Severity Issues**: 8 (All Resolved)
-* **Medium Severity Issues**: 10 (All Resolved)
+* **Medium Severity Issues**: 11 (All Resolved)
 * **Low Severity / UX Issues**: 5 (All Resolved)
 * **Remaining Unresolved Issues**: 0 (100% Resolved & Verified)
 
@@ -204,6 +204,14 @@ A deep, forensic end-to-end full-stack code, database, and route audit was perfo
 * **Root Cause**: `/compare` was static and only rendered pre-selected items without the ability for users to search products, choose custom items, compare 2 or 3 products flexibly, or update the comparison matrix dynamically.
 * **Fix Applied**: Built an interactive [`CustomCompareEngine.tsx`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/src/components/compare/CustomCompareEngine.tsx) system with 3 flexible slots, real-time product search with thumbnail/price/brand details, duplicate selection prevention, quick showdown presets, dynamic side-by-side spec alignment, pros/cons/highlights/verdict breakdown, and shareable URL query state synchronization (`?p1=...&p2=...&p3=...`).
 * **Affected Files**: [`src/components/compare/CustomCompareEngine.tsx`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/src/components/compare/CustomCompareEngine.tsx), [`src/app/compare/page.tsx`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/src/app/compare/page.tsx).
+
+---
+
+### [AUDIT-024] Show in Deals Admin Toggle & Empty-by-Default Deals Engine
+* **Category**: Admin Product Editor & Public Storefront / Deals Management
+* **Root Cause**: `/deals` was displaying hardcoded deals without strict admin toggle control, and there was no intuitive switch in `/shohan/products` to selectively toggle products into the Deals section.
+* **Fix Applied**: Added `is_deal BOOLEAN DEFAULT false` column in PostgreSQL `public.products`, reset initial deals so `/deals` is empty by default with an informative empty state, added an interactive **Show in Deals** toggle switch in the admin product editor modal with visual feedback (`🔥 ON` / `OFF`), and added a 1-click quick deal toggle button in the admin catalog table rows.
+* **Affected Files**: [`src/app/deals/page.tsx`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/src/app/deals/page.tsx), [`src/app/shohan/products/page.tsx`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/src/app/shohan/products/page.tsx), [`src/types/index.ts`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/src/types/index.ts), Supabase PostgreSQL `public.products`.
 
 ---
 
