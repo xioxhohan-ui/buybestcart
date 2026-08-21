@@ -107,7 +107,7 @@ export default function CategoryShowcaseGrid({ categories }: CategoryShowcaseGri
                   </span>
                 </div>
                 <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', lineHeight: 1.6, marginBottom: '1.25rem', flex: 1 }}>
-                  {cat.description || 'Independent reviews and verified Amazon affiliate ratings.'}
+                  {cat.description || 'Independent lab reviews, buyer guides, and verified performance benchmarks.'}
                 </p>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', fontSize: '0.8125rem', fontWeight: 700, color: 'var(--green-accent)', fontFamily: 'var(--font-display)' }}>
                   <span>Browse Archive</span>

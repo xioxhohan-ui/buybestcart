@@ -20,7 +20,7 @@ interface AnimatedHeroProps {
 export default function AnimatedHero({
   heading = 'The Independent Guide to Better Buying.',
   subheading = 'Curated, Tested & Verified.',
-  description = 'We independently test consumer technology, audio gear, and everyday lifestyle tools. Our reviews cut through marketing noise to present verified specifications and authentic Amazon pricing.',
+  description = 'We independently test consumer technology, audio gear, and everyday lifestyle tools. Our reviews cut through marketing noise to present verified specifications, lab scores, and authentic pricing.',
   eyebrow = 'THE 2026 SHOPPING & PRODUCT REVIEW EDIT',
   featuredProduct,
 }: AnimatedHeroProps) {
@@ -241,7 +241,7 @@ export default function AnimatedHero({
               <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', flexWrap: 'wrap' }}>
                 <div>
                   <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase' }}>
-                    Live Amazon Price
+                    Verified Price
                   </div>
                   <div style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--text-primary)', fontFamily: 'var(--font-display)' }}>
                     {formatPrice(showcaseItem.price, 'USD')}
@@ -253,7 +253,7 @@ export default function AnimatedHero({
                     In-Depth Review
                   </Link>
                   <Link href={`/products/${showcaseItem.slug}`} className="btn btn-primary btn-sm">
-                    Check Amazon ↗
+                    View Product Details →
                   </Link>
                 </div>
               </div>

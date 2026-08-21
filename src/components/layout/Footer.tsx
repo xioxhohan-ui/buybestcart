@@ -95,9 +95,12 @@ export default async function Footer() {
           </div>
         </div>
 
-        {/* Amazon Associates Compliance Statement */}
-        <div style={{ background: '#292524', border: '1px solid #44403C', borderLeft: '3px solid var(--green-gold)', borderRadius: 'var(--radius-sm)', padding: '1.25rem 1.5rem', color: '#D6D3D1', fontSize: '0.8125rem', lineHeight: 1.65, margin: '2rem 0' }}>
-          <strong style={{ color: '#FAF9F5' }}>AFFILIATE DISCLOSURE:</strong> {config.disclosure_text}
+        {/* Compliance Statement */}
+        <div style={{ borderTop: '1px solid #292524', paddingTop: '1.25rem', marginTop: '2rem', color: '#A8A29E', fontSize: '0.75rem', lineHeight: 1.6 }}>
+          {config.disclosure_text}{' '}
+          <Link href="/affiliate-disclosure" style={{ color: '#D6D3D1', textDecoration: 'underline', textUnderlineOffset: '2px' }}>
+            Learn more.
+          </Link>
         </div>
 
         {/* Footer Bottom */}

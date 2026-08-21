@@ -265,16 +265,16 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
               )}
             </div>
 
-            <div style={{ fontSize: '0.8125rem', color: 'var(--green-dark)', marginBottom: '1.25rem', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-              <ShieldCheck size={13} />
-              <span>Verified live price via official Amazon partner integration</span>
+            <div style={{ fontSize: '0.8125rem', color: 'var(--text-muted)', marginBottom: '1.25rem', fontWeight: 500, display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+              <ShieldCheck size={13} color="var(--green-accent)" />
+              <span>In Stock & Verified Merchant Availability</span>
             </div>
 
             <AffiliateCTA
               productSlug={product.slug}
               asin={product.asin}
               price={product.price}
-              label="Check Price & Availability on Amazon"
+              label="Buy on Amazon"
               size="lg"
               fullWidth
             />

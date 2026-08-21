@@ -9,10 +9,10 @@ interface EditorialAdPlacementProps {
 }
 
 export default function EditorialAdPlacement({
-  headline = 'Amazon Prime & Seasonal Electronics Showcase',
-  tagline = 'Exclusive partner promotions, verified limited-time price drops, and lightning deals tracked across all 11 global Amazon marketplaces.',
-  ctaText = 'View Active Deals on Amazon →',
-  ctaLink = '/deals',
+  headline = 'Curated Electronics & Flagship Hardware Showcase',
+  tagline = 'Expert-tested audio gear, ultralight laptops, 4K displays, and top-rated tech accessories.',
+  ctaText = 'Explore Curated Picks →',
+  ctaLink = '/products',
 }: EditorialAdPlacementProps) {
   return (
     <div className="container" style={{ margin: '3rem auto' }}>
@@ -35,7 +35,7 @@ export default function EditorialAdPlacement({
         <div style={{ maxWidth: '680px' }}>
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', fontFamily: 'var(--font-display)', fontSize: '0.6875rem', fontWeight: 700, color: 'var(--green-gold)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '0.625rem' }}>
             <span>✦</span>
-            <span>FEATURED AMAZON PARTNER SPOTLIGHT</span>
+            <span>EDITORIAL SPOTLIGHT</span>
           </div>
           <h3 style={{ color: '#FAF9F5', fontSize: '1.65rem', fontFamily: 'var(--font-serif)', marginBottom: '0.625rem' }}>
             {headline}

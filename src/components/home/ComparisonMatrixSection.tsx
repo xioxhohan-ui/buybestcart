@@ -24,7 +24,7 @@ export default function ComparisonMatrixSection({ products }: ComparisonMatrixSe
           <div className="editorial-eyebrow">HEAD-TO-HEAD SHOWDOWN</div>
           <h2>Flagship Product Comparison</h2>
           <p style={{ color: 'var(--text-secondary)', fontSize: '0.9375rem', marginTop: '0.25rem' }}>
-            Directly cross-examine technical specifications, battery life, weight, and live Amazon pricing.
+            Directly cross-examine technical specifications, battery life, weight, and verified pricing.
           </p>
         </div>
         <Link href="/compare" className="btn btn-secondary btn-sm">
@@ -89,7 +89,7 @@ export default function ComparisonMatrixSection({ products }: ComparisonMatrixSe
 
             {/* Price */}
             <tr>
-              <th style={{ background: '#F8F7F2' }}>Amazon Price</th>
+              <th style={{ background: '#F8F7F2' }}>Verified Price</th>
               {comparisonItems.map((item) => (
                 <td key={item.id} style={{ textAlign: 'center', fontSize: '1.25rem', fontWeight: 800, fontFamily: 'var(--font-display)', color: 'var(--text-primary)' }}>
                   {formatPrice(item.price, item.currency || 'USD')}
@@ -111,14 +111,14 @@ export default function ComparisonMatrixSection({ products }: ComparisonMatrixSe
 
             {/* CTA Row */}
             <tr>
-              <th style={{ background: '#F8F7F2' }}>Shop Directly</th>
+              <th style={{ background: '#F8F7F2' }}>Product Link</th>
               {comparisonItems.map((item) => (
                 <td key={item.id} style={{ textAlign: 'center', padding: '1.25rem' }}>
                   <AffiliateCTA
                     productSlug={item.slug}
                     asin={item.asin}
                     price={item.price}
-                    label="View on Amazon"
+                    label="Buy on Amazon"
                     size="sm"
                     fullWidth
                   />

@@ -95,14 +95,14 @@ export default async function HomePage() {
         'Our editorial staff independently benchmarks acoustics, battery endurance, build quality, and value across weeks of real-world usage before assigning our editorial ratings.',
     },
     {
-      question: 'How do affiliate links work on this website?',
+      question: 'How are product prices verified?',
       answer:
-        'When you click links on our site to Amazon, we may earn an affiliate commission at no additional cost to you. This supports our independent testing laboratory.',
+        'We continuously track and synchronize pricing with official merchant storefronts to ensure accurate comparison data.',
     },
     {
       question: 'Are product prices and availability updated in real time?',
       answer:
-        'Yes. We sync regularly with Amazon product APIs across 11 international storefronts so you always see accurate prices in your regional currency.',
+        'Yes. We sync regularly across international storefronts so you always see accurate prices in your regional currency.',
     },
   ];
 
@@ -313,18 +313,6 @@ export default async function HomePage() {
 
       {/* 14. FREQUENTLY ASKED QUESTIONS */}
       <FAQSection faqs={faqsToRender} />
-
-      {/* 15. BOTTOM AFFILIATE DISCLOSURE CALLOUT */}
-      <section className="container" style={{ padding: '3rem 1.5rem 5rem 1.5rem' }}>
-        <div style={{ background: '#FAF9F6', border: '1px solid var(--border)', borderRadius: 'var(--radius-md)', padding: '2rem', textAlign: 'center', maxWidth: '820px', margin: '0 auto' }}>
-          <div style={{ fontSize: '0.75rem', fontWeight: 800, letterSpacing: '0.08em', color: 'var(--text-muted)', marginBottom: '0.5rem', textTransform: 'uppercase' }}>
-            AFFILIATE TRANSPARENCY
-          </div>
-          <p style={{ fontSize: '0.8125rem', color: 'var(--text-secondary)', lineHeight: 1.6, margin: 0 }}>
-            {config.disclosure_text}
-          </p>
-        </div>
-      </section>
     </div>
   );
 }

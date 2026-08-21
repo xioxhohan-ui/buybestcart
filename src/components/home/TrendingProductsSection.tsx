@@ -23,9 +23,9 @@ export default function TrendingProductsSection({ products }: TrendingProductsSe
               <TrendingUp size={13} />
               <span>HIGH VELOCITY PICKS</span>
             </div>
-            <h2>Trending on Amazon Right Now</h2>
+            <h2>Trending Flagship Picks</h2>
             <p style={{ color: 'var(--text-secondary)', fontSize: '0.9375rem', marginTop: '0.25rem' }}>
-              The most researched and purchased electronics across all 11 regional marketplaces this week.
+              The most researched and top-rated electronics, audio gear, and productivity tools this week.
             </p>
           </div>
           <Link href="/deals" className="btn btn-secondary btn-sm">

@@ -29,7 +29,7 @@ export default function AnimatedStats() {
           <div ref={stat2Ref} className="stat-value">
             11
           </div>
-          <div className="stat-label">Amazon Marketplaces</div>
+          <div className="stat-label">Regional Marketplaces</div>
         </div>
         <div className="stat-cell">
           <div ref={stat3Ref} className="stat-value" style={{ color: 'var(--green-accent)' }}>

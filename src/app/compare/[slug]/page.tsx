@@ -158,7 +158,7 @@ export default async function ComparisonDetailPage({ params }: ComparisonPagePro
               productSlug={winner.slug}
               asin={winner.asin}
               price={winner.price}
-              label="Check Winner Price on Amazon"
+              label="Buy Winner on Amazon"
               size="sm"
             />
           )}

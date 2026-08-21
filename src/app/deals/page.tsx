@@ -9,8 +9,8 @@ import { Product } from '@/types';
 export const revalidate = 60;
 
 export const metadata: Metadata = {
-  title: "Today's Best Amazon Deals & Price Drops | Best Buy Cart",
-  description: 'Verified Amazon price drops, limited-time discounts, and daily tech promotions curated by experts.',
+  title: "Today's Best Tech Deals & Price Drops | Best Buy Cart",
+  description: 'Verified hardware price drops, seasonal discounts, and curated tech savings evaluated by our editorial staff.',
 };
 
 export default async function DealsPage() {
@@ -34,9 +34,9 @@ export default async function DealsPage() {
       <div style={{ marginBottom: '3rem', maxWidth: '720px' }}>
         <div style={{ fontSize: '0.8125rem', fontWeight: 700, color: 'var(--amber-deal)', textTransform: 'uppercase', marginBottom: '0.5rem', display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}>
           <Flame size={13} />
-          <span>Hand-Curated Promotions</span>
+          <span>Hand-Curated Savings</span>
         </div>
-        <h1 style={{ marginBottom: '0.75rem' }}>Today&apos;s Best Amazon Tech Deals</h1>
+        <h1 style={{ marginBottom: '0.75rem' }}>Today&apos;s Best Tech Deals & Price Drops</h1>
         <p style={{ fontSize: '1.125rem', color: 'var(--text-secondary)', lineHeight: 1.6 }}>
           We continuously track price drops on top-ranked laptops, noise-canceling headphones, and gaming gear. All prices are verified in real time.
         </p>
