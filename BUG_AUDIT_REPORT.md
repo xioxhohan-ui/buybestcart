@@ -13,9 +13,9 @@
 
 A deep, forensic end-to-end full-stack code, database, and route audit was performed across all layers of the **BuyBestCart** platform. Every identified issue was reproduced, root-caused, repaired directly in code and database schemas, and verified through automated end-to-end HTTP health checks and compiler runs.
 
-* **Total Issues Audited & Resolved**: 19
+* **Total Issues Audited & Resolved**: 20
 * **Critical / High Severity Issues**: 8 (All Resolved)
-* **Medium Severity Issues**: 6 (All Resolved)
+* **Medium Severity Issues**: 7 (All Resolved)
 * **Low Severity / UX Issues**: 5 (All Resolved)
 * **Remaining Unresolved Issues**: 0 (100% Resolved & Verified)
 
@@ -172,6 +172,14 @@ A deep, forensic end-to-end full-stack code, database, and route audit was perfo
 * **Root Cause**: Admin had no dedicated field to paste, edit, validate, or preview custom affiliate buy URLs directly on individual products, requiring manual ASIN auto-calculation.
 * **Fix Applied**: Added `affiliate_url` column to PostgreSQL `public.products`, added dedicated URL input with regex HTTP/HTTPS validation and "Preview Buy Button" tester in `/shohan/products`, updated `/shohan/amazon` product modal, and connected `AffiliateCTA` & `/go/[slug]` dynamic routing across public product pages, comparison matrix, and product cards.
 * **Affected Files**: Supabase PostgreSQL `public.products`, [`src/app/shohan/products/page.tsx`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/src/app/shohan/products/page.tsx), [`src/app/shohan/amazon/page.tsx`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/src/app/shohan/amazon/page.tsx), [`src/components/products/AffiliateCTA.tsx`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/src/components/products/AffiliateCTA.tsx), [`src/app/go/[slug]/route.ts`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/src/app/go/%5Bslug%5D/route.ts), [`src/app/products/[slug]/page.tsx`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/src/app/products/%5Bslug%5D/page.tsx), [`src/components/products/ProductCard.tsx`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/src/components/products/ProductCard.tsx), [`src/types/index.ts`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/src/types/index.ts).
+
+---
+
+### [AUDIT-020] Branded OpenGraph & Social Share Images (Best Buy Cart Logo Font)
+* **Category**: SEO / Social Graph Metadata & Brand Visual Identity
+* **Root Cause**: Sharing website links on Facebook, Twitter/X, WhatsApp, Telegram, LinkedIn, and iMessage fell back to a generic Unsplash stock headphone image instead of the official **Best Buy Cart** editorial logo font and branding.
+* **Fix Applied**: Built dynamic Next.js OpenGraph image generators ([`src/app/opengraph-image.tsx`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/src/app/opengraph-image.tsx) and [`src/app/twitter-image.tsx`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/src/app/twitter-image.tsx)) rendering the luxury serif **Best Buy Cart.** typography, emerald dot, tagline, and verified credentials in 1200x630 format. Generated high-resolution static fallback [`public/og-image.png`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/public/og-image.png), updated `src/lib/settings.ts`, updated `src/app/layout.tsx` metadata headers, and synchronized Supabase PostgreSQL `settings` (`branding`).
+* **Affected Files**: [`src/app/opengraph-image.tsx`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/src/app/opengraph-image.tsx), [`src/app/twitter-image.tsx`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/src/app/twitter-image.tsx), [`public/og-image.png`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/public/og-image.png), [`src/lib/settings.ts`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/src/lib/settings.ts), [`src/app/layout.tsx`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/src/app/layout.tsx), [`src/app/guides/[slug]/page.tsx`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/src/app/guides/%5Bslug%5D/page.tsx), [`src/app/compare/[slug]/page.tsx`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/src/app/compare/%5Bslug%5D/page.tsx), [`src/app/products/[slug]/page.tsx`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/src/app/products/%5Bslug%5D/page.tsx), Supabase PostgreSQL `public.settings`.
 
 ---
 
