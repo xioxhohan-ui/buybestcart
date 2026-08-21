@@ -703,11 +703,10 @@ h4 {
   background: var(--bg-surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
-  box-shadow: var(--shadow-hover);
-  z-index: var(--z-search-dropdown, 200);
-  max-height: 380px;
-  max-height: 60dvh;
-  overflow-y: auto;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12), 0 2px 6px rgba(0, 0, 0, 0.04);
+  z-index: 500;
+  max-height: 420px;
+  overflow: hidden;
 }
 
 .search-dropdown-item {
@@ -1295,17 +1294,6 @@ section,
   }
 }
 
-/* Search dropdown mobile overlay */
-@media (max-width: 768px) {
-  .search-dropdown {
-    position: fixed !important;
-    left: 0.75rem !important;
-    right: 0.75rem !important;
-    top: auto !important;
-    max-height: 60vh;
-    z-index: 200;
-  }
-}
 
 /* Product Detail & Verdict Responsive Card */
 .product-detail-container {

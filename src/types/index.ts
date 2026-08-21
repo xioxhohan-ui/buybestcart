@@ -291,21 +291,6 @@ export interface Comparison {
   winner?: Product;
 }
 
-export interface AdSlot {
-  id: string;
-  slot_name: string;
-  type: 'banner' | 'sidebar' | 'in_feed' | 'sticky_bottom' | 'leaderboard' | 'billboard';
-  headline: string;
-  subline?: string;
-  cta_text?: string;
-  cta_link?: string;
-  image_url?: string;
-  sponsor_name?: string;
-  is_active: boolean;
-  priority: number;
-  created_at: string;
-  updated_at: string;
-}
 
 export interface FAQ {
   id: string;

@@ -24,7 +24,6 @@ import TrendingProductsSection from '@/components/home/TrendingProductsSection';
 import ComparisonMatrixSection from '@/components/home/ComparisonMatrixSection';
 import CategoryShowcaseGrid from '@/components/home/CategoryShowcaseGrid';
 import NewsletterSection from '@/components/home/NewsletterSection';
-import AdSlot from '@/components/ads/AdSlot';
 import ProductGrid from '@/components/products/ProductGrid';
 import FAQSection from '@/components/common/FAQSection';
 
@@ -72,15 +71,7 @@ export default async function HomePage() {
     .order('display_order', { ascending: true })
     .limit(6);
 
-  // 5. Fetch ad billboard slot
-  const { data: billboardAd } = await supabase
-    .from('ad_slots')
-    .select('*')
-    .eq('slot_name', 'homepage_billboard')
-    .eq('is_active', true)
-    .single();
-
-  // 6. Fetch FAQs
+  // 5. Fetch FAQs
   const { data: dbFaqs } = await supabase
     .from('faqs')
     .select('*')
@@ -111,19 +102,7 @@ export default async function HomePage() {
 
   return (
     <div>
-      {/* 01. TOP ANNOUNCEMENT & LEADERBOARD AD SLOT */}
-      {billboardAd && (
-        <AdSlot
-          type="leaderboard"
-          sponsorName={billboardAd.sponsor_name || 'Amazon Partner'}
-          headline={billboardAd.headline}
-          subline={billboardAd.subline || ''}
-          ctaText={billboardAd.cta_text || 'View Deals ↗'}
-          ctaLink={billboardAd.cta_link || '/deals'}
-        />
-      )}
-
-      {/* 02. CMS-DRIVEN EDITORIAL HERO SPREAD */}
+      {/* 01. CMS-DRIVEN EDITORIAL HERO SPREAD */}
       <AnimatedHero
         heading={config.hero_heading}
         subheading={config.hero_subheading}
@@ -169,17 +148,7 @@ export default async function HomePage() {
       {/* 07. FLAGSHIP PRODUCT COMPARISON MATRIX */}
       <ComparisonMatrixSection products={(featuredProducts as Product[]) || []} />
 
-      {/* 08. SPONSORED BILLBOARD PLACEMENT */}
-      {billboardAd && (
-        <AdSlot
-          type="billboard"
-          sponsorName={billboardAd.sponsor_name}
-          headline={billboardAd.headline}
-          subline={billboardAd.subline || ''}
-          ctaText={billboardAd.cta_text || 'View Deals ↗'}
-          ctaLink={billboardAd.cta_link || '/deals'}
-        />
-      )}
+
 
       {/* 09. TODAY'S HIGHLIGHTED DEALS */}
       {dealsProducts && dealsProducts.length > 0 && (

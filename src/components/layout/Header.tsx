@@ -308,7 +308,7 @@ export default function Header({
               boxShadow: 'var(--shadow)',
             }}
           >
-            <SearchBar />
+            <SearchBar autoFocus onResultClick={() => setMobileSearchOpen(false)} />
           </div>
         )}
       </div>
@@ -391,7 +391,7 @@ export default function Header({
             <div style={{ padding: '1.25rem' }}>
               {/* Compact Drawer Search Bar */}
               <div style={{ marginBottom: '1.5rem' }}>
-                <SearchBar />
+                <SearchBar onResultClick={() => setMobileDrawerOpen(false)} />
               </div>
 
               {/* Accordion Departments Section */}

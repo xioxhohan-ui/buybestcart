@@ -32,7 +32,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
       const { data } = await supabase
         .from('products')
         .select('*, brand:brands(*), category:categories(*), images:product_images(*)')
-        .or(`title.ilike.%${cleanQ}%,short_description.ilike.%${cleanQ}%`)
+        .or(`title.ilike.%${cleanQ}%,short_description.ilike.%${cleanQ}%,asin.ilike.%${cleanQ}%`)
         .in('status', ['active', 'featured'])
         .limit(24);
 

@@ -13,11 +13,11 @@ export async function GET(request: NextRequest) {
 
   const supabase = createServerClient();
 
-  // Search products by title or short_description using ilike safely
+  // Search products by title, short_description, or ASIN using ilike safely
   const { data: products, error } = await supabase
     .from('products')
     .select('id, title, slug, thumbnail_url, price, currency, rating, review_count, brand:brands(name), category:categories(name, slug)')
-    .or(`title.ilike.%${q}%,short_description.ilike.%${q}%`)
+    .or(`title.ilike.%${q}%,short_description.ilike.%${q}%,asin.ilike.%${q}%`)
     .in('status', ['active', 'featured', 'published'])
     .limit(limit);
 

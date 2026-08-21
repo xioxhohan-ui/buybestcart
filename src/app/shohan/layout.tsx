@@ -100,7 +100,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     {
       group: 'Configuration Layer',
       items: [
-        { name: 'Ad Slots & Banners', href: '/shohan/ads', icon: ShieldCheck },
         { name: 'Navigation Builder', href: '/shohan/navigation', icon: Compass },
         { name: 'Homepage Builder', href: '/shohan/homepage', icon: Layout },
         { name: 'Amazon 11 Stores', href: '/shohan/amazon', icon: ShoppingBag },

@@ -232,23 +232,6 @@ CREATE TABLE IF NOT EXISTS public.deals (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- 10. AD SLOTS (LEADERBOARDS, BILLBOARDS, SPONSORSHIPS)
-CREATE TABLE IF NOT EXISTS public.ad_slots (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  slot_name TEXT NOT NULL UNIQUE,
-  slot_type TEXT NOT NULL CHECK (slot_type IN ('leaderboard', 'billboard', 'sidebar-medium', 'sidebar-halfpage', 'between-content')),
-  headline TEXT NOT NULL,
-  subline TEXT,
-  cta_text TEXT DEFAULT 'Learn More ↗',
-  cta_link TEXT DEFAULT '/deals',
-  sponsor_name TEXT DEFAULT 'Featured Partner',
-  is_active BOOLEAN DEFAULT TRUE,
-  display_order INT DEFAULT 1,
-  clicks_count INT DEFAULT 0,
-  impressions_count INT DEFAULT 0,
-  created_at TIMESTAMPTZ DEFAULT NOW(),
-  updated_at TIMESTAMPTZ DEFAULT NOW()
-);
 
 -- 11. AFFILIATE MARKETPLACES (11 AMAZON REGIONS)
 CREATE TABLE IF NOT EXISTS public.affiliate_marketplaces (
@@ -343,7 +326,7 @@ DO $$
 DECLARE
   t TEXT;
 BEGIN
-  FOREACH t IN ARRAY ARRAY['brands', 'categories', 'products', 'articles', 'comparisons', 'ad_slots', 'affiliate_marketplaces', 'faqs', 'settings']
+  FOREACH t IN ARRAY ARRAY['brands', 'categories', 'products', 'articles', 'comparisons', 'affiliate_marketplaces', 'faqs', 'settings']
   LOOP
     EXECUTE format('DROP TRIGGER IF EXISTS tr_%I_updated_at ON %I;', t, t);
     EXECUTE format('CREATE TRIGGER tr_%I_updated_at BEFORE UPDATE ON %I FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();', t, t);
@@ -365,7 +348,6 @@ ALTER TABLE public.product_features ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.product_images ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.articles ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.comparisons ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.ad_slots ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.affiliate_marketplaces ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.affiliate_clicks ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.faqs ENABLE ROW LEVEL SECURITY;
@@ -382,7 +364,6 @@ CREATE POLICY "Public can view features" ON public.product_features FOR SELECT U
 CREATE POLICY "Public can view product images" ON public.product_images FOR SELECT USING (TRUE);
 CREATE POLICY "Public can view published articles" ON public.articles FOR SELECT USING (status = 'published');
 CREATE POLICY "Public can view published comparisons" ON public.comparisons FOR SELECT USING (status = 'published');
-CREATE POLICY "Public can view active ad slots" ON public.ad_slots FOR SELECT USING (is_active = TRUE);
 CREATE POLICY "Public can view enabled marketplaces" ON public.affiliate_marketplaces FOR SELECT USING (is_enabled = TRUE);
 CREATE POLICY "Public can view active faqs" ON public.faqs FOR SELECT USING (is_active = TRUE);
 CREATE POLICY "Public can view settings" ON public.settings FOR SELECT USING (TRUE);
@@ -399,7 +380,6 @@ CREATE POLICY "Admin full access features" ON public.product_features FOR ALL US
 CREATE POLICY "Admin full access images" ON public.product_images FOR ALL USING (TRUE) WITH CHECK (TRUE);
 CREATE POLICY "Admin full access articles" ON public.articles FOR ALL USING (TRUE) WITH CHECK (TRUE);
 CREATE POLICY "Admin full access comparisons" ON public.comparisons FOR ALL USING (TRUE) WITH CHECK (TRUE);
-CREATE POLICY "Admin full access ad slots" ON public.ad_slots FOR ALL USING (TRUE) WITH CHECK (TRUE);
 CREATE POLICY "Admin full access marketplaces" ON public.affiliate_marketplaces FOR ALL USING (TRUE) WITH CHECK (TRUE);
 CREATE POLICY "Admin full access clicks" ON public.affiliate_clicks FOR ALL USING (TRUE) WITH CHECK (TRUE);
 CREATE POLICY "Admin full access faqs" ON public.faqs FOR ALL USING (TRUE) WITH CHECK (TRUE);

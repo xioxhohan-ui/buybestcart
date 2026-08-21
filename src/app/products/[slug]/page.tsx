@@ -11,7 +11,6 @@ import { generateProductJsonLd } from '@/lib/seo';
 import { formatPrice } from '@/lib/region';
 import ProductGrid from '@/components/products/ProductGrid';
 import ProductGallery from '@/components/products/ProductGallery';
-import AdSlot from '@/components/ads/AdSlot';
 
 interface ProductPageProps {
   params: Promise<{ slug: string }>;
@@ -428,37 +427,21 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
         </section>
       )}
 
-      {/* Technical Specifications Table & Sidebar Ad */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))', gap: '2.5rem', margin: '3.5rem 0', alignItems: 'start' }}>
-        <div>
-          <section>
-            <div className="editorial-eyebrow">LAB METRICS</div>
-            <h2 style={{ marginBottom: '1.5rem' }}>Detailed Specification Matrix</h2>
-            <table className="editorial-table">
-              <tbody>
-                {specsToRender.map((spec: { id?: string; spec_key: string; spec_value: string }, index: number) => (
-                  <tr key={spec.id || index}>
-                    <th style={{ width: '35%' }}>{spec.spec_key}</th>
-                    <td>{spec.spec_value}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </section>
-        </div>
-
-        {/* Sidebar 300x250 Ad Slot */}
-        <div>
-          <AdSlot
-            type="sidebar-medium"
-            sponsorName="Amazon Partner Store"
-            headline="Protect Your Gear with AppleCare & Asurion"
-            subline="Get official 2-year drops and spills warranty protection directly with Amazon checkout."
-            ctaText="Add Amazon Protection ↗"
-            ctaLink="/deals"
-          />
-        </div>
-      </div>
+      {/* Technical Specifications Table */}
+      <section style={{ margin: '3.5rem 0' }}>
+        <div className="editorial-eyebrow">LAB METRICS</div>
+        <h2 style={{ marginBottom: '1.5rem' }}>Detailed Specification Matrix</h2>
+        <table className="editorial-table">
+          <tbody>
+            {specsToRender.map((spec: { id?: string; spec_key: string; spec_value: string }, index: number) => (
+              <tr key={spec.id || index}>
+                <th style={{ width: '30%', minWidth: '140px' }}>{spec.spec_key}</th>
+                <td>{spec.spec_value}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </section>
 
       {/* SIMILAR RECOMMENDATIONS / You May Also Consider */}
       {relatedProducts && relatedProducts.length > 0 && (
