@@ -13,9 +13,9 @@
 
 A deep, forensic end-to-end full-stack code, database, and route audit was performed across all layers of the **BuyBestCart** platform. Every identified issue was reproduced, root-caused, repaired directly in code and database schemas, and verified through automated end-to-end HTTP health checks and compiler runs.
 
-* **Total Issues Audited & Resolved**: 20
+* **Total Issues Audited & Resolved**: 21
 * **Critical / High Severity Issues**: 8 (All Resolved)
-* **Medium Severity Issues**: 7 (All Resolved)
+* **Medium Severity Issues**: 8 (All Resolved)
 * **Low Severity / UX Issues**: 5 (All Resolved)
 * **Remaining Unresolved Issues**: 0 (100% Resolved & Verified)
 
@@ -180,6 +180,14 @@ A deep, forensic end-to-end full-stack code, database, and route audit was perfo
 * **Root Cause**: Sharing website links on Facebook, Twitter/X, WhatsApp, Telegram, LinkedIn, and iMessage fell back to a generic Unsplash stock headphone image instead of the official **Best Buy Cart** editorial logo font and branding.
 * **Fix Applied**: Built dynamic Next.js OpenGraph image generators ([`src/app/opengraph-image.tsx`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/src/app/opengraph-image.tsx) and [`src/app/twitter-image.tsx`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/src/app/twitter-image.tsx)) rendering the luxury serif **Best Buy Cart.** typography, emerald dot, tagline, and verified credentials in 1200x630 format. Generated high-resolution static fallback [`public/og-image.png`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/public/og-image.png), updated `src/lib/settings.ts`, updated `src/app/layout.tsx` metadata headers, and synchronized Supabase PostgreSQL `settings` (`branding`).
 * **Affected Files**: [`src/app/opengraph-image.tsx`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/src/app/opengraph-image.tsx), [`src/app/twitter-image.tsx`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/src/app/twitter-image.tsx), [`public/og-image.png`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/public/og-image.png), [`src/lib/settings.ts`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/src/lib/settings.ts), [`src/app/layout.tsx`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/src/app/layout.tsx), [`src/app/guides/[slug]/page.tsx`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/src/app/guides/%5Bslug%5D/page.tsx), [`src/app/compare/[slug]/page.tsx`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/src/app/compare/%5Bslug%5D/page.tsx), [`src/app/products/[slug]/page.tsx`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/src/app/products/%5Bslug%5D/page.tsx), Supabase PostgreSQL `public.settings`.
+
+---
+
+### [AUDIT-021] Multi-Image Product Preview & Auto-Cycling Engine (2s Standard / 1s Hover Speedup)
+* **Category**: Frontend UI / UX & Admin Product Editor Integration
+* **Root Cause**: Product cards were limited to displaying only a single static thumbnail image, and uploaded gallery images from `/shohan/products` were not dynamically accessible or cycled on the storefront.
+* **Fix Applied**: Built an automatic multi-image cycling engine in [`ProductCard.tsx`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/src/components/products/ProductCard.tsx) that seamlessly transitions through all uploaded photos every **2 seconds** by default and accelerates to **1 second per photo** on cursor hover with smooth CSS crossfades, mobile swipe support, slide counter badges, and dot progress bars. Upgraded queries across the app (`/`, `/products`, `/category/[...slug]`, `/deals`, `/search`) to join `images:product_images(*)`. Built a dedicated interactive [`ProductGallery.tsx`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/src/components/products/ProductGallery.tsx) for single product pages and enhanced `/shohan/products` with batch URL pasting, live simulator preview, and photo count indicators.
+* **Affected Files**: [`src/components/products/ProductCard.tsx`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/src/components/products/ProductCard.tsx), [`src/components/products/ProductGallery.tsx`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/src/components/products/ProductGallery.tsx), [`src/app/shohan/products/page.tsx`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/src/app/shohan/products/page.tsx), [`src/app/products/[slug]/page.tsx`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/src/app/products/%5Bslug%5D/page.tsx), [`src/app/page.tsx`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/src/app/page.tsx), [`src/app/products/page.tsx`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/src/app/products/page.tsx), [`src/app/category/[...slug]/page.tsx`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/src/app/category/%5B...slug%5D/page.tsx), [`src/app/deals/page.tsx`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/src/app/deals/page.tsx), [`src/app/search/page.tsx`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/src/app/search/page.tsx), Supabase PostgreSQL `public.product_images`.
 
 ---
 
