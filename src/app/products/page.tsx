@@ -18,7 +18,7 @@ export default async function ProductsCatalogPage() {
 
   const { data: products } = await supabase
     .from('products')
-    .select('*, brand:brands(*), category:categories(*)')
+    .select('*, brand:brands(*), category:categories(*), images:product_images(*)')
     .in('status', ['active', 'featured'])
     .order('global_rank', { ascending: true })
     .order('created_at', { ascending: false });

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { supabase } from '@/lib/supabase/client';
 import { triggerRevalidation } from '@/lib/revalidate';
 import { Product, Brand, Category, ProductStatus, ProductContentSource, ProductImage, ProductFeature, ProductSpecification } from '@/types';
@@ -112,6 +112,10 @@ export default function AdminProductsPage() {
 
   // Dynamic Gallery, Features & Specifications
   const [galleryImages, setGalleryImages] = useState<ProductImage[]>([]);
+  const [batchImageUrls, setBatchImageUrls] = useState('');
+  const [showBatchAdd, setShowBatchAdd] = useState(false);
+  const [previewImageIndex, setPreviewImageIndex] = useState(0);
+  const [previewHovered, setPreviewHovered] = useState(false);
   const [featureRows, setFeatureRows] = useState<ProductFeature[]>([]);
   const [specRows, setSpecRows] = useState<ProductSpecification[]>([]);
 
@@ -328,6 +332,65 @@ export default function AdminProductsPage() {
       setFormData({ ...formData, thumbnail_url: updated[index].url });
     }
   };
+
+  const handleBatchAddImages = () => {
+    if (!batchImageUrls.trim()) return;
+    const urls = batchImageUrls
+      .split(/[\n,]+/)
+      .map((u) => u.trim())
+      .filter((u) => u.startsWith('http://') || u.startsWith('https://'));
+
+    if (urls.length === 0) {
+      alert('Please enter valid image URLs starting with http:// or https://');
+      return;
+    }
+
+    const existingUrls = galleryImages.map((g) => g.url.trim());
+    const newItems: ProductImage[] = [];
+    urls.forEach((url) => {
+      if (!existingUrls.includes(url)) {
+        newItems.push({
+          url,
+          alt_text: formData.title || 'Product photo',
+          is_primary: galleryImages.length === 0 && newItems.length === 0,
+          display_order: galleryImages.length + newItems.length + 1,
+        });
+      }
+    });
+
+    if (newItems.length > 0) {
+      setGalleryImages([...galleryImages, ...newItems]);
+      if (!formData.thumbnail_url && newItems[0]) {
+        setFormData({ ...formData, thumbnail_url: newItems[0].url });
+      }
+    }
+    setBatchImageUrls('');
+    setShowBatchAdd(false);
+  };
+
+  // Compile active multi-images for the live admin preview
+  const previewImagesList = useMemo(() => {
+    const list: string[] = [];
+    if (formData.thumbnail_url && formData.thumbnail_url.trim()) {
+      list.push(formData.thumbnail_url.trim());
+    }
+    galleryImages.forEach((img) => {
+      if (img && img.url && img.url.trim() && !list.includes(img.url.trim())) {
+        list.push(img.url.trim());
+      }
+    });
+    return list;
+  }, [formData.thumbnail_url, galleryImages]);
+
+  // Admin live multi-image preview auto-cycle: 2s default, 1s hover speedup
+  useEffect(() => {
+    if (previewImagesList.length <= 1) return;
+    const interval = previewHovered ? 1000 : 2000;
+    const timer = setInterval(() => {
+      setPreviewImageIndex((prev) => (prev + 1) % previewImagesList.length);
+    }, interval);
+    return () => clearInterval(timer);
+  }, [previewImagesList.length, previewHovered]);
 
   // Feature Helpers
   const addFeatureRow = () => {
@@ -672,9 +735,13 @@ export default function AdminProductsPage() {
                     <div style={{ fontWeight: 700, fontSize: '0.9375rem', color: 'var(--text-primary)' }}>
                       {p.title}
                     </div>
-                    <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', display: 'flex', gap: '0.75rem', marginTop: '0.15rem' }}>
+                    <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '0.75rem', marginTop: '0.2rem', flexWrap: 'wrap' }}>
                       <span>ASIN: <code>{p.asin || 'N/A'}</code></span>
                       <span>Slug: <code>/products/{p.slug}</code></span>
+                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem', background: '#F5F5F4', padding: '0.1rem 0.4rem', borderRadius: '4px', color: 'var(--text-secondary)', fontWeight: 600 }}>
+                        <ImageIcon size={11} color="var(--green-accent)" />
+                        <span>{(p.images && p.images.length > 0) ? p.images.length : (p.thumbnail_url ? 1 : 0)} photos</span>
+                      </span>
                     </div>
                   </td>
                   <td>
@@ -1306,21 +1373,183 @@ export default function AdminProductsPage() {
                 </div>
               </div>
 
-              {/* Gallery Image URLs */}
-              <div style={{ background: '#FAF9F6', border: '1px solid var(--border)', borderRadius: 'var(--radius-md)', padding: '1rem' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
-                  <label style={{ fontSize: '0.8125rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-                    <ImageIcon size={14} color="var(--green-accent)" />
-                    <span>Product Photography Gallery</span>
-                  </label>
-                  <button type="button" onClick={addGalleryImage} className="btn btn-secondary btn-sm" style={{ padding: '0.2rem 0.5rem', fontSize: '0.75rem' }}>
-                    + Add Image URL
-                  </button>
+              {/* Multi-Image Gallery & Live Cycling Preview */}
+              <div style={{ background: '#FAF9F6', border: '1px solid var(--border)', borderRadius: 'var(--radius-md)', padding: '1.25rem' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.85rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+                  <div>
+                    <label style={{ fontSize: '0.875rem', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '0.4rem', color: 'var(--text-primary)' }}>
+                      <ImageIcon size={16} color="var(--green-accent)" />
+                      <span>Product Photography Gallery ({previewImagesList.length} Photos)</span>
+                    </label>
+                    <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.15rem' }}>
+                      Auto-cycles every 2s on public cards • Speeds up to 1s on hover
+                    </p>
+                  </div>
+                  <div style={{ display: 'flex', gap: '0.4rem' }}>
+                    <button
+                      type="button"
+                      onClick={() => setShowBatchAdd(!showBatchAdd)}
+                      className="btn btn-secondary btn-sm"
+                      style={{ padding: '0.25rem 0.6rem', fontSize: '0.75rem' }}
+                    >
+                      {showBatchAdd ? '✕ Close Batch Add' : '⚡ Batch Paste URLs'}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={addGalleryImage}
+                      className="btn btn-secondary btn-sm"
+                      style={{ padding: '0.25rem 0.6rem', fontSize: '0.75rem', fontWeight: 700 }}
+                    >
+                      + Add Image Row
+                    </button>
+                  </div>
                 </div>
 
+                {/* Batch Add Modal / Dropdown */}
+                {showBatchAdd && (
+                  <div style={{ background: '#FFFFFF', border: '1px solid var(--border-strong)', borderRadius: 'var(--radius-sm)', padding: '0.85rem', marginBottom: '1rem' }}>
+                    <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, marginBottom: '0.35rem', color: 'var(--text-primary)' }}>
+                      Paste Multiple Image URLs (one per line or separated by commas):
+                    </label>
+                    <textarea
+                      rows={3}
+                      value={batchImageUrls}
+                      onChange={(e) => setBatchImageUrls(e.target.value)}
+                      placeholder="https://m.media-amazon.com/images/I/71...jpg&#10;https://m.media-amazon.com/images/I/81...jpg"
+                      style={{ width: '100%', padding: '0.5rem', fontSize: '0.75rem', borderRadius: 'var(--radius-xs)', border: '1px solid var(--border-strong)', fontFamily: 'monospace' }}
+                    />
+                    <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem', marginTop: '0.5rem' }}>
+                      <button
+                        type="button"
+                        onClick={() => setShowBatchAdd(false)}
+                        className="btn btn-secondary btn-sm"
+                        style={{ padding: '0.25rem 0.6rem', fontSize: '0.75rem' }}
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        type="button"
+                        onClick={handleBatchAddImages}
+                        className="btn btn-primary btn-sm"
+                        style={{ padding: '0.25rem 0.75rem', fontSize: '0.75rem' }}
+                      >
+                        Add to Gallery
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {/* Live Admin Multi-Image Simulator Card */}
+                {previewImagesList.length > 0 && (
+                  <div
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '1.25rem',
+                      background: '#FFFFFF',
+                      border: '1px solid var(--border-strong)',
+                      borderRadius: 'var(--radius-sm)',
+                      padding: '0.85rem',
+                      marginBottom: '1rem',
+                    }}
+                  >
+                    {/* Simulator Image Box */}
+                    <div
+                      onMouseEnter={() => setPreviewHovered(true)}
+                      onMouseLeave={() => setPreviewHovered(false)}
+                      style={{
+                        width: '120px',
+                        height: '100px',
+                        background: '#FAF9F6',
+                        border: '1px solid var(--border)',
+                        borderRadius: 'var(--radius-xs)',
+                        position: 'relative',
+                        overflow: 'hidden',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        flexShrink: 0,
+                        cursor: 'pointer',
+                      }}
+                      title="Hover to test 1-second cycling speedup!"
+                    >
+                      {previewImagesList.map((url: string, idx: number) => (
+                        <img
+                          key={idx}
+                          src={url}
+                          alt="preview"
+                          style={{
+                            position: 'absolute',
+                            maxHeight: '90%',
+                            maxWidth: '90%',
+                            objectFit: 'contain',
+                            opacity: idx === previewImageIndex ? 1 : 0,
+                            transition: 'opacity 0.35s ease-in-out',
+                          }}
+                        />
+                      ))}
+
+                      {previewImagesList.length > 1 && (
+                        <div
+                          style={{
+                            position: 'absolute',
+                            top: '4px',
+                            right: '4px',
+                            background: previewHovered ? 'var(--green-accent)' : 'rgba(0,0,0,0.6)',
+                            color: '#FFF',
+                            fontSize: '0.625rem',
+                            fontWeight: 700,
+                            padding: '0.1rem 0.35rem',
+                            borderRadius: '999px',
+                          }}
+                        >
+                          {previewImageIndex + 1}/{previewImagesList.length}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Simulator Status & Instruction */}
+                    <div style={{ flex: 1 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem' }}>
+                        <span style={{ fontSize: '0.75rem', fontWeight: 800, color: 'var(--text-primary)' }}>
+                          Live Public Storefront Simulator
+                        </span>
+                        <span
+                          style={{
+                            fontSize: '0.6875rem',
+                            fontWeight: 700,
+                            padding: '0.15rem 0.45rem',
+                            borderRadius: '999px',
+                            background: previewHovered ? 'var(--amber-light)' : 'var(--green-light)',
+                            color: previewHovered ? 'var(--amber-deal)' : 'var(--green-accent)',
+                            border: previewHovered ? '1px solid var(--amber-border)' : '1px solid var(--green-border)',
+                          }}
+                        >
+                          {previewHovered ? '⚡ Fast Hover Mode: 1.0s / photo' : '⏱ Standard Loop: 2.0s / photo'}
+                        </span>
+                      </div>
+                      <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', lineHeight: 1.4, margin: 0 }}>
+                        {previewImagesList.length > 1
+                          ? `Cycling through ${previewImagesList.length} uploaded photos. Move your cursor over the box to experience the 1-second accelerated preview!`
+                          : 'Add at least 2 image URLs below to enable smooth automatic photo cycling on public product cards.'}
+                      </p>
+                    </div>
+                  </div>
+                )}
+
+                {/* Individual Gallery Rows */}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                   {galleryImages.map((img, idx) => (
                     <div key={idx} style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                      {/* Mini Thumbnail */}
+                      <div style={{ width: '32px', height: '32px', borderRadius: '4px', background: '#FFF', border: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', flexShrink: 0 }}>
+                        {img.url ? (
+                          <img src={img.url} alt={`Thumb ${idx + 1}`} style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }} />
+                        ) : (
+                          <span style={{ fontSize: '0.625rem', color: '#999' }}>#{idx + 1}</span>
+                        )}
+                      </div>
+
                       <input
                         type="url"
                         placeholder="Image CDN URL (https://...)"
@@ -1331,7 +1560,7 @@ export default function AdminProductsPage() {
                           setGalleryImages(updated);
                           if (img.is_primary) setFormData({ ...formData, thumbnail_url: e.target.value });
                         }}
-                        style={{ flex: 1, padding: '0.35rem 0.5rem', fontSize: '0.8125rem', borderRadius: 'var(--radius-xs)', border: '1px solid var(--border-strong)' }}
+                        style={{ flex: 1, padding: '0.35rem 0.5rem', fontSize: '0.8125rem', borderRadius: 'var(--radius-xs)', border: '1px solid var(--border-strong)', background: '#FFFFFF' }}
                       />
                       <button
                         type="button"
@@ -1345,11 +1574,12 @@ export default function AdminProductsPage() {
                           background: img.is_primary ? 'var(--green-light)' : '#FFF',
                           color: img.is_primary ? 'var(--green-accent)' : 'var(--text-muted)',
                           cursor: 'pointer',
+                          whiteSpace: 'nowrap',
                         }}
                       >
                         {img.is_primary ? '★ Primary' : 'Set Primary'}
                       </button>
-                      <button type="button" onClick={() => removeGalleryImage(idx)} style={{ background: 'none', border: 'none', color: 'var(--danger)', cursor: 'pointer' }}>
+                      <button type="button" onClick={() => removeGalleryImage(idx)} style={{ background: 'none', border: 'none', color: 'var(--danger)', cursor: 'pointer' }} title="Delete photo">
                         <Trash2 size={13} />
                       </button>
                     </div>

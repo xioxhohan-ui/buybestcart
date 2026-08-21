@@ -10,6 +10,7 @@ import FAQSection from '@/components/common/FAQSection';
 import { generateProductJsonLd } from '@/lib/seo';
 import { formatPrice } from '@/lib/region';
 import ProductGrid from '@/components/products/ProductGrid';
+import ProductGallery from '@/components/products/ProductGallery';
 import AdSlot from '@/components/ads/AdSlot';
 
 interface ProductPageProps {
@@ -148,64 +149,13 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 300px), 1fr))', gap: '2.5rem', margin: '2rem 0 3.5rem 0' }}>
         {/* Left: Product Image & Badges */}
         <div>
-          <div
-            style={{
-              background: '#ffffff',
-              border: '1px solid var(--border)',
-              borderRadius: 'var(--radius-md)',
-              padding: '2.5rem',
-              textAlign: 'center',
-              position: 'relative',
-              boxShadow: 'var(--shadow-sm)',
-            }}
-          >
-            {product.badge_text ? (
-              <span
-                style={{
-                  position: 'absolute',
-                  top: '1rem',
-                  left: '1rem',
-                  background: 'var(--green-accent)',
-                  color: '#ffffff',
-                  fontSize: '0.75rem',
-                  fontWeight: 800,
-                  padding: '0.3rem 0.65rem',
-                  borderRadius: 'var(--radius-xs)',
-                  letterSpacing: '0.04em',
-                  textTransform: 'uppercase',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '0.3rem',
-                }}
-              >
-                <Award size={12} color="#FFFFFF" />
-                <span>{product.badge_text}</span>
-              </span>
-            ) : product.global_rank && product.global_rank <= 3 ? (
-              <span
-                style={{
-                  position: 'absolute',
-                  top: '1rem',
-                  left: '1rem',
-                  background: 'var(--green-accent)',
-                  color: '#ffffff',
-                  fontSize: '0.75rem',
-                  fontWeight: 800,
-                  padding: '0.3rem 0.65rem',
-                  borderRadius: 'var(--radius-xs)',
-                  letterSpacing: '0.04em',
-                }}
-              >
-                #{product.global_rank} OVERALL PICK
-              </span>
-            ) : null}
-
-            <img
-              src={product.image_url || product.thumbnail_url || 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=700&auto=format&fit=crop&q=80'}
-              alt={product.title}
-              style={{ maxHeight: '340px', margin: '0 auto', objectFit: 'contain' }}
-            />
-          </div>
+          <ProductGallery
+            title={product.title}
+            thumbnailUrl={product.thumbnail_url}
+            images={product.images}
+            badgeText={product.badge_text}
+            globalRank={product.global_rank}
+          />
         </div>
 
         {/* Right: Product Details & Buying Box */}

@@ -54,7 +54,7 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
   // Fetch products in this category
   let query = supabase
     .from('products')
-    .select('*, brand:brands(*), category:categories(*)')
+    .select('*, brand:brands(*), category:categories(*), images:product_images(*)')
     .eq('category_id', category.id)
     .in('status', ['active', 'featured']);
 

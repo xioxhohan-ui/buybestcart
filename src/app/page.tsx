@@ -45,14 +45,14 @@ export default async function HomePage() {
   // 1. Fetch featured products
   const { data: featuredProducts } = await supabase
     .from('products')
-    .select('*, brand:brands(*), category:categories(*)')
+    .select('*, brand:brands(*), category:categories(*), images:product_images(*)')
     .eq('status', 'featured')
     .limit(8);
 
   // 2. Fetch active deals
   const { data: dealsProducts } = await supabase
     .from('products')
-    .select('*, brand:brands(*), category:categories(*)')
+    .select('*, brand:brands(*), category:categories(*), images:product_images(*)')
     .neq('deal_status', 'none')
     .in('status', ['active', 'featured'])
     .limit(4);

@@ -18,7 +18,7 @@ export default async function DealsPage() {
 
   const { data: dealsProducts } = await supabase
     .from('products')
-    .select('*, brand:brands(*), category:categories(*)')
+    .select('*, brand:brands(*), category:categories(*), images:product_images(*)')
     .neq('deal_status', 'none')
     .in('status', ['active', 'featured'])
     .order('updated_at', { ascending: false });
