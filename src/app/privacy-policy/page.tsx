@@ -3,8 +3,8 @@ import type { Metadata } from 'next';
 import Breadcrumbs from '@/components/common/Breadcrumbs';
 
 export const metadata: Metadata = {
-  title: 'Privacy Policy | Best Buy Cart',
-  description: 'Our privacy policy explains how Best Buy Cart collects, uses, and protects your information.',
+  title: 'Privacy Policy | Buy Best Cart',
+  description: 'Our privacy policy explains how Buy Best Cart collects, uses, and protects your information.',
 };
 
 export default function PrivacyPolicyPage() {
@@ -27,7 +27,7 @@ export default function PrivacyPolicyPage() {
         <section>
           <h2 style={{ color: 'var(--text-primary)', marginBottom: '0.75rem', fontSize: '1.35rem' }}>1. Information We Collect</h2>
           <p>
-            Best Buy Cart is an independent editorial review and product ranking publication. We do not require account registration to read our reviews, comparisons, or buying guides. We do not collect or store sensitive financial details, payment card numbers, or personal billing addresses.
+            Buy Best Cart is an independent editorial review and product ranking publication. We do not require account registration to read our reviews, comparisons, or buying guides. We do not collect or store sensitive financial details, payment card numbers, or personal billing addresses.
           </p>
           <p style={{ marginTop: '0.75rem' }}>
             We collect anonymous usage data such as page views, referral sources, browser types, and interaction telemetry to monitor website performance and improve user experience.
@@ -59,7 +59,7 @@ export default function PrivacyPolicyPage() {
         <section>
           <h2 style={{ color: 'var(--text-primary)', marginBottom: '0.75rem', fontSize: '1.35rem' }}>4. Third-Party Services & Links</h2>
           <p>
-            Best Buy Cart contains links to third-party retail merchants and service providers. We are not responsible for the privacy practices, policies, or content of external websites. We encourage you to review the privacy policies of any merchant website you visit.
+            Buy Best Cart contains links to third-party retail merchants and service providers. We are not responsible for the privacy practices, policies, or content of external websites. We encourage you to review the privacy policies of any merchant website you visit.
           </p>
         </section>
 

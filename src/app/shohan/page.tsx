@@ -53,7 +53,7 @@ export default function AdminLoginPage() {
           <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: 'var(--primary-light)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1rem auto' }}>
             <ShoppingBag size={24} color="var(--primary)" />
           </div>
-          <h1 style={{ fontSize: '1.5rem', marginBottom: '0.25rem' }}>Best Buy Cart</h1>
+          <h1 style={{ fontSize: '1.5rem', marginBottom: '0.25rem' }}>Buy Best Cart</h1>
           <p style={{ color: 'var(--text-muted)', fontSize: '0.875rem' }}>
             Master Administration Gateway (<code>/shohan</code>)
           </p>

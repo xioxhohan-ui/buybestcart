@@ -26,12 +26,12 @@ export async function generateMetadata({ params }: ComparisonPageProps): Promise
     .single();
 
   if (!comparison) {
-    return { title: 'Comparison Not Found | Best Buy Cart' };
+    return { title: 'Comparison Not Found | Buy Best Cart' };
   }
 
   const siteUrl = 'https://buybestcart.shop';
   const canonicalUrl = `${siteUrl}/compare/${slug}`;
-  const title = comparison.seo_title || `${comparison.title} — Head-to-Head Comparison | Best Buy Cart`;
+  const title = comparison.seo_title || `${comparison.title} — Head-to-Head Comparison | Buy Best Cart`;
   const description =
     comparison.seo_description ||
     comparison.description ||
@@ -47,7 +47,7 @@ export async function generateMetadata({ params }: ComparisonPageProps): Promise
       title,
       description,
       url: canonicalUrl,
-      siteName: 'Best Buy Cart',
+      siteName: 'Buy Best Cart',
       type: 'website',
       images: [
         {

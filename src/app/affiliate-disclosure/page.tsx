@@ -3,7 +3,7 @@ import type { Metadata } from 'next';
 import Breadcrumbs from '@/components/common/Breadcrumbs';
 
 export const metadata: Metadata = {
-  title: 'Amazon Associates Affiliate Disclosure | Best Buy Cart',
+  title: 'Amazon Associates Affiliate Disclosure | Buy Best Cart',
   description: 'Full legal affiliate disclosure regarding our participation in the Amazon Services LLC Associates Program.',
 };
 
@@ -26,13 +26,13 @@ export default function AffiliateDisclosurePage() {
       <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', fontSize: '1.0625rem', lineHeight: 1.8, color: 'var(--text-secondary)' }}>
         <div className="affiliate-disclosure-banner" style={{ background: 'var(--bg-surface)', borderColor: 'var(--primary-border)', padding: '1.5rem', fontSize: '1rem', color: 'var(--text-primary)' }}>
           <strong>Official Amazon Associate Statement:</strong><br />
-          &ldquo;Best Buy Cart is a participant in the Amazon Services LLC Associates Program, an affiliate advertising program designed to provide a means for sites to earn advertising fees by advertising and linking to Amazon.com, Amazon.co.uk, Amazon.ca, Amazon.de, Amazon.fr, Amazon.it, Amazon.es, Amazon.nl, Amazon.se, Amazon.pl, Amazon.com.au, and any other website that may be affiliated with Amazon Service LLC Associates Program.&rdquo;
+          &ldquo;Buy Best Cart is a participant in the Amazon Services LLC Associates Program, an affiliate advertising program designed to provide a means for sites to earn advertising fees by advertising and linking to Amazon.com, Amazon.co.uk, Amazon.ca, Amazon.de, Amazon.fr, Amazon.it, Amazon.es, Amazon.nl, Amazon.se, Amazon.pl, Amazon.com.au, and any other website that may be affiliated with Amazon Service LLC Associates Program.&rdquo;
         </div>
 
         <section>
           <h2 style={{ color: 'var(--text-primary)', marginBottom: '0.75rem' }}>What Does This Mean For You?</h2>
           <p>
-            When you click on links to Amazon from Best Buy Cart and make a purchase, we may receive a small commission from Amazon. This does <strong>not</strong> increase the purchase price for you. You pay the exact same price as any other Amazon shopper.
+            When you click on links to Amazon from Buy Best Cart and make a purchase, we may receive a small commission from Amazon. This does <strong>not</strong> increase the purchase price for you. You pay the exact same price as any other Amazon shopper.
           </p>
         </section>
 
@@ -46,7 +46,7 @@ export default function AffiliateDisclosurePage() {
         <section>
           <h2 style={{ color: 'var(--text-primary)', marginBottom: '0.75rem' }}>Amazon Trademarks</h2>
           <p>
-            Amazon and the Amazon logo are trademarks of Amazon.com, Inc. or its affiliates. Best Buy Cart is an independent affiliate publication and is not owned, operated, or endorsed by Amazon.com, Inc. or Best Buy Co., Inc.
+            Amazon and the Amazon logo are trademarks of Amazon.com, Inc. or its affiliates. Buy Best Cart is an independent affiliate publication and is not owned, operated, or endorsed by Amazon.com, Inc. or Best Buy Co., Inc.
           </p>
         </section>
       </div>

@@ -9,16 +9,16 @@ import { Product } from '@/types';
 export const revalidate = 60;
 
 export const metadata: Metadata = {
-  title: 'Custom Product Comparison Matrix (Up to 3 Products) | Best Buy Cart',
+  title: 'Custom Product Comparison Matrix (Up to 3 Products) | Buy Best Cart',
   description: 'Search and compare up to 3 products side-by-side. Technical specifications, noise cancellation, battery endurance, pros, cons, and verified Amazon pricing.',
   openGraph: {
-    title: 'Custom Product Comparison Matrix | Best Buy Cart',
+    title: 'Custom Product Comparison Matrix | Buy Best Cart',
     description: 'Compare 2 or 3 products side-by-side with verified laboratory benchmarks and live Amazon pricing.',
-    images: [{ url: 'https://buybestcart.shop/og-image.png', width: 1200, height: 630, alt: 'Best Buy Cart Comparison Tool' }],
+    images: [{ url: 'https://buybestcart.shop/og-image.png', width: 1200, height: 630, alt: 'Buy Best Cart Comparison Tool' }],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Custom Product Comparison Matrix | Best Buy Cart',
+    title: 'Custom Product Comparison Matrix | Buy Best Cart',
     description: 'Compare 2 or 3 products side-by-side with verified laboratory benchmarks and live Amazon pricing.',
     images: ['https://buybestcart.shop/og-image.png'],
   },

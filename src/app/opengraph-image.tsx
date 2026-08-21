@@ -1,7 +1,7 @@
 import { ImageResponse } from 'next/og';
 
 export const runtime = 'edge';
-export const alt = 'Best Buy Cart — The Independent Guide to Better Buying';
+export const alt = 'Buy Best Cart — The Independent Guide to Better Buying';
 export const size = {
   width: 1200,
   height: 630,
@@ -106,7 +106,7 @@ export default async function Image() {
               textShadow: '0 4px 20px rgba(0,0,0,0.6)',
             }}
           >
-            <span>Best Buy Cart</span>
+            <span>Buy Best Cart</span>
             <span
               style={{
                 color: '#52B788',

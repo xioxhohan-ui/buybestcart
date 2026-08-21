@@ -46,7 +46,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json({
       success: true,
-      message: 'Thank you! You are now subscribed to The Best Buy Cart Weekly Edit.',
+      message: 'Thank you! You are now subscribed to The Buy Best Cart Weekly Edit.',
     });
   } catch (error: unknown) {
     const errMessage = error instanceof Error ? error.message : 'Unknown server error';

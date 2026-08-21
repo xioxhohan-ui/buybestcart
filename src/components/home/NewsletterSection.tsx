@@ -53,7 +53,7 @@ export default function NewsletterSection() {
         <div>
           <div className="editorial-eyebrow">THE WEEKLY DISPATCH</div>
           <h2 style={{ fontSize: '2.25rem', marginBottom: '0.75rem' }}>
-            Get The Best Buy Cart Edit.
+            Get The Buy Best Cart Edit.
           </h2>
           <p style={{ color: 'var(--text-secondary)', fontSize: '1rem', lineHeight: 1.65 }}>
             Join 45,000+ smart shoppers. We curate the week&apos;s best tech discounts, newly benchmarked gear, and honest buying advice every Thursday morning.

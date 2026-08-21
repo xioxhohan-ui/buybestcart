@@ -15,7 +15,7 @@ export async function generateMetadata(): Promise<Metadata> {
     title: `${config.site_name} — ${config.tagline}`,
     description: config.brand_description || config.hero_description,
     metadataBase: new URL(siteUrl),
-    keywords: ['buy best cart', 'buybestcart', 'best buy cart', 'amazon affiliate reviews', 'tech reviews 2026', 'buying guides', 'top rated tech', 'flagship comparisons'],
+    keywords: ['buy best cart', 'buybestcart', 'amazon affiliate reviews', 'tech reviews 2026', 'buying guides', 'top rated tech', 'flagship comparisons'],
     alternates: {
       canonical: siteUrl,
     },

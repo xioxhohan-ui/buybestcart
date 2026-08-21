@@ -29,10 +29,10 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
     .single();
 
   if (!product || !['active', 'featured', 'published'].includes(product.status)) {
-    return { title: 'Product Not Found | Best Buy Cart' };
+    return { title: 'Product Not Found | Buy Best Cart' };
   }
 
-  const title = product.seo_title || `${product.title} — Price, Specs & Reviews | Best Buy Cart`;
+  const title = product.seo_title || `${product.title} — Price, Specs & Reviews | Buy Best Cart`;
   const description = product.seo_description || product.short_description || `Read our in-depth testing and verified Amazon pricing for ${product.title}.`;
   const siteUrl = 'https://buybestcart.shop';
   const rawCanonical = product.canonical_url ? product.canonical_url.replace(/https?:\/\/(www\.)?bestbuycart\.com/g, siteUrl) : null;
@@ -49,7 +49,7 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
       title,
       description,
       url: canonicalUrl,
-      siteName: 'Best Buy Cart',
+      siteName: 'Buy Best Cart',
       images: [
         {
           url: ogImageUrl,
@@ -298,7 +298,7 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
       {/* Editor's Verdict, Best For, and In-Depth Assessment */}
       <section style={{ margin: '3.5rem 0', background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: 'var(--radius-md)', padding: '2.5rem', boxShadow: 'var(--shadow-sm)' }}>
         <div className="editorial-eyebrow">EDITORIAL ASSESSMENT</div>
-        <h2 style={{ marginBottom: '1rem' }}>Best Buy Cart Verdict & Testing Notes</h2>
+        <h2 style={{ marginBottom: '1rem' }}>Buy Best Cart Verdict & Testing Notes</h2>
         <p style={{ fontSize: '1.0625rem', lineHeight: 1.7, color: 'var(--text-secondary)', marginBottom: '2rem' }}>
           {product.editor_verdict || product.description || 'Our editorial laboratory conducted rigorous frequency sweep analysis, battery endurance tests, and multi-week ergonomic evaluations.'}
         </p>

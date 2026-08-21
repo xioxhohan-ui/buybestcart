@@ -14,7 +14,7 @@ interface SearchPageProps {
 export async function generateMetadata({ searchParams }: SearchPageProps): Promise<Metadata> {
   const { q } = await searchParams;
   return {
-    title: q ? `Search Results for "${q}" | Best Buy Cart` : 'Search Products | Best Buy Cart',
+    title: q ? `Search Results for "${q}" | Buy Best Cart` : 'Search Products | Buy Best Cart',
     description: `Browse product reviews, comparisons, and verified Amazon deals for ${q || 'consumer electronics'}.`,
     robots: { index: false, follow: true },
   };
@@ -51,7 +51,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
 
       <div style={{ maxWidth: '640px', margin: '1rem auto 3rem auto', textAlign: 'center' }}>
         <h1 style={{ fontSize: '1.75rem', marginBottom: '1rem' }}>
-          {q ? `Search results for "${q}"` : 'Search Best Buy Cart'}
+          {q ? `Search results for "${q}"` : 'Search Buy Best Cart'}
         </h1>
         <SearchBar />
       </div>

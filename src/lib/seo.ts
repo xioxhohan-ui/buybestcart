@@ -13,7 +13,7 @@ export function generateProductJsonLd(product: Product) {
     mpn: product.asin,
     brand: {
       '@type': 'Brand',
-      name: product.brand?.name || product.manufacturer || 'Best Buy Cart Selected',
+      name: product.brand?.name || product.manufacturer || 'Buy Best Cart Selected',
     },
     offers: product.price
       ? {
@@ -53,11 +53,11 @@ export function generateArticleJsonLd(article: Article) {
     dateModified: article.modified_date || article.updated_at,
     author: {
       '@type': 'Person',
-      name: article.author?.full_name || 'Best Buy Cart Editorial Team',
+      name: article.author?.full_name || 'Buy Best Cart Editorial Team',
     },
     publisher: {
       '@type': 'Organization',
-      name: 'Best Buy Cart',
+      name: 'Buy Best Cart',
       logo: {
         '@type': 'ImageObject',
         url: `${SITE_URL}/logo.png`,
@@ -99,7 +99,7 @@ export function generateWebSiteJsonLd() {
   return {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
-    name: 'Best Buy Cart',
+    name: 'Buy Best Cart',
     url: SITE_URL,
     potentialAction: {
       '@type': 'SearchAction',

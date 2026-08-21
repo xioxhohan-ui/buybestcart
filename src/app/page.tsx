@@ -90,7 +90,7 @@ export default async function HomePage() {
 
   const fallbackFaqs = [
     {
-      question: 'How does Best Buy Cart test and rank products?',
+      question: 'How does Buy Best Cart test and rank products?',
       answer:
         'Our editorial staff independently benchmarks acoustics, battery endurance, build quality, and value across weeks of real-world usage before assigning our editorial ratings.',
     },

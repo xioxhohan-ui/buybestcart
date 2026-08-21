@@ -2,8 +2,8 @@ import { MetadataRoute } from 'next';
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: 'Best Buy Cart — Tech & Lifestyle Shopping Magazine',
-    short_name: 'Best Buy Cart',
+    name: 'Buy Best Cart — Tech & Lifestyle Shopping Magazine',
+    short_name: 'Buy Best Cart',
     description: 'Independent product review, comparison, and verified Amazon deals publication.',
     start_url: '/',
     display: 'standalone',

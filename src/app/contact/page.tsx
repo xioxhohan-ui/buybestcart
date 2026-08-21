@@ -45,7 +45,7 @@ export default function ContactPage() {
       <Breadcrumbs items={breadcrumbs} />
 
       <div style={{ marginBottom: '2.5rem' }}>
-        <h1 style={{ fontSize: '2.25rem', marginBottom: '0.75rem' }}>Contact Best Buy Cart</h1>
+        <h1 style={{ fontSize: '2.25rem', marginBottom: '0.75rem' }}>Contact Buy Best Cart</h1>
         <p style={{ fontSize: '1.125rem', color: 'var(--text-secondary)' }}>
           Have a product question, editorial correction, or partnership inquiry? Reach out to our team.
         </p>

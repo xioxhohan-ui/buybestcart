@@ -8,7 +8,7 @@ import Breadcrumbs from '@/components/common/Breadcrumbs';
 export const revalidate = 60;
 
 export const metadata: Metadata = {
-  title: 'All Product Categories & Shopping Departments | Best Buy Cart',
+  title: 'All Product Categories & Shopping Departments | Buy Best Cart',
   description: 'Explore all verified tech, computing, audio, gaming, smart home, and lifestyle product categories curated by experts.',
 };
 

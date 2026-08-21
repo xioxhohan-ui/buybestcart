@@ -520,7 +520,7 @@ export default function AdminProductsPage() {
       who_should_buy: formData.who_should_buy,
       who_should_avoid: formData.who_should_avoid,
       key_highlights: featureRows.filter((f) => f.feature && f.feature.trim()).map((f) => f.feature.trim()),
-      seo_title: formData.seo_title || `${formData.title} — Price, Specs & Reviews | Best Buy Cart`,
+      seo_title: formData.seo_title || `${formData.title} — Price, Specs & Reviews | Buy Best Cart`,
       seo_description: formData.seo_description || formData.short_description || `Read our in-depth lab testing and review of the ${formData.title} with verified Amazon pricing.`,
       canonical_url: formData.canonical_url || `https://buybestcart.shop/products/${generatedSlug}`,
       og_image: formData.og_image || formData.thumbnail_url,
@@ -633,7 +633,7 @@ export default function AdminProductsPage() {
   });
 
   const effectiveSlug = formData.slug || formData.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') || 'product-slug';
-  const effectiveSeoTitle = formData.seo_title || (formData.title ? `${formData.title} — Price, Specs & Reviews | Best Buy Cart` : 'Product Title — Price, Specs & Reviews | Best Buy Cart');
+  const effectiveSeoTitle = formData.seo_title || (formData.title ? `${formData.title} — Price, Specs & Reviews | Buy Best Cart` : 'Product Title — Price, Specs & Reviews | Buy Best Cart');
   const effectiveSeoDesc = formData.seo_description || formData.short_description || 'Read our in-depth laboratory testing and verified buying advice for this top-rated product.';
 
   return (

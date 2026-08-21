@@ -77,9 +77,9 @@ export interface SiteConfiguration extends BrandSettings, ThemeTokens {
 
 export const DEFAULT_SITE_CONFIG: SiteConfiguration = {
   // Brand Settings
-  site_name: 'Best Buy Cart',
+  site_name: 'Buy Best Cart',
   tagline: 'The Independent Guide to Better Buying.',
-  company_name: 'Best Buy Cart Media Inc.',
+  company_name: 'Buy Best Cart Media Inc.',
   brand_description:
     'An independent consumer technology review publication and buying guide platform with laboratory testing and verified Amazon partner integration.',
   logo_url: '',
@@ -93,11 +93,11 @@ export const DEFAULT_SITE_CONFIG: SiteConfiguration = {
   contact_email: 'contact@buybestcart.shop',
   support_email: 'editorial@buybestcart.shop',
   social_links: {
-    facebook: 'https://facebook.com/bestbuycart',
-    instagram: 'https://instagram.com/bestbuycart',
-    youtube: 'https://youtube.com/@bestbuycart',
-    twitter_x: 'https://x.com/bestbuycart',
-    reddit: 'https://reddit.com/r/bestbuycart',
+    facebook: 'https://facebook.com/buybestcart',
+    instagram: 'https://instagram.com/buybestcart',
+    youtube: 'https://youtube.com/@buybestcart',
+    twitter_x: 'https://x.com/buybestcart',
+    reddit: 'https://reddit.com/r/buybestcart',
   },
 
   // Theme Design System Tokens
@@ -129,7 +129,7 @@ export const DEFAULT_SITE_CONFIG: SiteConfiguration = {
   announcement_link_text: 'Browse 2026 Picks →',
   announcement_link_url: '/#featured-picks',
   disclosure_text:
-    'Best Buy Cart is an independent editorial review publication. When you purchase through links on our site, we may earn an affiliate commission from Amazon at no extra cost to you.',
+    'Buy Best Cart is an independent editorial review publication. When you purchase through links on our site, we may earn an affiliate commission from Amazon at no extra cost to you.',
   feature_flags: {
     dark_mode: false,
     price_tracking: true,

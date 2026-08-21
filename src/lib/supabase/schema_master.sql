@@ -1,5 +1,5 @@
 -- ==============================================================================
--- BEST BUY CART (V2) — MASTER PRODUCTION DATABASE SCHEMA & SEED MIGRATION
+-- BUY BEST CART (V2) — MASTER PRODUCTION DATABASE SCHEMA & SEED MIGRATION
 -- Everything on the website is 100% dynamic, relational & editable via /shohan
 -- ==============================================================================
 
@@ -418,7 +418,7 @@ VALUES
     'general',
     'general',
     '{
-      "site_name": "Best Buy Cart",
+      "site_name": "Buy Best Cart",
       "tagline": "The Independent Guide to Better Buying.",
       "hero_heading": "The Independent Guide to Better Buying.",
       "hero_subheading": "Curated, Tested & Verified.",
@@ -432,7 +432,7 @@ VALUES
     'affiliate',
     'affiliate',
     '{
-      "disclosure_text": "Best Buy Cart is an independent editorial review publication. When you purchase through links on our site, we may earn an affiliate commission from Amazon at no extra cost to you."
+      "disclosure_text": "Buy Best Cart is an independent editorial review publication. When you purchase through links on our site, we may earn an affiliate commission from Amazon at no extra cost to you."
     }',
     'Legal Amazon Associates and FTC disclosure statement'
   )

@@ -9,7 +9,7 @@ import { Article } from '@/types';
 export const revalidate = 60;
 
 export const metadata: Metadata = {
-  title: 'Expert Buying Guides & In-Depth Reviews | Best Buy Cart',
+  title: 'Expert Buying Guides & In-Depth Reviews | Buy Best Cart',
   description: 'Detailed analysis, buying considerations, and recommendations across laptops, headphones, monitors, and gaming gear.',
 };
 

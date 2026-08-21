@@ -17,13 +17,13 @@ interface LegalPolicies {
 
 const DEFAULT_POLICIES: LegalPolicies = {
   affiliate_disclosure:
-    'Best Buy Cart is an independent product review and shopping comparison publication. We participate in the Amazon Services LLC Associates Program, an affiliate advertising program designed to provide a means for websites to earn advertising fees by linking to Amazon.com and affiliated international marketplaces. When you click through to Amazon and make a purchase, we may earn an affiliate commission at no additional cost to you.',
+    'Buy Best Cart is an independent product review and shopping comparison publication. We participate in the Amazon Services LLC Associates Program, an affiliate advertising program designed to provide a means for websites to earn advertising fees by linking to Amazon.com and affiliated international marketplaces. When you click through to Amazon and make a purchase, we may earn an affiliate commission at no additional cost to you.',
   privacy_policy:
-    'At Best Buy Cart, we respect your privacy. We do not store personal credit card information or sell your personal data. We utilize analytics cookies and affiliate tracking IDs solely to measure aggregated outbound traffic and improve product testing recommendations.',
+    'At Buy Best Cart, we respect your privacy. We do not store personal credit card information or sell your personal data. We utilize analytics cookies and affiliate tracking IDs solely to measure aggregated outbound traffic and improve product testing recommendations.',
   cookie_policy:
-    'Best Buy Cart uses essential cookies to remember your preferred Amazon marketplace region and anonymous analytics cookies to track referral traffic. You can adjust your browser cookie settings at any time.',
+    'Buy Best Cart uses essential cookies to remember your preferred Amazon marketplace region and anonymous analytics cookies to track referral traffic. You can adjust your browser cookie settings at any time.',
   terms_of_use:
-    'By accessing Best Buy Cart, you agree that product pricing, specifications, and availability are subject to change without notice on official merchant websites. Best Buy Cart does not sell products directly and is not responsible for order fulfillment on external merchant sites.',
+    'By accessing Buy Best Cart, you agree that product pricing, specifications, and availability are subject to change without notice on official merchant websites. Buy Best Cart does not sell products directly and is not responsible for order fulfillment on external merchant sites.',
   disclaimer:
     'Prices, promotions, and availability on Amazon are subject to change without notice. While we strive to maintain accurate live price tracking, please confirm the final price on the merchant storefront prior to completing purchase.',
   editorial_policy:
@@ -31,7 +31,7 @@ const DEFAULT_POLICIES: LegalPolicies = {
   how_we_rank:
     'Rankings (#1 Top Pick, #2 Runner-Up, Best Budget) are determined through an objective weighted matrix combining laboratory test benchmarks, verified customer review sentiment, and long-term durability assessments.',
   contact_info:
-    'For editorial inquiries, testing corrections, or partner relationships, contact our staff at editorial@buybestcart.shop or by mail at Best Buy Cart Media Inc.',
+    'For editorial inquiries, testing corrections, or partner relationships, contact our staff at editorial@buybestcart.shop or by mail at Buy Best Cart Media Inc.',
 };
 
 export default function AdminLegalPagesCMS() {

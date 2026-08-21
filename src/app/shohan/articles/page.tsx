@@ -120,7 +120,7 @@ export default function AdminArticlesCMSPage() {
       content: formData.content,
       featured_image: formData.featured_image,
       reading_time_minutes: Number(formData.reading_time_minutes) || 7,
-      seo_title: formData.seo_title || `${formData.title} | Best Buy Cart Editorial`,
+      seo_title: formData.seo_title || `${formData.title} | Buy Best Cart Editorial`,
       seo_description: formData.seo_description || formData.excerpt || `Read the complete editorial guide and laboratory reviews for ${formData.title}.`,
       canonical_url: formData.canonical_url || `https://buybestcart.shop/guides/${generatedSlug}`,
       og_image: formData.og_image || formData.featured_image,
@@ -167,7 +167,7 @@ export default function AdminArticlesCMSPage() {
   });
 
   const effectiveSlug = formData.slug || formData.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') || 'article-slug';
-  const effectiveSeoTitle = formData.seo_title || (formData.title ? `${formData.title} | Best Buy Cart Editorial` : 'Article Title | Best Buy Cart Editorial');
+  const effectiveSeoTitle = formData.seo_title || (formData.title ? `${formData.title} | Buy Best Cart Editorial` : 'Article Title | Buy Best Cart Editorial');
   const effectiveSeoDesc = formData.seo_description || formData.excerpt || 'Read our in-depth lab testing, verified comparisons, and buying recommendations.';
 
   return (

@@ -10,10 +10,10 @@ import { Product } from '@/types';
 export const revalidate = 60;
 
 export const metadata: Metadata = {
-  title: "Today's Best Tech Deals & Price Drops | Best Buy Cart",
+  title: "Today's Best Tech Deals & Price Drops | Buy Best Cart",
   description: 'Verified hardware price drops, seasonal discounts, and curated tech savings evaluated by our editorial staff.',
   openGraph: {
-    title: "Today's Best Tech Deals & Price Drops | Best Buy Cart",
+    title: "Today's Best Tech Deals & Price Drops | Buy Best Cart",
     description: 'Verified hardware price drops, seasonal discounts, and curated tech savings evaluated by our editorial staff.',
     images: [{ url: 'https://buybestcart.shop/og-image.png', width: 1200, height: 630, alt: "Today's Best Deals" }],
   },

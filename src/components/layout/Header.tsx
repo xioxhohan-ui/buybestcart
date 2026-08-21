@@ -39,7 +39,7 @@ interface HeaderProps {
 }
 
 export default function Header({
-  siteName = 'Best Buy Cart',
+  siteName = 'Buy Best Cart',
   announcementText = 'The 2026 Tech & Lifestyle Edit — 100% Independent Reviews & Verified Regional Amazon Stock',
   announcementLinkText = 'Testing Methodology →',
   announcementLinkUrl = '/how-we-rank',

@@ -248,7 +248,7 @@ export default function AdminFAQsPage() {
                 <input
                   type="text"
                   required
-                  placeholder="e.g. How does Best Buy Cart verify and rank products?"
+                  placeholder="e.g. How does Buy Best Cart verify and rank products?"
                   value={formData.question}
                   onChange={(e) => setFormData({ ...formData, question: e.target.value })}
                   style={{ width: '100%', padding: '0.625rem', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-strong)' }}

@@ -117,7 +117,7 @@ export default function AdminCategoriesPage() {
       image_url: formData.image_url,
       icon: formData.icon,
       parent_id: formData.parent_id || null,
-      seo_title: formData.seo_title || `${formData.name} Buying Guides & Reviews | Best Buy Cart`,
+      seo_title: formData.seo_title || `${formData.name} Buying Guides & Reviews | Buy Best Cart`,
       seo_description: formData.seo_description || formData.description,
       canonical_url: formData.canonical_url,
       og_image: formData.og_image || formData.image_url,

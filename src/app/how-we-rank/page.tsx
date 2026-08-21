@@ -4,7 +4,7 @@ import Breadcrumbs from '@/components/common/Breadcrumbs';
 import Link from 'next/link';
 
 export const metadata: Metadata = {
-  title: 'How We Rank Products — Editorial Methodology | Best Buy Cart',
+  title: 'How We Rank Products — Editorial Methodology | Buy Best Cart',
   description: 'Learn about our rigorous, independent product ranking criteria, testing methodologies, and Amazon affiliate relationship.',
 };
 
@@ -23,14 +23,14 @@ export default function HowWeRankPage() {
         </div>
         <h1 style={{ fontSize: '2.25rem', marginBottom: '1rem' }}>How We Review & Rank Products</h1>
         <p style={{ fontSize: '1.1875rem', color: 'var(--text-secondary)', lineHeight: 1.6 }}>
-          At Best Buy Cart, our mission is to provide clear, unbiased product recommendations. Here is an open look at our ranking algorithm and editorial philosophy.
+          At Buy Best Cart, our mission is to provide clear, unbiased product recommendations. Here is an open look at our ranking algorithm and editorial philosophy.
         </p>
       </div>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem', fontSize: '1.0625rem', lineHeight: 1.8, color: 'var(--text-secondary)' }}>
         <section>
           <h2 style={{ color: 'var(--text-primary)', marginBottom: '0.75rem' }}>1. The Four Pillars of Our Ranking Score</h2>
-          <p>Every product showcased on Best Buy Cart is evaluated across four core dimensions:</p>
+          <p>Every product showcased on Buy Best Cart is evaluated across four core dimensions:</p>
           <ul style={{ paddingLeft: '1.5rem', marginTop: '0.75rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
             <li><strong>Technical Performance (35%):</strong> Verifiable specifications, benchmark scores, battery endurance, and component reliability.</li>
             <li><strong>User Satisfaction & Build Longevity (25%):</strong> Thousands of verified Amazon buyer reviews analyzed for recurring defects or durability issues.</li>
@@ -49,7 +49,7 @@ export default function HowWeRankPage() {
         <section>
           <h2 style={{ color: 'var(--text-primary)', marginBottom: '0.75rem' }}>3. How Affiliate Links Work</h2>
           <p>
-            Best Buy Cart earns revenue through the Amazon Associates affiliate program. When you click our links to purchase a product on Amazon, we may earn a small referral commission. This occurs at <strong>zero additional cost to you</strong> and does not influence our editorial ratings.
+            Buy Best Cart earns revenue through the Amazon Associates affiliate program. When you click our links to purchase a product on Amazon, we may earn a small referral commission. This occurs at <strong>zero additional cost to you</strong> and does not influence our editorial ratings.
           </p>
         </section>
 

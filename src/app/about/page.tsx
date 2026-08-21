@@ -4,8 +4,8 @@ import Breadcrumbs from '@/components/common/Breadcrumbs';
 import Link from 'next/link';
 
 export const metadata: Metadata = {
-  title: 'About Us | Best Buy Cart',
-  description: 'Learn about Best Buy Cart — an independent product discovery, comparison, and review platform.',
+  title: 'About Us | Buy Best Cart',
+  description: 'Learn about Buy Best Cart — an independent product discovery, comparison, and review platform.',
 };
 
 export default function AboutPage() {
@@ -16,7 +16,7 @@ export default function AboutPage() {
       <Breadcrumbs items={breadcrumbs} />
 
       <div style={{ marginBottom: '2.5rem' }}>
-        <h1 style={{ fontSize: '2.25rem', marginBottom: '1rem' }}>About Best Buy Cart</h1>
+        <h1 style={{ fontSize: '2.25rem', marginBottom: '1rem' }}>About Buy Best Cart</h1>
         <p style={{ fontSize: '1.1875rem', color: 'var(--text-secondary)', lineHeight: 1.6 }}>
           Helping consumers discover, compare, and understand high-performance consumer technology.
         </p>
@@ -26,7 +26,7 @@ export default function AboutPage() {
         <section>
           <h2 style={{ color: 'var(--text-primary)', marginBottom: '0.75rem' }}>Our Mission</h2>
           <p>
-            With millions of products on Amazon and inconsistent online reviews, choosing the right laptop, noise-canceling headphones, or smart home device has become unnecessarily confusing. Best Buy Cart was created to solve this problem through clear, side-by-side spec comparisons, transparent pros/cons, and curated rankings.
+            With millions of products on Amazon and inconsistent online reviews, choosing the right laptop, noise-canceling headphones, or smart home device has become unnecessarily confusing. Buy Best Cart was created to solve this problem through clear, side-by-side spec comparisons, transparent pros/cons, and curated rankings.
           </p>
         </section>
 

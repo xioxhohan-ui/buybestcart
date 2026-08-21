@@ -9,7 +9,7 @@ import { Product } from '@/types';
 export const revalidate = 60;
 
 export const metadata: Metadata = {
-  title: 'Full Product Catalog & Verified Recommendations | Best Buy Cart',
+  title: 'Full Product Catalog & Verified Recommendations | Buy Best Cart',
   description: 'Browse our complete catalog of laboratory-tested tech, audio gear, laptops, and smart home hardware with direct Amazon shopping links.',
 };
 

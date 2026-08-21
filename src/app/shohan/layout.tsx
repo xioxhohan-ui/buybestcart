@@ -189,7 +189,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           {!collapsed && (
             <div style={{ fontWeight: 800, color: '#ffffff', fontSize: '0.9375rem', letterSpacing: '-0.01em', display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
               <Settings size={15} color="var(--green-gold)" />
-              <span>BEST BUY CART CMS</span>
+              <span>BUY BEST CART CMS</span>
             </div>
           )}
           <button
@@ -249,7 +249,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             <div style={{ padding: '1.25rem 1rem', borderBottom: '1px solid #1e293b', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#0f172a' }}>
               <div style={{ fontWeight: 800, color: '#ffffff', fontSize: '0.9375rem', letterSpacing: '-0.01em', display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
                 <Settings size={15} color="var(--green-gold)" />
-                <span>BEST BUY CART CMS</span>
+                <span>BUY BEST CART CMS</span>
               </div>
               <button
                 onClick={() => setMobileDrawerOpen(false)}
