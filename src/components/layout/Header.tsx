@@ -9,6 +9,7 @@ import {
   Scale,
   BookOpen,
   Cpu,
+  Headphones,
   Laptop,
   Gamepad2,
   Home,
@@ -82,14 +83,24 @@ export default function Header({
 
   const mobileNavCategories = [
     {
+      id: 'audio-headphones',
+      label: 'Audio & Headphones',
+      href: '/category/audio-headphones',
+      icon: Headphones,
+      subcategories: [
+        { name: 'Noise-Cancelling Headphones', href: '/category/audio-headphones' },
+        { name: 'True Wireless Earbuds', href: '/category/audio-headphones' },
+        { name: 'Over-Ear Studio Headphones', href: '/category/audio-headphones' },
+        { name: 'Bluetooth Portable Speakers', href: '/category/audio-headphones' },
+      ],
+    },
+    {
       id: 'electronics',
-      label: 'Electronics & Audio',
+      label: 'Electronics & Gadgets',
       href: '/category/electronics',
       icon: Cpu,
       subcategories: [
         { name: 'Smartphones (iPhone & Galaxy)', href: '/category/electronics' },
-        { name: 'Noise-Cancelling Headphones', href: '/category/electronics' },
-        { name: 'True Wireless Earbuds', href: '/category/electronics' },
         { name: '4K & Ultrawide Monitors', href: '/category/electronics' },
         { name: 'Fast GaN Wall Chargers', href: '/category/electronics' },
       ],

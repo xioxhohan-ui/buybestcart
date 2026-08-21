@@ -20,6 +20,8 @@ import {
   Layout,
   ShoppingBag,
   Link2,
+  Mail,
+  MessageSquare,
   BarChart3,
   Search,
   FileText,
@@ -111,6 +113,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     {
       group: 'System Data Layer',
       items: [
+        { name: 'Newsletter Audience', href: '/shohan/subscribers', icon: Mail },
+        { name: 'Reader Inquiries', href: '/shohan/messages', icon: MessageSquare },
         { name: 'Users & Roles', href: '/shohan/users', icon: Users },
         { name: 'System Health & Sync', href: '/shohan/system', icon: Activity },
         { name: 'Audit & System Logs', href: '/shohan/logs', icon: ScrollText },

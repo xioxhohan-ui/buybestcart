@@ -1,4 +1,5 @@
 import React from 'react';
+import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import { createServerClient } from '@/lib/supabase/server';
@@ -109,7 +110,7 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
       {subcategories && subcategories.length > 0 && (
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '2rem' }}>
           {subcategories.map((sub: Category) => (
-            <a
+            <Link
               key={sub.id}
               href={`/category/${category.slug}/${sub.slug}`}
               style={{
@@ -123,7 +124,7 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
               }}
             >
               {sub.name}
-            </a>
+            </Link>
           ))}
         </div>
       )}

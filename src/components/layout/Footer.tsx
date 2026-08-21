@@ -61,7 +61,7 @@ export default async function Footer() {
           <div>
             <h4 className="footer-col-title">CATEGORIES</h4>
             <ul className="footer-links">
-              <li><Link href="/category/electronics" className="footer-link">Electronics & Audio</Link></li>
+              <li><Link href="/category/audio-headphones" className="footer-link">Audio & Headphones</Link></li>
               <li><Link href="/category/computers-laptops" className="footer-link">Computers & Laptops</Link></li>
               <li><Link href="/category/gaming" className="footer-link">Gaming & VR Gear</Link></li>
               <li><Link href="/category/home-kitchen" className="footer-link">Home & Kitchen</Link></li>

@@ -7,8 +7,8 @@ export default function manifest(): MetadataRoute.Manifest {
     description: 'Independent product review, comparison, and verified Amazon deals publication.',
     start_url: '/',
     display: 'standalone',
-    background_color: '#0A0A0A',
-    theme_color: '#16a34a',
+    background_color: '#FAF9F5',
+    theme_color: '#1b4332',
     icons: [
       {
         src: '/favicon.ico',
