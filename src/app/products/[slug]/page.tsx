@@ -231,14 +231,64 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
             />
           </div>
 
-          {/* Key Features Bullet List */}
-          {product.features && product.features.length > 0 && (
-            <div style={{ marginBottom: '2rem' }}>
-              <h3 style={{ fontSize: '1.125rem', marginBottom: '0.75rem' }}>Key Highlights</h3>
-              <ul style={{ paddingLeft: '1.25rem', display: 'flex', flexDirection: 'column', gap: '0.5rem', color: 'var(--text-secondary)', fontSize: '0.9375rem' }}>
-                {product.features.map((f: { id?: string; feature: string }, idx: number) => (
-                  <li key={f.id || idx}>{f.feature}</li>
-                ))}
+          {/* Key Highlights Bullet List Card */}
+          {((product.features && product.features.length > 0) || (product.key_highlights && product.key_highlights.length > 0)) && (
+            <div
+              style={{
+                marginBottom: '2rem',
+                background: '#FAF9F6',
+                border: '1px solid var(--border)',
+                borderRadius: 'var(--radius-md)',
+                padding: '1.5rem',
+                boxShadow: 'var(--shadow-sm)',
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', marginBottom: '0.85rem' }}>
+                <Sparkles size={16} color="var(--green-accent)" />
+                <h3 style={{ fontSize: '1.0625rem', fontWeight: 800, margin: 0, color: 'var(--text-primary)', letterSpacing: '-0.01em' }}>
+                  Key Highlights
+                </h3>
+              </div>
+              <ul style={{ margin: 0, padding: 0, listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.625rem' }}>
+                {(
+                  (product.features && product.features.length > 0)
+                    ? product.features.map((f: { id?: string; feature: string }) => f.feature)
+                    : (product.key_highlights || [])
+                )
+                  .filter((text: string) => text && text.trim().length > 0)
+                  .map((highlight: string, idx: number) => (
+                    <li
+                      key={idx}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'flex-start',
+                        gap: '0.625rem',
+                        fontSize: '0.9375rem',
+                        color: 'var(--text-primary)',
+                        lineHeight: 1.5,
+                      }}
+                    >
+                      <span
+                        style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          width: '18px',
+                          height: '18px',
+                          borderRadius: '50%',
+                          background: 'var(--green-light)',
+                          color: 'var(--green-accent)',
+                          fontSize: '0.6875rem',
+                          fontWeight: 900,
+                          flexShrink: 0,
+                          marginTop: '2px',
+                        }}
+                      >
+                        ✓
+                      </span>
+                      <span>{highlight}</span>
+                    </li>
+                  ))}
               </ul>
             </div>
           )}

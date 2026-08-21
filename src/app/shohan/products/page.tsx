@@ -117,6 +117,8 @@ export default function AdminProductsPage() {
   const [previewImageIndex, setPreviewImageIndex] = useState(0);
   const [previewHovered, setPreviewHovered] = useState(false);
   const [featureRows, setFeatureRows] = useState<ProductFeature[]>([]);
+  const [batchHighlightsText, setBatchHighlightsText] = useState('');
+  const [showBatchHighlights, setShowBatchHighlights] = useState(false);
   const [specRows, setSpecRows] = useState<ProductSpecification[]>([]);
 
   const fetchData = async () => {
@@ -296,11 +298,17 @@ export default function AdminProductsPage() {
       { url: p.thumbnail_url || '', alt_text: p.title, is_primary: true, display_order: 1 }
     ]);
 
-    setFeatureRows(p.features && p.features.length > 0 ? p.features : [
-      { feature: '40-hour continuous battery endurance', display_order: 1 },
-      { feature: 'Active dual-processor noise cancellation', display_order: 2 },
-      { feature: 'Bluetooth 5.3 multipoint audio connectivity', display_order: 3 },
-    ]);
+    const loadedFeatures = (p.features && p.features.length > 0)
+      ? p.features
+      : (p.key_highlights && p.key_highlights.length > 0)
+      ? p.key_highlights.map((text, i) => ({ feature: text, display_order: i + 1 }))
+      : [
+          { feature: '40-hour continuous battery endurance', display_order: 1 },
+          { feature: 'Active dual-processor noise cancellation', display_order: 2 },
+          { feature: 'Bluetooth 5.3 multipoint audio connectivity', display_order: 3 },
+        ];
+
+    setFeatureRows(loadedFeatures);
 
     setSpecRows(p.specifications && p.specifications.length > 0 ? p.specifications : [
       { spec_key: 'Acoustic Driver', spec_value: '30mm Carbon Fiber Composite', display_order: 1 },
@@ -407,6 +415,28 @@ export default function AdminProductsPage() {
     setFeatureRows(updated);
   };
 
+  const handleBatchAddHighlights = () => {
+    if (!batchHighlightsText.trim()) return;
+    const lines = batchHighlightsText
+      .split('\n')
+      .map((l) => l.replace(/^[\s*•\-–—\d.)]+/, '').trim())
+      .filter((l) => l.length > 0);
+
+    if (lines.length === 0) {
+      alert('Please enter at least one highlight line.');
+      return;
+    }
+
+    const newRows = lines.map((line, idx) => ({
+      feature: line,
+      display_order: featureRows.length + idx + 1,
+    }));
+
+    setFeatureRows([...featureRows, ...newRows]);
+    setBatchHighlightsText('');
+    setShowBatchHighlights(false);
+  };
+
   // Specifications Helpers
   const addSpecRow = () => {
     setSpecRows([...specRows, { spec_key: '', spec_value: '', display_order: specRows.length + 1 }]);
@@ -485,6 +515,7 @@ export default function AdminProductsPage() {
       buying_advice: formData.buying_advice,
       who_should_buy: formData.who_should_buy,
       who_should_avoid: formData.who_should_avoid,
+      key_highlights: featureRows.filter((f) => f.feature && f.feature.trim()).map((f) => f.feature.trim()),
       seo_title: formData.seo_title || `${formData.title} — Price, Specs & Reviews | Best Buy Cart`,
       seo_description: formData.seo_description || formData.short_description || `Read our in-depth lab testing and review of the ${formData.title} with verified Amazon pricing.`,
       canonical_url: formData.canonical_url || `https://buybestcart.shop/products/${generatedSlug}`,
@@ -1585,6 +1616,115 @@ export default function AdminProductsPage() {
                     </div>
                   ))}
                 </div>
+              </div>
+
+              {/* Key Highlights / Bullet Points */}
+              <div style={{ background: '#FAF9F6', border: '1px solid var(--border)', borderRadius: 'var(--radius-md)', padding: '1.25rem' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+                  <div>
+                    <label style={{ fontSize: '0.875rem', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '0.4rem', color: 'var(--text-primary)' }}>
+                      <Sparkles size={16} color="var(--green-accent)" />
+                      <span>Key Highlights / Product Bullet Points ({featureRows.filter((f) => f.feature && f.feature.trim()).length} Items)</span>
+                    </label>
+                    <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.15rem' }}>
+                      Displayed directly on the public product page as primary bullet points
+                    </p>
+                  </div>
+                  <div style={{ display: 'flex', gap: '0.4rem' }}>
+                    <button
+                      type="button"
+                      onClick={() => setShowBatchHighlights(!showBatchHighlights)}
+                      className="btn btn-secondary btn-sm"
+                      style={{ padding: '0.25rem 0.6rem', fontSize: '0.75rem' }}
+                    >
+                      {showBatchHighlights ? '✕ Close Batch Paste' : '⚡ Batch Paste Highlights'}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={addFeatureRow}
+                      className="btn btn-secondary btn-sm"
+                      style={{ padding: '0.25rem 0.6rem', fontSize: '0.75rem', fontWeight: 700 }}
+                    >
+                      + Add Highlight
+                    </button>
+                  </div>
+                </div>
+
+                {/* Batch Paste Highlights Modal */}
+                {showBatchHighlights && (
+                  <div style={{ background: '#FFFFFF', border: '1px solid var(--border-strong)', borderRadius: 'var(--radius-sm)', padding: '0.85rem', marginBottom: '1rem' }}>
+                    <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, marginBottom: '0.35rem', color: 'var(--text-primary)' }}>
+                      Paste Multiple Highlights (one per line, bullets like &quot;*&quot; or &quot;-&quot; are automatically cleaned):
+                    </label>
+                    <textarea
+                      rows={4}
+                      value={batchHighlightsText}
+                      onChange={(e) => setBatchHighlightsText(e.target.value)}
+                      placeholder="* 40-hour continuous battery endurance&#10;* Active dual-processor noise cancellation&#10;* Bluetooth 5.3 multipoint audio connectivity"
+                      style={{ width: '100%', padding: '0.5rem', fontSize: '0.75rem', borderRadius: 'var(--radius-xs)', border: '1px solid var(--border-strong)' }}
+                    />
+                    <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem', marginTop: '0.5rem' }}>
+                      <button
+                        type="button"
+                        onClick={() => setShowBatchHighlights(false)}
+                        className="btn btn-secondary btn-sm"
+                        style={{ padding: '0.25rem 0.6rem', fontSize: '0.75rem' }}
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        type="button"
+                        onClick={handleBatchAddHighlights}
+                        className="btn btn-primary btn-sm"
+                        style={{ padding: '0.25rem 0.75rem', fontSize: '0.75rem' }}
+                      >
+                        Add to Highlights
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {/* Individual Highlight Rows */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                  {featureRows.map((f, idx) => (
+                    <div key={idx} style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                      <span style={{ fontSize: '0.875rem', color: 'var(--green-accent)', fontWeight: 800, minWidth: '1.25rem', textAlign: 'center' }}>
+                        ●
+                      </span>
+                      <input
+                        type="text"
+                        placeholder="e.g. 40-hour continuous battery endurance"
+                        value={f.feature}
+                        onChange={(e) => updateFeatureText(idx, e.target.value)}
+                        style={{ flex: 1, padding: '0.45rem 0.65rem', fontSize: '0.8125rem', borderRadius: 'var(--radius-xs)', border: '1px solid var(--border-strong)', background: '#FFFFFF' }}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => removeFeatureRow(idx)}
+                        style={{ background: 'none', border: 'none', color: 'var(--danger)', cursor: 'pointer', padding: '0.35rem' }}
+                        title="Delete highlight"
+                      >
+                        <Trash2 size={14} />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Live Public Product Card Preview of Highlights */}
+                {featureRows.filter((f) => f.feature && f.feature.trim()).length > 0 && (
+                  <div style={{ marginTop: '1rem', background: '#FFFFFF', border: '1px solid var(--border-strong)', borderRadius: 'var(--radius-sm)', padding: '0.85rem' }}>
+                    <div style={{ fontSize: '0.75rem', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '0.35rem', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                      <span>Public Product Page Preview:</span>
+                    </div>
+                    <ul style={{ margin: 0, paddingLeft: '1.25rem', display: 'flex', flexDirection: 'column', gap: '0.35rem', fontSize: '0.8125rem', color: 'var(--text-secondary)' }}>
+                      {featureRows
+                        .filter((f) => f.feature && f.feature.trim())
+                        .map((f, i) => (
+                          <li key={i} style={{ lineHeight: 1.4 }}>{f.feature}</li>
+                        ))}
+                    </ul>
+                  </div>
+                )}
               </div>
 
               {/* Dynamic Specifications Matrix */}

@@ -179,6 +179,7 @@ export interface Product {
   category?: Category;
   specifications?: ProductSpecification[];
   features?: ProductFeature[];
+  key_highlights?: string[];
   images?: ProductImage[];
   marketplaces?: ProductMarketplace[];
 }
