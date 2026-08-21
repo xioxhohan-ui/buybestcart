@@ -1,15 +1,36 @@
 'use client';
 
 import React, { useState } from 'react';
+import { Mail, CheckCircle2, AlertCircle, RefreshCw } from 'lucide-react';
 
 export default function NewsletterSection() {
   const [email, setEmail] = useState('');
+  const [loading, setLoading] = useState(false);
   const [subscribed, setSubscribed] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (email) {
-      setSubscribed(true);
+    if (!email) return;
+
+    setLoading(true);
+    setErrorMsg(null);
+    try {
+      const res = await fetch('/api/newsletter', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, source: 'homepage_newsletter_box' }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setSubscribed(true);
+      } else {
+        setErrorMsg(data.error || 'Failed to subscribe. Please try again.');
+      }
+    } catch {
+      setErrorMsg('Network error. Please try again later.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -50,12 +71,23 @@ export default function NewsletterSection() {
                 color: 'var(--green-accent)',
                 fontWeight: 700,
                 textAlign: 'center',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '0.5rem',
               }}
             >
-              ✓ Thank you! You&apos;re subscribed to The Weekly Shopping Edit.
+              <CheckCircle2 size={20} />
+              <span>✓ Thank you! You&apos;re subscribed to The Weekly Shopping Edit.</span>
             </div>
           ) : (
             <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+              {errorMsg && (
+                <div style={{ background: '#fef2f2', border: '1px solid #fecaca', color: '#991b1b', padding: '0.5rem 0.75rem', borderRadius: 'var(--radius-xs)', fontSize: '0.8125rem', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                  <AlertCircle size={14} />
+                  <span>{errorMsg}</span>
+                </div>
+              )}
               <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
                 <input
                   type="email"
@@ -74,8 +106,9 @@ export default function NewsletterSection() {
                     outline: 'none',
                   }}
                 />
-                <button type="submit" className="btn btn-primary btn-lg">
-                  Subscribe →
+                <button type="submit" disabled={loading} className="btn btn-primary btn-lg" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}>
+                  {loading ? <RefreshCw size={16} className="animate-spin" /> : null}
+                  <span>{loading ? 'Subscribing...' : 'Subscribe →'}</span>
                 </button>
               </div>
               <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>

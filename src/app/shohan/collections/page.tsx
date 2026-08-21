@@ -100,6 +100,7 @@ export default function AdminCollectionsPage() {
         .eq('id', editingCollection.id);
 
       if (!error) {
+        await fetch('/api/revalidate', { method: 'POST' }).catch(() => {});
         setShowModal(false);
         fetchCollections();
       } else {
@@ -112,6 +113,7 @@ export default function AdminCollectionsPage() {
       });
 
       if (!error) {
+        await fetch('/api/revalidate', { method: 'POST' }).catch(() => {});
         setShowModal(false);
         fetchCollections();
       } else {
@@ -123,6 +125,7 @@ export default function AdminCollectionsPage() {
   const handleDelete = async (id: string, title: string) => {
     if (confirm(`Are you sure you want to delete collection "${title}"?`)) {
       await supabase.from('collections').delete().eq('id', id);
+      await fetch('/api/revalidate', { method: 'POST' }).catch(() => {});
       fetchCollections();
     }
   };

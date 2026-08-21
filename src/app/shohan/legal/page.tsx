@@ -72,13 +72,14 @@ export default function AdminLegalPagesCMS() {
       updated_at: new Date().toISOString(),
     });
 
-    setSaving(false);
     if (!error) {
+      await fetch('/api/revalidate', { method: 'POST' }).catch(() => {});
       setSaved(true);
       setTimeout(() => setSaved(false), 3000);
     } else {
       alert(`Error saving legal policies: ${error.message}`);
     }
+    setSaving(false);
   };
 
   const tabs: Array<{ key: keyof LegalPolicies; label: string }> = [

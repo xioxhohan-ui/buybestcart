@@ -20,7 +20,7 @@ const DEFAULT_PRIMARY_NAV: NavItem[] = [
   { id: 'nav-comp', label: 'Computers', href: '/category/computers-laptops', icon: 'laptop', enabled: true, order: 2 },
   { id: 'nav-game', label: 'Gaming', href: '/category/gaming', icon: 'gamepad-2', enabled: true, order: 3 },
   { id: 'nav-home', label: 'Home & Kitchen', href: '/category/home-kitchen', icon: 'home', enabled: true, order: 4 },
-  { id: 'nav-smart', label: 'Smart Home', href: '/smart-home/best-smart-home-products', icon: 'shield-check', enabled: true, order: 5 },
+  { id: 'nav-smart', label: 'Smart Home', href: '/category/smart-home', icon: 'shield-check', enabled: true, order: 5 },
   { id: 'nav-beauty', label: 'Beauty', href: '/category/beauty', icon: 'sparkles', enabled: true, order: 6 },
   { id: 'nav-health', label: 'Wellness', href: '/category/health-wellness', icon: 'heart-pulse', enabled: true, order: 7 },
   { id: 'nav-sports', label: 'Sports', href: '/category/sports', icon: 'dumbbell', enabled: true, order: 8 },
@@ -76,7 +76,7 @@ export default function AdminNavigationPage() {
     );
   };
 
-  const updateItem = (id: string, field: keyof NavItem, value: any) => {
+  const updateItem = (id: string, field: keyof NavItem, value: NavItem[keyof NavItem]) => {
     setNavItems(
       navItems.map((item) => (item.id === id ? { ...item, [field]: value } : item))
     );
@@ -112,13 +112,14 @@ export default function AdminNavigationPage() {
       updated_at: new Date().toISOString(),
     });
 
-    setSaving(false);
     if (!error) {
+      await fetch('/api/revalidate', { method: 'POST' }).catch(() => {});
       setSaved(true);
       setTimeout(() => setSaved(false), 3000);
     } else {
       alert(`Error saving navigation: ${error.message}`);
     }
+    setSaving(false);
   };
 
   const handleReset = () => {

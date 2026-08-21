@@ -102,6 +102,7 @@ export default function AdminAdsPage() {
         .eq('id', editingAd.id);
 
       if (!error) {
+        await fetch('/api/revalidate', { method: 'POST' }).catch(() => {});
         setShowModal(false);
         fetchAds();
       } else {
@@ -115,6 +116,7 @@ export default function AdminAdsPage() {
       });
 
       if (!error) {
+        await fetch('/api/revalidate', { method: 'POST' }).catch(() => {});
         setShowModal(false);
         fetchAds();
       } else {
@@ -126,6 +128,7 @@ export default function AdminAdsPage() {
   const handleDelete = async (id: string, name: string) => {
     if (confirm(`Are you sure you want to delete ad placement "${name}"?`)) {
       await supabase.from('ad_slots').delete().eq('id', id);
+      await fetch('/api/revalidate', { method: 'POST' }).catch(() => {});
       fetchAds();
     }
   };
