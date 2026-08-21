@@ -27,7 +27,7 @@ export async function generateMetadata({ params }: GuidePageProps): Promise<Meta
   const siteUrl = 'https://buybestcart.shop';
   const rawCanonical = article.canonical_url ? article.canonical_url.replace(/https?:\/\/(www\.)?bestbuycart\.com/g, siteUrl) : null;
   const canonicalUrl = rawCanonical || `${siteUrl}/guides/${slug}`;
-  const ogImageUrl = article.og_image || article.featured_image || 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=1200&auto=format&fit=crop&q=80';
+  const ogImageUrl = article.og_image || article.featured_image || `${siteUrl}/og-image.png`;
 
   return {
     title,

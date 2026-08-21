@@ -49,11 +49,20 @@ export async function generateMetadata({ params }: ComparisonPageProps): Promise
       url: canonicalUrl,
       siteName: 'Best Buy Cart',
       type: 'website',
+      images: [
+        {
+          url: `${siteUrl}/og-image.png`,
+          width: 1200,
+          height: 630,
+          alt: title,
+        },
+      ],
     },
     twitter: {
       card: 'summary_large_image',
       title,
       description,
+      images: [`${siteUrl}/og-image.png`],
     },
     robots: {
       index: true,

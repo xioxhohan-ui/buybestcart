@@ -25,13 +25,20 @@ export async function generateMetadata(): Promise<Metadata> {
       url: siteUrl,
       siteName: config.site_name,
       type: 'website',
-      images: config.og_default_image ? [{ url: config.og_default_image }] : [],
+      images: [
+        {
+          url: config.og_default_image || `${siteUrl}/og-image.png`,
+          width: 1200,
+          height: 630,
+          alt: `${config.site_name} — ${config.tagline}`,
+        },
+      ],
     },
     twitter: {
       card: 'summary_large_image',
       title: `${config.site_name} — ${config.tagline}`,
       description: config.brand_description || config.hero_description,
-      images: config.default_social_image ? [config.default_social_image] : [],
+      images: [config.default_social_image || `${siteUrl}/og-image.png`],
     },
     robots: {
       index: true,

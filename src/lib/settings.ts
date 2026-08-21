@@ -88,8 +88,8 @@ export const DEFAULT_SITE_CONFIG: SiteConfiguration = {
   favicon_url: '/favicon.ico',
   footer_logo_url: '',
   browser_theme_color: '#1C1917',
-  og_default_image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=1200&auto=format&fit=crop&q=80',
-  default_social_image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=1200&auto=format&fit=crop&q=80',
+  og_default_image: 'https://buybestcart.shop/og-image.png',
+  default_social_image: 'https://buybestcart.shop/og-image.png',
   contact_email: 'contact@buybestcart.shop',
   support_email: 'editorial@buybestcart.shop',
   social_links: {
