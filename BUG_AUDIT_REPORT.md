@@ -13,10 +13,10 @@
 
 A deep, forensic end-to-end full-stack code, database, and route audit was performed across all layers of the **BuyBestCart** platform. Every identified issue was reproduced, root-caused, repaired directly in code and database schemas, and verified through automated end-to-end HTTP health checks and compiler runs.
 
-* **Total Issues Audited & Resolved**: 26
+* **Total Issues Audited & Resolved**: 29
 * **Critical / High Severity Issues**: 8 (All Resolved)
-* **Medium Severity Issues**: 12 (All Resolved)
-* **Low Severity / UX Issues**: 6 (All Resolved)
+* **Medium Severity Issues**: 14 (All Resolved)
+* **Low Severity / UX Issues**: 7 (All Resolved)
 * **Remaining Unresolved Issues**: 0 (100% Resolved & Verified)
 
 ---
@@ -228,6 +228,30 @@ A deep, forensic end-to-end full-stack code, database, and route audit was perfo
 * **Root Cause**: Statically generated sitemaps risk serving stale or deleted product URLs and require manual rebuilds whenever products are created, edited, or deleted in the database.
 * **Fix Applied**: Built an automatic live dynamic sitemap handler ([`src/app/sitemap.xml/route.ts`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/src/app/sitemap.xml/route.ts)) configured with `force-dynamic` and `revalidate = 0`. Queries live PostgreSQL tables in real-time, automatically indexing all active public product slugs, department categories, deals, comparison pages, and editorial guides. Features strict URL deduplication (`Map`), Google Image Sitemap XML namespace (`xmlns:image`), automated removal of deleted/draft URLs, and permanent reference in [`src/app/robots.ts`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/src/app/robots.ts).
 * **Affected Files**: [`src/app/sitemap.xml/route.ts`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/src/app/sitemap.xml/route.ts), [`src/app/robots.ts`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/src/app/robots.ts).
+
+---
+
+### [AUDIT-027] Admin Reader Messages & Contact Inquiries Management Module
+* **Category**: Admin Portal / Lead & Feedback Management
+* **Root Cause**: Messages submitted via the `/contact` form were stored in PostgreSQL `messages` table, but there was no dedicated interactive UI in the admin suite to view, triage, reply to, or archive inquiries.
+* **Fix Applied**: Created a responsive admin portal page at [`src/app/shohan/messages/page.tsx`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/src/app/shohan/messages/page.tsx) with search filtering, status tabs (`unread`, `read`, `replied`, `archived`), full message modal preview, and 1-click email response triggers.
+* **Affected Files**: [`src/app/shohan/messages/page.tsx`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/src/app/shohan/messages/page.tsx), [`src/app/shohan/layout.tsx`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/src/app/shohan/layout.tsx).
+
+---
+
+### [AUDIT-028] Admin Newsletter Audience & Subscriber Export Management Module
+* **Category**: Admin Portal / Audience & Marketing Lead Management
+* **Root Cause**: Newsletter signups from the homepage and footer were saved in PostgreSQL `newsletter_subscribers` table, but had no admin interface for searching, filtering by geographic region, toggling subscriptions, or exporting CSV mailing lists.
+* **Fix Applied**: Built [`src/app/shohan/subscribers/page.tsx`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/src/app/shohan/subscribers/page.tsx) with real-time Supabase integration, search, region filtering, 1-click CSV mailing list exporter, status toggling, and delete management.
+* **Affected Files**: [`src/app/shohan/subscribers/page.tsx`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/src/app/shohan/subscribers/page.tsx), [`src/app/shohan/layout.tsx`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/src/app/shohan/layout.tsx).
+
+---
+
+### [AUDIT-029] Category Route Normalization & Next.js Client Navigation Fixes
+* **Category**: Frontend Navigation & Performance
+* **Root Cause**: Subcategory pills in category detail pages used unoptimized `<a>` tags causing hard page reloads, and certain header/footer links pointed to unpopulated category slugs.
+* **Fix Applied**: Converted category pills in [`src/app/category/[...slug]/page.tsx`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/src/app/category/[...slug]/page.tsx) to Next.js `<Link>` components, and aligned header and footer navigation links to active category slugs (e.g. `/category/audio-headphones`).
+* **Affected Files**: [`src/app/category/[...slug]/page.tsx`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/src/app/category/[...slug]/page.tsx), [`src/components/layout/Header.tsx`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/src/components/layout/Header.tsx), [`src/components/layout/Footer.tsx`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/src/components/layout/Footer.tsx).
 
 ---
 
