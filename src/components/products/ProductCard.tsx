@@ -161,6 +161,9 @@ export default function ProductCard({ product, rank }: ProductCardProps) {
               transform: isHovered ? 'scale(1.05)' : 'scale(1.0)',
               pointerEvents: idx === currentIndex ? 'auto' : 'none',
             }}
+            onError={(e) => {
+              (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500&auto=format&fit=crop&q=60';
+            }}
           />
         ))}
 

@@ -13,12 +13,12 @@ export async function GET(
 
   const supabase = createServerClient();
 
-  // Find product by slug
+  // Find product by slug or direct ASIN
   const { data: product } = await supabase
     .from('products')
     .select('id, asin, title, amazon_url, affiliate_url')
-    .eq('slug', slug)
-    .single();
+    .or(`slug.eq.${slug},asin.eq.${slug}`)
+    .maybeSingle();
 
   let destinationUrl = 'https://www.amazon.com?tag=bestbuycart-20';
 
@@ -54,6 +54,12 @@ export async function GET(
     } catch {
       // Analytics failure must never prevent Amazon redirect (Section 121)
     }
+  } else if (/^[A-Z0-9]{10}$/i.test(slug)) {
+    // If direct 10-char ASIN was passed
+    destinationUrl = buildAmazonAffiliateUrl({
+      asin: slug.toUpperCase(),
+      countryCode: region,
+    });
   }
 
   // 302 Found redirect to Amazon affiliate marketplace destination
