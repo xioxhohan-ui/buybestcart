@@ -13,8 +13,8 @@
 
 A deep, forensic end-to-end full-stack code, database, and route audit was performed across all layers of the **BuyBestCart** platform. Every identified issue was reproduced, root-caused, repaired directly in code and database schemas, and verified through automated end-to-end HTTP health checks and compiler runs.
 
-* **Total Issues Audited & Resolved**: 18
-* **Critical / High Severity Issues**: 7 (All Resolved)
+* **Total Issues Audited & Resolved**: 19
+* **Critical / High Severity Issues**: 8 (All Resolved)
 * **Medium Severity Issues**: 6 (All Resolved)
 * **Low Severity / UX Issues**: 5 (All Resolved)
 * **Remaining Unresolved Issues**: 0 (100% Resolved & Verified)
@@ -164,6 +164,14 @@ A deep, forensic end-to-end full-stack code, database, and route audit was perfo
 * **Root Cause**: `src/app/shohan/media/page.tsx` managed media items in temporary React component state, which were lost upon page refresh.
 * **Fix Applied**: Connected `AdminMediaPage` to live `public.media` table in PostgreSQL with full CRUD operations, SEO metadata generation, and automatic seed fallback.
 * **Affected Files**: [`src/app/shohan/media/page.tsx`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/src/app/shohan/media/page.tsx).
+
+---
+
+### [AUDIT-019] Dedicated Affiliate Buy Link Field in Admin Product Editor & Dynamic Routing
+* **Category**: Admin CMS & Public Storefront / Affiliate Architecture
+* **Root Cause**: Admin had no dedicated field to paste, edit, validate, or preview custom affiliate buy URLs directly on individual products, requiring manual ASIN auto-calculation.
+* **Fix Applied**: Added `affiliate_url` column to PostgreSQL `public.products`, added dedicated URL input with regex HTTP/HTTPS validation and "Preview Buy Button" tester in `/shohan/products`, updated `/shohan/amazon` product modal, and connected `AffiliateCTA` & `/go/[slug]` dynamic routing across public product pages, comparison matrix, and product cards.
+* **Affected Files**: Supabase PostgreSQL `public.products`, [`src/app/shohan/products/page.tsx`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/src/app/shohan/products/page.tsx), [`src/app/shohan/amazon/page.tsx`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/src/app/shohan/amazon/page.tsx), [`src/components/products/AffiliateCTA.tsx`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/src/components/products/AffiliateCTA.tsx), [`src/app/go/[slug]/route.ts`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/src/app/go/%5Bslug%5D/route.ts), [`src/app/products/[slug]/page.tsx`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/src/app/products/%5Bslug%5D/page.tsx), [`src/components/products/ProductCard.tsx`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/src/components/products/ProductCard.tsx), [`src/types/index.ts`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/src/types/index.ts).
 
 ---
 
