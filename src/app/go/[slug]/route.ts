@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerClient } from '@/lib/supabase/server';
-import { buildAmazonAffiliateUrl, MARKETPLACES } from '@/lib/affiliate';
+import { buildAmazonAffiliateUrl } from '@/lib/affiliate';
 
 export async function GET(
   request: NextRequest,
@@ -63,5 +63,13 @@ export async function GET(
   }
 
   // 302 Found redirect to Amazon affiliate marketplace destination
-  return NextResponse.redirect(destinationUrl, 302);
+  // CRITICAL SEO HEADERS: Explicitly mark all affiliate redirects as non-indexable for Googlebot & SEO tools
+  return NextResponse.redirect(destinationUrl, {
+    status: 302,
+    headers: {
+      'X-Robots-Tag': 'noindex, nofollow, noarchive, nosnippet',
+      'Cache-Control': 'no-store, no-cache, must-revalidate, max-age=0',
+      'Pragma': 'no-cache',
+    },
+  });
 }

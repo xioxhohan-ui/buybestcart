@@ -11,8 +11,10 @@ export default function robots(): MetadataRoute.Robots {
         disallow: [
           '/api/',
           '/go/',
+          '/go/*',
           '/search',
           '/shohan/',
+          '/admin/',
         ],
       },
     ],
