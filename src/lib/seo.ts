@@ -47,23 +47,69 @@ export function generateArticleJsonLd(article: Article) {
   return {
     '@context': 'https://schema.org',
     '@type': article.schema_type || 'Article',
-    headline: article.title,
+    mainEntityOfPage: {
+      '@type': 'WebPage',
+      '@id': `${SITE_URL}/guides/${article.slug}`,
+    },
+    headline: article.seo_title || article.title,
     image: article.featured_image ? [article.featured_image] : [],
-    datePublished: article.publish_date || article.created_at,
-    dateModified: article.modified_date || article.updated_at,
+    datePublished: article.published_at || article.publish_date || article.created_at,
+    dateModified: article.modified_date || article.updated_at || article.created_at,
     author: {
       '@type': 'Person',
-      name: article.author?.full_name || 'Buy Best Cart Editorial Team',
+      name: article.author_name || article.author?.full_name || 'Buy Best Cart Editorial Team',
+      jobTitle: article.author_role || 'Senior Hardware & Testing Analyst',
     },
     publisher: {
       '@type': 'Organization',
       name: 'Buy Best Cart',
+      url: SITE_URL,
       logo: {
         '@type': 'ImageObject',
         url: `${SITE_URL}/logo.png`,
       },
     },
-    description: article.excerpt,
+    description: article.seo_description || article.excerpt || article.title,
+    keywords: Array.isArray(article.tags) ? article.tags.join(', ') : undefined,
+  };
+}
+
+export function generateGuideProductsJsonLd(article: Article) {
+  const topProducts = article.top_products || [];
+  if (topProducts.length === 0) return null;
+
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    name: `${article.title} - Ranked Product Picks`,
+    description: article.excerpt || `Top ranked products selected in ${article.title}.`,
+    itemListElement: topProducts.map((p, idx) => ({
+      '@type': 'ListItem',
+      position: p.rank || idx + 1,
+      name: p.custom_award_label ? `${p.custom_award_label}: ${p.title}` : p.title,
+      item: {
+        '@type': 'Product',
+        name: p.title,
+        image: p.gallery_images && p.gallery_images.length > 0 ? p.gallery_images : (p.thumbnail_url ? [p.thumbnail_url] : []),
+        description: p.short_description || p.full_description || p.title,
+        offers: p.price
+          ? {
+              '@type': 'Offer',
+              price: p.price,
+              priceCurrency: p.currency || 'USD',
+              availability:
+                p.availability === 'out_of_stock'
+                  ? 'https://schema.org/OutOfStock'
+                  : 'https://schema.org/InStock',
+              url: p.affiliate_url || p.buy_url || `${SITE_URL}/guides/${article.slug}`,
+              seller: {
+                '@type': 'Organization',
+                name: 'Amazon',
+              },
+            }
+          : undefined,
+      },
+    })),
   };
 }
 

@@ -4,7 +4,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { createServerClient } from '@/lib/supabase/server';
 import Breadcrumbs from '@/components/common/Breadcrumbs';
-import { generateArticleJsonLd, generateFaqJsonLd } from '@/lib/seo';
+import { generateArticleJsonLd, generateFaqJsonLd, generateGuideProductsJsonLd } from '@/lib/seo';
 import { Article } from '@/types';
 import { BookOpen, Award, Sparkles, Clock, Calendar, User, ShieldCheck, ArrowRight, Share2 } from 'lucide-react';
 import TopProductsSection from '@/components/guides/TopProductsSection';
@@ -25,18 +25,20 @@ export async function generateMetadata({ params }: GuidePageProps): Promise<Meta
   const supabase = createServerClient();
   const { data: article } = await supabase
     .from('articles')
-    .select('title, excerpt, featured_image, seo_title, seo_description, canonical_url, og_image, status')
+    .select('title, excerpt, featured_image, seo_title, seo_description, canonical_url, og_image, status, publish_date, published_at, updated_at, modified_date, author_name, tags')
     .eq('slug', slug)
     .single();
 
   if (!article || article.status !== 'published') return { title: 'Guide Not Found | Buy Best Cart' };
 
-  const title = article.seo_title || article.title;
-  const description = article.seo_description || article.excerpt || `Read the complete buying guide and lab recommendations for ${article.title}.`;
+  const title = article.seo_title || `${article.title} (2026) | Buy Best Cart`;
+  const description = article.seo_description || article.excerpt || `Read the complete buying guide, lab test scores, and verified recommendations for ${article.title}.`;
   const siteUrl = 'https://buybestcart.shop';
   const rawCanonical = article.canonical_url ? article.canonical_url.replace(/https?:\/\/(www\.)?bestbuycart\.com/g, siteUrl) : null;
   const canonicalUrl = rawCanonical || `${siteUrl}/guides/${slug}`;
   const ogImageUrl = article.og_image || article.featured_image || `${siteUrl}/og-image.png`;
+  const publishedTime = article.published_at || article.publish_date;
+  const modifiedTime = article.modified_date || article.updated_at || publishedTime;
 
   return {
     title,
@@ -58,6 +60,10 @@ export async function generateMetadata({ params }: GuidePageProps): Promise<Meta
         },
       ],
       type: 'article',
+      publishedTime: publishedTime ? new Date(publishedTime).toISOString() : undefined,
+      modifiedTime: modifiedTime ? new Date(modifiedTime).toISOString() : undefined,
+      authors: article.author_name ? [article.author_name] : ['Buy Best Cart Editorial Team'],
+      tags: Array.isArray(article.tags) ? article.tags : undefined,
     },
     twitter: {
       card: 'summary_large_image',
@@ -103,6 +109,7 @@ export default async function GuideDetailPage({ params }: GuidePageProps) {
 
   const jsonLd = generateArticleJsonLd(article as Article);
   const faqJsonLd = article.faqs && article.faqs.length > 0 ? generateFaqJsonLd(article.faqs) : null;
+  const productsJsonLd = generateGuideProductsJsonLd(article as Article);
   const relatedArticles = (relatedRaw as unknown as Article[]) || [];
 
   const breadcrumbs = [
@@ -125,6 +132,12 @@ export default async function GuideDetailPage({ params }: GuidePageProps) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
+      {productsJsonLd && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(productsJsonLd) }}
+        />
+      )}
       {faqJsonLd && (
         <script
           type="application/ld+json"

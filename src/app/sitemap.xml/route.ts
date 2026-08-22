@@ -43,7 +43,7 @@ export async function GET() {
       fetchSafe(
         supabase
           .from('articles')
-          .select('slug, updated_at, modified_date')
+          .select('slug, title, featured_image, updated_at, modified_date, published_at')
           .eq('status', 'published')
       ),
       fetchSafe(
@@ -150,10 +150,17 @@ export async function GET() {
       }
     });
 
-    // 4. Published Articles & Buying Guides
-    articles.forEach((a: { slug?: string; updated_at?: string; modified_date?: string }) => {
+    // 4. Published Articles & Buying Guides (Strictly published only)
+    articles.forEach((a: { slug?: string; title?: string; featured_image?: string; updated_at?: string; modified_date?: string; published_at?: string }) => {
       if (a.slug) {
-        addUrl(`/guides/${a.slug}`, a.modified_date || a.updated_at, 'weekly', '0.8');
+        addUrl(
+          `/guides/${a.slug}`,
+          a.modified_date || a.updated_at || a.published_at,
+          'weekly',
+          '0.85',
+          a.featured_image || undefined,
+          a.title || undefined
+        );
       }
     });
 

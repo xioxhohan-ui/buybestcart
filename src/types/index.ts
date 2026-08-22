@@ -227,6 +227,7 @@ export interface TopProductItem {
   id?: string;
   product_id?: string;
   position: number;
+  rank?: number;
   title: string;
   thumbnail_url?: string;
   gallery_images?: string[];
@@ -235,6 +236,8 @@ export interface TopProductItem {
   currency?: string;
   availability?: string;
   badge?: string;
+  award_label?: string;
+  custom_award_label?: string;
   short_description?: string;
   full_description?: string;
   highlights?: string[];
@@ -249,6 +252,7 @@ export interface TopProductItem {
   video_url?: string;
   video_title?: string;
   affiliate_url?: string;
+  buy_url?: string;
   cta_text?: string;
   asin?: string;
   product_slug?: string;
