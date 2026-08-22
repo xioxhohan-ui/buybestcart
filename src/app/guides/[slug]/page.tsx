@@ -4,12 +4,14 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { createServerClient } from '@/lib/supabase/server';
 import Breadcrumbs from '@/components/common/Breadcrumbs';
-import { generateArticleJsonLd } from '@/lib/seo';
+import { generateArticleJsonLd, generateFaqJsonLd } from '@/lib/seo';
 import { Article } from '@/types';
 import { BookOpen, Award, Sparkles, Clock, Calendar, User, ShieldCheck, ArrowRight, Share2 } from 'lucide-react';
 import TopProductsSection from '@/components/guides/TopProductsSection';
 import DetailedProductReviewsSection from '@/components/guides/DetailedProductReviewsSection';
 import HowWeTestedSection from '@/components/guides/HowWeTestedSection';
+import WhatToLookForSection from '@/components/guides/WhatToLookForSection';
+import ArticleFaqSection from '@/components/guides/ArticleFaqSection';
 import ArticleContentRenderer from '@/components/guides/ArticleContentRenderer';
 
 interface GuidePageProps {
@@ -100,6 +102,7 @@ export default async function GuideDetailPage({ params }: GuidePageProps) {
   }
 
   const jsonLd = generateArticleJsonLd(article as Article);
+  const faqJsonLd = article.faqs && article.faqs.length > 0 ? generateFaqJsonLd(article.faqs) : null;
   const relatedArticles = (relatedRaw as unknown as Article[]) || [];
 
   const breadcrumbs = [
@@ -122,6 +125,12 @@ export default async function GuideDetailPage({ params }: GuidePageProps) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
+      {faqJsonLd && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+        />
+      )}
 
       <Breadcrumbs items={breadcrumbs} />
 
@@ -220,6 +229,16 @@ export default async function GuideDetailPage({ params }: GuidePageProps) {
       {/* 4. How We Tested & Editorial Methodology Section */}
       {article.how_we_tested && article.how_we_tested.enabled !== false && (
         <HowWeTestedSection data={article.how_we_tested} />
+      )}
+
+      {/* 5. What to Look For: Buyer's Guide & Key Decision Factors */}
+      {article.what_to_look_for && article.what_to_look_for.enabled !== false && (
+        <WhatToLookForSection data={article.what_to_look_for} />
+      )}
+
+      {/* 6. Frequently Asked Questions (FAQ) Section */}
+      {article.faqs && article.faqs.length > 0 && (
+        <ArticleFaqSection faqs={article.faqs} />
       )}
 
       {/* Rich Article Body Content */}

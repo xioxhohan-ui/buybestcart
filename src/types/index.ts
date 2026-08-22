@@ -283,6 +283,25 @@ export interface HowWeTestedData {
   evaluation_criteria?: EvaluationCriterion[];
 }
 
+export interface BuyingFactor {
+  title: string;
+  description: string;
+  importance?: 'critical' | 'important' | 'nice_to_have';
+}
+
+export interface WhatToLookForData {
+  enabled?: boolean;
+  title?: string;
+  summary?: string;
+  factors?: BuyingFactor[];
+  additional_advice?: string;
+}
+
+export interface ArticleFaqItem {
+  question: string;
+  answer: string;
+}
+
 export interface Article {
   id: string;
   title: string;
@@ -290,6 +309,8 @@ export interface Article {
   excerpt?: string;
   introduction?: string;
   how_we_tested?: HowWeTestedData;
+  what_to_look_for?: WhatToLookForData;
+  faqs?: ArticleFaqItem[];
   content: string;
   body?: string;
   featured_image?: string;

@@ -41,18 +41,24 @@ import {
   Sliders,
   Award,
   FlaskConical,
+  Compass,
+  HelpCircle,
 } from 'lucide-react';
 import Link from 'next/link';
 import TopProductsManager from '@/components/admin/TopProductsManager';
 import HowWeTestedManager from '@/components/admin/HowWeTestedManager';
+import WhatToLookForManager from '@/components/admin/WhatToLookForManager';
+import ArticleFaqManager from '@/components/admin/ArticleFaqManager';
 import VideoEmbedManager from '@/components/admin/VideoEmbedManager';
 import SeoTitleAdvisor from '@/components/admin/SeoTitleAdvisor';
 import TopProductsSection from '@/components/guides/TopProductsSection';
 import DetailedProductReviewsSection from '@/components/guides/DetailedProductReviewsSection';
 import HowWeTestedSection from '@/components/guides/HowWeTestedSection';
+import WhatToLookForSection from '@/components/guides/WhatToLookForSection';
+import ArticleFaqSection from '@/components/guides/ArticleFaqSection';
 import ArticleContentRenderer from '@/components/guides/ArticleContentRenderer';
 import PriceDisplay from '@/components/common/PriceDisplay';
-import { HowWeTestedData } from '@/types';
+import { HowWeTestedData, WhatToLookForData, ArticleFaqItem } from '@/types';
 
 export default function AdminBlogGuidesPage() {
   const [guides, setGuides] = useState<Article[]>([]);
@@ -68,7 +74,7 @@ export default function AdminBlogGuidesPage() {
   // WordPress-Style Editor View Settings
   const [layoutMode, setLayoutMode] = useState<'split' | 'editor' | 'preview'>('split');
   const [previewDevice, setPreviewDevice] = useState<'desktop' | 'tablet' | 'mobile'>('desktop');
-  const [activeTab, setActiveTab] = useState<'content' | 'top_products' | 'how_we_tested' | 'videos' | 'seo' | 'author'>('content');
+  const [activeTab, setActiveTab] = useState<'content' | 'top_products' | 'how_we_tested' | 'what_to_look_for' | 'faqs' | 'videos' | 'seo' | 'author'>('content');
 
   // Form State (Live 2-way data binding)
   const [formData, setFormData] = useState<{
@@ -78,6 +84,8 @@ export default function AdminBlogGuidesPage() {
     excerpt: string;
     introduction: string;
     how_we_tested?: HowWeTestedData;
+    what_to_look_for?: WhatToLookForData;
+    faqs?: ArticleFaqItem[];
     content: string;
     featured_image: string;
     status: ArticleStatus;
@@ -121,6 +129,22 @@ export default function AdminBlogGuidesPage() {
         { name: 'Value & Amazon Pricing', weight: '20%', description: 'Real-world feature set relative to verified retail cost.' },
       ],
     },
+    what_to_look_for: {
+      enabled: true,
+      title: "5. What to Look For: Buyer's Guide & Decision Checklist",
+      summary: 'Key technical, battery, comfort, and warranty factors to evaluate before purchasing.',
+      factors: [
+        { title: 'Core Performance vs. Daily Workload', importance: 'critical', description: 'Ensure the specifications meet your multitasking and processing needs without bottlenecking.' },
+        { title: 'Real-World Battery Life & Fast Charging', importance: 'critical', description: 'Look for verified continuous playback/runtime benchmarks rather than manufacturer claims.' },
+        { title: 'Build Quality, Materials & Ergonomics', importance: 'important', description: 'Evaluate chassis materials, weight distribution, and comfort over multi-hour sessions.' },
+        { title: 'Connectivity & Ecosystem Compatibility', importance: 'important', description: 'Verify Bluetooth codec support, port selection, and multi-device pairing capabilities.' },
+      ],
+      additional_advice: 'Check Amazon merchant seller ratings and verify official manufacturer warranty coverage before finalizing your order.',
+    },
+    faqs: [
+      { question: 'How do you test and rank products in this guide?', answer: 'We evaluate products in our independent testing lab measuring performance, battery endurance, thermal stability, and long-duration build quality without sponsor bias.' },
+      { question: 'Are prices and stock levels updated regularly?', answer: 'Yes, our platform tracks Amazon catalog pricing and availability in real time across supported storefronts.' },
+    ],
     content: `## Lab Testing Methodology & Evaluation Criteria\n\nWe spent over 40 lab hours evaluating acoustic isolation, active battery endurance, thermal throttling, and overall build longevity.\n\n### Why Trust Our Lab\n\nOur engineers evaluate retail sample units and measure real-world performance without merchant sponsor intervention.\n\n> "A top-tier recommendation must not only benchmark well in the lab, but withstand real-world commuting, drops, and prolonged battery stress."`,
     featured_image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&auto=format&fit=crop&q=80',
     status: 'published',
@@ -183,6 +207,22 @@ export default function AdminBlogGuidesPage() {
           { name: 'Value for Money', weight: '20%', description: 'Features relative to verified Amazon price.' },
         ],
       },
+      what_to_look_for: {
+        enabled: true,
+        title: "5. What to Look For: Buyer's Guide & Decision Checklist",
+        summary: 'Key technical, battery, comfort, and warranty factors to evaluate before purchasing.',
+        factors: [
+          { title: 'Core Performance vs. Daily Workload', importance: 'critical', description: 'Ensure the specifications meet your multitasking and processing needs without bottlenecking.' },
+          { title: 'Real-World Battery Life & Fast Charging', importance: 'critical', description: 'Look for verified continuous playback/runtime benchmarks rather than manufacturer claims.' },
+          { title: 'Build Quality, Materials & Ergonomics', importance: 'important', description: 'Evaluate chassis materials, weight distribution, and comfort over multi-hour sessions.' },
+          { title: 'Connectivity & Ecosystem Compatibility', importance: 'important', description: 'Verify Bluetooth codec support, port selection, and multi-device pairing capabilities.' },
+        ],
+        additional_advice: 'Check Amazon merchant seller ratings and verify official manufacturer warranty coverage before finalizing your order.',
+      },
+      faqs: [
+        { question: 'How do you test and rank products in this guide?', answer: 'We evaluate products in our independent testing lab measuring performance, battery endurance, thermal stability, and long-duration build quality without sponsor bias.' },
+        { question: 'Are prices and stock levels updated regularly?', answer: 'Yes, our platform tracks Amazon catalog pricing and availability in real time across supported storefronts.' },
+      ],
       content: `## Lab Testing Methodology & Evaluation Criteria\n\nWe spent over 40 lab hours evaluating acoustic isolation, active battery endurance, thermal throttling, and overall build longevity.\n\n### Why Trust Our Lab\n\nOur engineers evaluate retail sample units and measure real-world performance without merchant sponsor intervention.\n\n> "A top-tier recommendation must not only benchmark well in the lab, but withstand real-world commuting, drops, and prolonged battery stress."`,
       featured_image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&auto=format&fit=crop&q=80',
       status: 'published',
@@ -228,6 +268,21 @@ export default function AdminBlogGuidesPage() {
           { name: 'Value', weight: '20%' },
         ],
       },
+      what_to_look_for: g.what_to_look_for || {
+        enabled: true,
+        title: "5. What to Look For: Buyer's Guide & Decision Checklist",
+        summary: 'Key technical, battery, comfort, and warranty factors to evaluate before purchasing.',
+        factors: [
+          { title: 'Performance vs. Needs', importance: 'critical', description: 'Ensure the hardware matches your computing workload.' },
+          { title: 'Battery Longevity', importance: 'critical', description: 'Verify all-day endurance in real-world scenarios.' },
+          { title: 'Ergonomics & Materials', importance: 'important', description: 'Look for long-lasting comfort and durable chassis engineering.' },
+        ],
+        additional_advice: 'Always verify merchant seller warranty and return policy on Amazon.',
+      },
+      faqs: g.faqs || [
+        { question: 'How do you test and rank products in this guide?', answer: 'We evaluate products in our independent testing lab measuring performance, battery endurance, thermal stability, and long-duration build quality without sponsor bias.' },
+        { question: 'Are prices and stock levels updated regularly?', answer: 'Yes, our platform tracks Amazon catalog pricing and availability in real time across supported storefronts.' },
+      ],
       content: g.content || g.body || '',
       featured_image: g.featured_image || 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&auto=format&fit=crop&q=80',
       status: g.status || 'published',
@@ -294,6 +349,8 @@ export default function AdminBlogGuidesPage() {
       canonical_url: formData.canonical_url || `https://buybestcart.shop/guides/${cleanSlug}`,
       top_products: formData.top_products,
       how_we_tested: formData.how_we_tested,
+      what_to_look_for: formData.what_to_look_for,
+      faqs: formData.faqs,
       videos: formData.videos,
       schema_type: 'Article',
       updated_at: new Date().toISOString(),
@@ -611,9 +668,11 @@ export default function AdminBlogGuidesPage() {
                   { id: 'content', label: '1. Intro & Content', icon: BookOpen },
                   { id: 'top_products', label: `2. Top Picks & Reviews (${formData.top_products.length})`, icon: Sparkles },
                   { id: 'how_we_tested', label: '3. How We Tested', icon: FlaskConical },
-                  { id: 'videos', label: `4. Videos & Media (${formData.videos.length})`, icon: Video },
-                  { id: 'seo', label: '5. SEO & SERP', icon: Search },
-                  { id: 'author', label: '6. Author & Date', icon: User },
+                  { id: 'what_to_look_for', label: '4. What to Look For', icon: Compass },
+                  { id: 'faqs', label: `5. FAQs (${(formData.faqs || []).length})`, icon: HelpCircle },
+                  { id: 'videos', label: `6. Videos & Media (${formData.videos.length})`, icon: Video },
+                  { id: 'seo', label: '7. SEO & SERP', icon: Search },
+                  { id: 'author', label: '8. Author & Date', icon: User },
                 ].map((tab) => (
                   <button
                     key={tab.id}
@@ -808,7 +867,23 @@ export default function AdminBlogGuidesPage() {
                   />
                 )}
 
-                {/* TAB 4: VIDEOS & MULTIMEDIA */}
+                {/* TAB 4: WHAT TO LOOK FOR BUYER CHECKLIST */}
+                {activeTab === 'what_to_look_for' && (
+                  <WhatToLookForManager
+                    data={formData.what_to_look_for}
+                    onChange={(updated) => setFormData({ ...formData, what_to_look_for: updated })}
+                  />
+                )}
+
+                {/* TAB 5: FREQUENTLY ASKED QUESTIONS */}
+                {activeTab === 'faqs' && (
+                  <ArticleFaqManager
+                    faqs={formData.faqs}
+                    onChange={(updated) => setFormData({ ...formData, faqs: updated })}
+                  />
+                )}
+
+                {/* TAB 6: VIDEOS & MULTIMEDIA */}
                 {activeTab === 'videos' && (
                   <VideoEmbedManager
                     videos={formData.videos}
@@ -1109,6 +1184,16 @@ export default function AdminBlogGuidesPage() {
                   {/* 4. How We Tested Methodology Live Preview */}
                   {formData.how_we_tested && formData.how_we_tested.enabled !== false && (
                     <HowWeTestedSection data={formData.how_we_tested} />
+                  )}
+
+                  {/* 5. What to Look For Buyer Guide Live Preview */}
+                  {formData.what_to_look_for && formData.what_to_look_for.enabled !== false && (
+                    <WhatToLookForSection data={formData.what_to_look_for} />
+                  )}
+
+                  {/* 6. Frequently Asked Questions Live Preview */}
+                  {formData.faqs && formData.faqs.length > 0 && (
+                    <ArticleFaqSection faqs={formData.faqs} />
                   )}
 
                   {/* Rich Article Body Content */}

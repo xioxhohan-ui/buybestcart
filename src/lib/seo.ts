@@ -1,4 +1,4 @@
-import { Product, Article, FAQ } from '@/types';
+import { Product, Article, FAQ, ArticleFaqItem } from '@/types';
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://buybestcart.shop';
 
@@ -67,7 +67,7 @@ export function generateArticleJsonLd(article: Article) {
   };
 }
 
-export function generateFaqJsonLd(faqs: FAQ[]) {
+export function generateFaqJsonLd(faqs: (FAQ | ArticleFaqItem)[]) {
   return {
     '@context': 'https://schema.org',
     '@type': 'FAQPage',
