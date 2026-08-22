@@ -31,7 +31,7 @@ export async function generateMetadata({ params }: ComparisonPageProps): Promise
 
   const siteUrl = 'https://buybestcart.shop';
   const canonicalUrl = `${siteUrl}/compare/${slug}`;
-  const title = comparison.seo_title || `${comparison.title} — Head-to-Head Comparison | Buy Best Cart`;
+  const title = comparison.seo_title || comparison.title;
   const description =
     comparison.seo_description ||
     comparison.description ||

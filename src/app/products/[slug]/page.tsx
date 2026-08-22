@@ -7,7 +7,7 @@ import { Product } from '@/types';
 import Breadcrumbs from '@/components/common/Breadcrumbs';
 import AffiliateCTA from '@/components/products/AffiliateCTA';
 import FAQSection from '@/components/common/FAQSection';
-import { generateProductJsonLd } from '@/lib/seo';
+import { generateProductJsonLd, optimizeSeoTitle } from '@/lib/seo';
 import { formatPrice } from '@/lib/region';
 import ProductGrid from '@/components/products/ProductGrid';
 import ProductGallery from '@/components/products/ProductGallery';
@@ -31,7 +31,7 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
     return { title: 'Product Not Found | Buy Best Cart' };
   }
 
-  const title = product.seo_title || `${product.title} — Price, Specs & Reviews | Buy Best Cart`;
+  const title = product.seo_title || optimizeSeoTitle(product.title);
   const description = product.seo_description || product.short_description || `Read our in-depth testing and verified Amazon pricing for ${product.title}.`;
   const siteUrl = 'https://buybestcart.shop';
   const rawCanonical = product.canonical_url ? product.canonical_url.replace(/https?:\/\/(www\.)?bestbuycart\.com/g, siteUrl) : null;

@@ -22,7 +22,7 @@ export async function generateMetadata({ params }: GuidePageProps): Promise<Meta
 
   if (!article || article.status !== 'published') return { title: 'Guide Not Found | Buy Best Cart' };
 
-  const title = article.seo_title || `${article.title} | Buy Best Cart Editorial`;
+  const title = article.seo_title || article.title;
   const description = article.seo_description || article.excerpt || `Read the complete buying guide and lab recommendations for ${article.title}.`;
   const siteUrl = 'https://buybestcart.shop';
   const rawCanonical = article.canonical_url ? article.canonical_url.replace(/https?:\/\/(www\.)?bestbuycart\.com/g, siteUrl) : null;

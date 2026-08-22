@@ -31,7 +31,7 @@ export async function generateMetadata({ params }: CategoryPageProps): Promise<M
   }
 
   return {
-    title: category.seo_title || `Best ${category.name} of 2026 — Top Picks & Buying Guide | Buy Best Cart`,
+    title: category.seo_title || `Best ${category.name} of 2026 | Buy Best Cart`,
     description: category.seo_description || category.description || `Discover the highest-rated ${category.name} ranked by experts with verified Amazon pricing.`,
   };
 }

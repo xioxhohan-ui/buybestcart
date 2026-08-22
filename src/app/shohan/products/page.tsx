@@ -29,6 +29,8 @@ import {
 } from 'lucide-react';
 import { formatPrice } from '@/lib/region';
 import Link from 'next/link';
+import SeoTitleAdvisor from '@/components/admin/SeoTitleAdvisor';
+import { optimizeSeoTitle } from '@/lib/seo';
 
 const DEPARTMENTS = [
   'Electronics',
@@ -520,7 +522,7 @@ export default function AdminProductsPage() {
       who_should_buy: formData.who_should_buy,
       who_should_avoid: formData.who_should_avoid,
       key_highlights: featureRows.filter((f) => f.feature && f.feature.trim()).map((f) => f.feature.trim()),
-      seo_title: formData.seo_title || `${formData.title} — Price, Specs & Reviews | Buy Best Cart`,
+      seo_title: formData.seo_title || optimizeSeoTitle(formData.title),
       seo_description: formData.seo_description || formData.short_description || `Read our in-depth lab testing and review of the ${formData.title} with verified Amazon pricing.`,
       canonical_url: formData.canonical_url || `https://buybestcart.shop/products/${generatedSlug}`,
       og_image: formData.og_image || formData.thumbnail_url,
@@ -1171,76 +1173,32 @@ export default function AdminProductsPage() {
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem' }}>
                   <Globe size={16} color="var(--green-accent)" />
                   <span style={{ fontSize: '0.875rem', fontWeight: 800, color: 'var(--text-primary)', letterSpacing: '0.02em' }}>
-                    GOOGLE SEARCH ENGINE OPTIMIZATION (SEO) & URL SLUG
+                    GOOGLE SEARCH ENGINE OPTIMIZATION (SEO) &amp; URL SLUG
                   </span>
                 </div>
 
-                {/* Google Live SERP Preview */}
-                <div style={{ background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 'var(--radius-sm)', padding: '1rem', marginBottom: '1rem', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
-                  <div style={{ fontSize: '0.6875rem', color: '#64748B', fontWeight: 700, textTransform: 'uppercase', marginBottom: '0.35rem' }}>
-                    Google Search Result Snippet Preview:
-                  </div>
-                  <div style={{ fontSize: '0.8125rem', color: '#202124', marginBottom: '0.15rem' }}>
-                    https://buybestcart.shop › products › <strong style={{ color: '#1A0DAB' }}>{effectiveSlug}</strong>
-                  </div>
-                  <div style={{ fontSize: '1.125rem', color: '#1A0DAB', fontWeight: 500, lineHeight: 1.3, marginBottom: '0.25rem', textDecoration: 'underline', cursor: 'pointer' }}>
-                    {effectiveSeoTitle}
-                  </div>
-                  <div style={{ fontSize: '0.8125rem', color: '#4D5156', lineHeight: 1.45 }}>
-                    {effectiveSeoDesc.slice(0, 160)}...
-                  </div>
-                </div>
-
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '0.75rem' }}>
-                  <div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '0.35rem' }}>
-                      <label style={{ fontSize: '0.8125rem', fontWeight: 700 }}>
-                        SEO Meta Title (Google SERP)
-                      </label>
-                      <span style={{ fontSize: '0.6875rem', color: formData.seo_title.length > 60 ? 'var(--danger)' : 'var(--text-muted)' }}>
-                        {formData.seo_title.length}/60 chars
-                      </span>
-                    </div>
-                    <input
-                      type="text"
-                      placeholder="Custom Google Title (Defaults to dynamic template)"
-                      value={formData.seo_title}
-                      onChange={(e) => setFormData({ ...formData, seo_title: e.target.value })}
-                      style={{ width: '100%', padding: '0.5rem', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-strong)', fontSize: '0.8125rem', background: '#FFFFFF' }}
-                    />
-                  </div>
-
-                  <div>
-                    <label style={{ display: 'block', fontSize: '0.8125rem', fontWeight: 700, marginBottom: '0.35rem' }}>
-                      Custom URL Slug (Link: /products/{formData.slug || 'slug'})
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="e.g. sony-wh-1000xm5-wireless-headphones"
-                      value={formData.slug}
-                      onChange={(e) => setFormData({ ...formData, slug: e.target.value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') })}
-                      style={{ width: '100%', padding: '0.5rem', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-strong)', fontSize: '0.8125rem', background: '#FFFFFF', fontFamily: 'monospace' }}
-                    />
-                  </div>
-                </div>
-
-                <div style={{ marginBottom: '0.75rem' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '0.35rem' }}>
-                    <label style={{ fontSize: '0.8125rem', fontWeight: 700 }}>
-                      SEO Meta Description (Google Rich Snippet)
-                    </label>
-                    <span style={{ fontSize: '0.6875rem', color: formData.seo_description.length > 160 ? 'var(--danger)' : 'var(--text-muted)' }}>
-                      {formData.seo_description.length}/160 chars
-                    </span>
-                  </div>
-                  <textarea
-                    rows={2}
-                    placeholder="Search engine summary. Describe key lab specs and buying value..."
-                    value={formData.seo_description}
-                    onChange={(e) => setFormData({ ...formData, seo_description: e.target.value })}
-                    style={{ width: '100%', padding: '0.5rem', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-strong)', fontSize: '0.8125rem', background: '#FFFFFF' }}
+                <div style={{ marginBottom: '1rem' }}>
+                  <label style={{ display: 'block', fontSize: '0.8125rem', fontWeight: 700, marginBottom: '0.35rem' }}>
+                    Custom URL Slug (Link: /products/{formData.slug || 'slug'})
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="e.g. sony-wh-1000xm5-wireless-headphones"
+                    value={formData.slug}
+                    onChange={(e) => setFormData({ ...formData, slug: e.target.value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') })}
+                    style={{ width: '100%', padding: '0.5rem', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-strong)', fontSize: '0.8125rem', background: '#FFFFFF', fontFamily: 'monospace' }}
                   />
                 </div>
+
+                <SeoTitleAdvisor
+                  title={formData.seo_title}
+                  onChange={(newTitle) => setFormData({ ...formData, seo_title: newTitle })}
+                  rawEntityTitle={formData.title}
+                  slug={formData.slug}
+                  pathPrefix="products"
+                  description={formData.seo_description}
+                  onDescriptionChange={(newDesc) => setFormData({ ...formData, seo_description: newDesc })}
+                />
 
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
                   <div>
