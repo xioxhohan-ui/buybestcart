@@ -391,9 +391,7 @@ export default function AdminArticlesCMSPage() {
                   description={formData.seo_description}
                   onDescriptionChange={(newDesc) => setFormData({ ...formData, seo_description: newDesc })}
                 />
-              </div>
-
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginTop: '1rem' }}>
                   <div>
                     <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, marginBottom: '0.25rem' }}>
                       Canonical URL Override
