@@ -233,6 +233,17 @@ export default function TopProductsManager({ products = [], onChange }: TopProdu
     }
   };
 
+  const handleAutoRankByScore = () => {
+    const sorted = [...products].sort((a, b) => (b.score || 0) - (a.score || 0));
+    const reindexed = sorted.map((item, idx) => ({
+      ...item,
+      position: idx + 1,
+      rank: idx + 1,
+      badge: idx === 0 && (!item.badge || item.badge.includes('Top Pick') || item.badge.includes('Top Ranked')) ? 'Best Overall' : item.badge,
+    }));
+    onChange(reindexed);
+  };
+
   return (
     <div style={{ background: 'var(--bg-subtle)', border: '1px solid var(--border)', borderRadius: 'var(--radius-lg)', padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
       {/* Header & Quick Action Bar */}
@@ -243,11 +254,21 @@ export default function TopProductsManager({ products = [], onChange }: TopProdu
             <span>2. Our Top Picks &amp; Detailed Review Builder ({products.length} Products Included)</span>
           </div>
           <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', margin: '0.25rem 0 0 0' }}>
-            Choose any number of products (Top 5, Top 6, Top 7, Top 8, Top 9, Top 10, Top 15, Top 20+). Configure customizable specifications, galleries, pros/cons, &quot;best for&quot; callouts, and Amazon CTA buttons.
+            Configure up to 20+ products with custom ranking scores, award badges, specifications, pros/cons, and Amazon CTA links.
           </p>
         </div>
 
         <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
+          <button
+            type="button"
+            onClick={handleAutoRankByScore}
+            className="btn btn-secondary btn-sm"
+            style={{ fontSize: '0.6875rem', padding: '0.3rem 0.6rem', display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}
+            title="Automatically sort products by Overall Lab Score (Highest to Lowest) and reindex ranks"
+          >
+            <Sparkles size={12} />
+            <span>Auto-Rank by Score</span>
+          </button>
           {/* Quick Import from Catalog Dropdown */}
           <select
             onChange={(e) => {
@@ -558,6 +579,22 @@ export default function TopProductsManager({ products = [], onChange }: TopProdu
                       </div>
 
                       <div>
+                        <label style={{ display: 'block', fontSize: '0.6875rem', fontWeight: 800, textTransform: 'uppercase', marginBottom: '0.25rem', color: 'var(--green-deep)' }}>
+                          Lab Score (/10)
+                        </label>
+                        <input
+                          type="number"
+                          step="0.1"
+                          min="1"
+                          max="10"
+                          value={item.score ?? ''}
+                          onChange={(e) => handleUpdateItem(idx, 'score', parseFloat(e.target.value) || undefined)}
+                          placeholder="e.g. 9.8"
+                          style={{ width: '100%', padding: '0.4rem 0.6rem', fontSize: '0.8125rem', fontWeight: 800, borderRadius: 'var(--radius-xs)', border: '1px solid var(--green-border)', background: 'var(--green-light)' }}
+                        />
+                      </div>
+
+                      <div>
                         <label style={{ display: 'block', fontSize: '0.6875rem', fontWeight: 800, textTransform: 'uppercase', marginBottom: '0.25rem' }}>
                           CTA Button Label
                         </label>
@@ -569,6 +606,20 @@ export default function TopProductsManager({ products = [], onChange }: TopProdu
                           style={{ width: '100%', padding: '0.4rem 0.6rem', fontSize: '0.8125rem', fontWeight: 700, borderRadius: 'var(--radius-xs)', border: '1px solid var(--border-strong)' }}
                         />
                       </div>
+                    </div>
+
+                    {/* Ranking Reason / Standout Advantage */}
+                    <div>
+                      <label style={{ display: 'block', fontSize: '0.6875rem', fontWeight: 800, textTransform: 'uppercase', marginBottom: '0.25rem', color: '#B45309' }}>
+                        Short Reason for This Ranking / Standout Factor
+                      </label>
+                      <input
+                        type="text"
+                        value={item.ranking_reason || ''}
+                        onChange={(e) => handleUpdateItem(idx, 'ranking_reason', e.target.value)}
+                        placeholder="e.g. Industry-leading acoustic suppression, all-day comfort, and 30-hour battery life."
+                        style={{ width: '100%', padding: '0.45rem 0.65rem', fontSize: '0.8125rem', borderRadius: 'var(--radius-xs)', border: '1px solid var(--border-strong)' }}
+                      />
                     </div>
 
                     {/* Image & Gallery URLs */}

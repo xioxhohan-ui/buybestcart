@@ -56,6 +56,7 @@ import DetailedProductReviewsSection from '@/components/guides/DetailedProductRe
 import HowWeTestedSection from '@/components/guides/HowWeTestedSection';
 import WhatToLookForSection from '@/components/guides/WhatToLookForSection';
 import ArticleFaqSection from '@/components/guides/ArticleFaqSection';
+import TopTenRankingSection from '@/components/guides/TopTenRankingSection';
 import ArticleContentRenderer from '@/components/guides/ArticleContentRenderer';
 import PriceDisplay from '@/components/common/PriceDisplay';
 import { HowWeTestedData, WhatToLookForData, ArticleFaqItem } from '@/types';
@@ -1194,6 +1195,11 @@ export default function AdminBlogGuidesPage() {
                   {/* 6. Frequently Asked Questions Live Preview */}
                   {formData.faqs && formData.faqs.length > 0 && (
                     <ArticleFaqSection faqs={formData.faqs} />
+                  )}
+
+                  {/* 7. Top 10 Product Ranking Live Preview */}
+                  {formData.top_products.length > 0 && (
+                    <TopTenRankingSection products={formData.top_products} />
                   )}
 
                   {/* Rich Article Body Content */}

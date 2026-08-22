@@ -257,6 +257,8 @@ export interface TopProductItem {
   asin?: string;
   product_slug?: string;
   rating?: number;
+  score?: number;
+  ranking_reason?: string;
   review_count?: number;
 }
 

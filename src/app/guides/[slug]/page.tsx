@@ -12,6 +12,7 @@ import DetailedProductReviewsSection from '@/components/guides/DetailedProductRe
 import HowWeTestedSection from '@/components/guides/HowWeTestedSection';
 import WhatToLookForSection from '@/components/guides/WhatToLookForSection';
 import ArticleFaqSection from '@/components/guides/ArticleFaqSection';
+import TopTenRankingSection from '@/components/guides/TopTenRankingSection';
 import ArticleContentRenderer from '@/components/guides/ArticleContentRenderer';
 
 interface GuidePageProps {
@@ -252,6 +253,11 @@ export default async function GuideDetailPage({ params }: GuidePageProps) {
       {/* 6. Frequently Asked Questions (FAQ) Section */}
       {article.faqs && article.faqs.length > 0 && (
         <ArticleFaqSection faqs={article.faqs} />
+      )}
+
+      {/* 7. Final Top 10 Product Ranking Summary Section */}
+      {topProducts.length > 0 && (
+        <TopTenRankingSection products={topProducts} />
       )}
 
       {/* Rich Article Body Content */}
