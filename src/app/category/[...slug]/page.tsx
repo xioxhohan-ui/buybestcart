@@ -7,6 +7,7 @@ import { Category, Product } from '@/types';
 import Breadcrumbs from '@/components/common/Breadcrumbs';
 import ProductGrid from '@/components/products/ProductGrid';
 import FAQSection from '@/components/common/FAQSection';
+import CategorySortSelect from '@/components/category/CategorySortSelect';
 
 interface CategoryPageProps {
   params: Promise<{ slug: string[] }>;
@@ -136,25 +137,8 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
             Top Ranked {category.name} ({products ? products.length : 0} items)
           </h2>
 
-          {/* Simple Sort Selector */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.875rem' }}>
-            <span style={{ color: 'var(--text-muted)' }}>Sort by:</span>
-            <select
-              style={{
-                padding: '0.375rem 0.75rem',
-                borderRadius: 'var(--radius)',
-                border: '1px solid var(--border)',
-                background: 'var(--bg-surface)',
-                fontSize: '0.875rem',
-              }}
-              defaultValue={resolvedSearchParams.sort || 'rank'}
-            >
-              <option value="rank">Recommended Rank</option>
-              <option value="rating">Highest Rated</option>
-              <option value="price_asc">Price: Low to High</option>
-              <option value="price_desc">Price: High to Low</option>
-            </select>
-          </div>
+          {/* Interactive URL-Synced Sort Selector */}
+          <CategorySortSelect currentSort={resolvedSearchParams.sort} />
         </div>
 
         <ProductGrid products={(products as Product[]) || []} ranked={true} />

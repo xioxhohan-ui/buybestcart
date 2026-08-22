@@ -7,43 +7,61 @@ export async function POST(request: Request) {
     const body = await request.json();
     const { name, email, subject, message } = body;
 
-    if (!name || !email || !message) {
+    if (!name || typeof name !== 'string' || !name.trim()) {
       return NextResponse.json(
-        { success: false, error: 'Name, email, and message are required fields.' },
+        { success: false, error: 'Your name is required.' },
         { status: 400 }
       );
     }
 
+    if (!email || typeof email !== 'string' || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
+      return NextResponse.json(
+        { success: false, error: 'A valid email address is required.' },
+        { status: 400 }
+      );
+    }
+
+    if (!message || typeof message !== 'string' || !message.trim()) {
+      return NextResponse.json(
+        { success: false, error: 'Message content cannot be empty.' },
+        { status: 400 }
+      );
+    }
+
+    const cleanName = name.trim().slice(0, 100);
+    const cleanEmail = email.trim().toLowerCase().slice(0, 120);
+    const cleanSubject = (subject && typeof subject === 'string' ? subject.trim().slice(0, 150) : '') || 'Editorial Inquiry';
+    const cleanMessage = message.trim().slice(0, 5000);
+
     const supabase = createServerClient();
-    const sanitizedSubject = subject || 'Editorial Inquiry';
     const now = new Date().toISOString();
 
     // 1. Insert into messages table
     const { error: msgErr } = await supabase.from('messages').insert([
       {
-        name,
-        email,
-        subject: sanitizedSubject,
-        message,
+        name: cleanName,
+        email: cleanEmail,
+        subject: cleanSubject,
+        message: cleanMessage,
         status: 'unread',
         created_at: now,
       },
     ]);
 
+    if (msgErr) {
+      console.warn('Supabase messages insert notice:', msgErr.message);
+    }
+
     // 2. Insert into system_logs table
-    const { error: logErr } = await supabase.from('system_logs').insert([
+    await supabase.from('system_logs').insert([
       {
         level: 'info',
         category: 'contact_message',
-        message: `New contact message from ${name} (${email}): ${sanitizedSubject}`,
-        metadata: { name, email, subject: sanitizedSubject, message },
+        message: `New contact message from ${cleanName} (${cleanEmail}): ${cleanSubject}`,
+        metadata: { name: cleanName, email: cleanEmail, subject: cleanSubject },
         created_at: now,
       },
     ]);
-
-    if (msgErr && logErr) {
-      console.warn('Supabase log insert notice:', msgErr.message || logErr.message);
-    }
 
     // 3. Revalidate cache for real-time admin update
     await triggerRevalidation();
