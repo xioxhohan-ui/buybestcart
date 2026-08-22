@@ -26,11 +26,15 @@ import {
   Search,
   RefreshCw,
   Link2,
+  Download,
+  FileCode,
+  Upload,
 } from 'lucide-react';
 import { formatPrice } from '@/lib/region';
 import Link from 'next/link';
 import SeoTitleAdvisor from '@/components/admin/SeoTitleAdvisor';
 import { optimizeSeoTitle } from '@/lib/seo';
+import { downloadProductJson, parseProductJsonToTopProducts } from '@/lib/productTemplate';
 
 const DEPARTMENTS = [
   'Electronics',
@@ -253,6 +257,105 @@ export default function AdminProductsPage() {
     ]);
 
     setShowModal(true);
+  };
+
+  const handleImportProductJsonFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      try {
+        const rawJson = event.target?.result as string;
+        const parsedList = parseProductJsonToTopProducts(rawJson);
+        if (parsedList.length > 0) {
+          const item = parsedList[0];
+          setEditingProduct(null);
+          setFormData({
+            title: item.title || '',
+            slug: item.product_slug || '',
+            asin: item.asin || '',
+            brand_id: brands[0]?.id || '',
+            category_id: categories[0]?.id || '',
+            manufacturer: (item as any).brand || '',
+            short_description: item.short_description || '',
+            description: item.full_description || '',
+            thumbnail_url: item.thumbnail_url || 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=700&auto=format&fit=crop&q=80',
+            price: (item.price || 199.99).toString(),
+            list_price: (item.list_price || 249.99).toString(),
+            currency: item.currency || 'USD',
+            availability: item.availability || 'In Stock',
+            amazon_url: item.buy_url || item.affiliate_url || '',
+            affiliate_url: item.affiliate_url || item.buy_url || '',
+            rating: (item.rating || 4.8).toString(),
+            review_count: (item.review_count || 500).toString(),
+            editorial_score: (item.score || 9.5).toString(),
+            global_rank: (products.length + 1).toString(),
+            category_rank: '1',
+            is_featured: true,
+            is_editor_choice: true,
+            is_deal: false,
+            badge_text: item.badge || 'Best Overall',
+            deal_status: 'none',
+            status: 'active',
+            content_source: 'manual',
+            pros: Array.isArray(item.pros) ? item.pros.join('\n') : '',
+            cons: Array.isArray(item.cons) ? item.cons.join('\n') : '',
+            editor_verdict: item.performance_notes || item.full_description || '',
+            best_for: item.best_for || '',
+            why_we_like_it: item.ranking_reason || '',
+            buying_advice: '',
+            who_should_buy: item.best_for || '',
+            who_should_avoid: item.avoid_if || '',
+            seo_title: '',
+            seo_description: '',
+            canonical_url: '',
+            og_image: item.thumbnail_url || '',
+          });
+
+          // Populate gallery images
+          if (item.gallery_images && item.gallery_images.length > 0) {
+            setGalleryImages(
+              item.gallery_images.map((url, idx) => ({
+                url,
+                alt_text: item.title,
+                is_primary: idx === 0,
+                display_order: idx + 1,
+              }))
+            );
+          }
+
+          // Populate specs
+          if (item.specifications && item.specifications.length > 0) {
+            setSpecRows(
+              item.specifications.map((s, idx) => ({
+                spec_key: s.name,
+                spec_value: s.value,
+                display_order: idx + 1,
+              }))
+            );
+          }
+
+          // Populate features
+          if (item.highlights && item.highlights.length > 0) {
+            setFeatureRows(
+              item.highlights.map((h, idx) => ({
+                feature: h,
+                display_order: idx + 1,
+              }))
+            );
+          }
+
+          setShowModal(true);
+        } else {
+          alert('Could not detect product attributes in the uploaded JSON file.');
+        }
+      } catch (err: any) {
+        alert(`Error reading JSON file: ${err?.message || 'Invalid format'}`);
+      }
+    };
+    reader.readAsText(file);
+    e.target.value = '';
   };
 
   const openEditModal = (p: Product) => {
@@ -660,10 +763,27 @@ export default function AdminProductsPage() {
           </p>
         </div>
 
-        <button onClick={openAddModal} className="btn btn-primary btn-sm" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}>
-          <Plus size={14} />
-          <span>Add New Product</span>
-        </button>
+        <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+          <label
+            className="btn btn-secondary btn-sm"
+            style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', cursor: 'pointer' }}
+            title="Upload and import product from a JSON template file"
+          >
+            <Upload size={14} />
+            <span>Import JSON</span>
+            <input
+              type="file"
+              accept=".json,application/json"
+              style={{ display: 'none' }}
+              onChange={handleImportProductJsonFile}
+            />
+          </label>
+
+          <button onClick={openAddModal} className="btn btn-primary btn-sm" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}>
+            <Plus size={14} />
+            <span>Add New Product</span>
+          </button>
+        </div>
       </div>
 
       {/* Search & Filters */}
@@ -875,6 +995,14 @@ export default function AdminProductsPage() {
                         title="Refresh Amazon price & availability"
                       >
                         <RefreshCw size={12} />
+                      </button>
+                      <button
+                        onClick={() => downloadProductJson(p)}
+                        className="btn btn-secondary btn-sm"
+                        style={{ padding: '0.25rem 0.5rem', fontSize: '0.75rem' }}
+                        title="Export product data to JSON backup"
+                      >
+                        <Download size={12} />
                       </button>
                       <button
                         onClick={() => openEditModal(p)}
@@ -1944,7 +2072,56 @@ export default function AdminProductsPage() {
                 </div>
               </div>
 
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', marginTop: '1rem' }}>
+              {/* Reusable Product List Template Option */}
+              <div
+                style={{
+                  background: 'var(--green-light)',
+                  border: '1px solid var(--green-border)',
+                  borderRadius: 'var(--radius-md)',
+                  padding: '0.875rem 1.25rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  gap: '1rem',
+                  flexWrap: 'wrap',
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flex: 1, minWidth: '240px' }}>
+                  <input
+                    type="checkbox"
+                    id="add_to_product_template"
+                    defaultChecked={true}
+                    style={{ width: '18px', height: '18px', cursor: 'pointer', accentColor: 'var(--green-accent)' }}
+                  />
+                  <div>
+                    <label
+                      htmlFor="add_to_product_template"
+                      style={{ fontSize: '0.875rem', fontWeight: 800, color: 'var(--green-deep)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.35rem' }}
+                    >
+                      <Sparkles size={14} color="var(--green-accent)" />
+                      <span>Add to Product List Template (Reusable in Buying Guides &amp; Blogs)</span>
+                    </label>
+                    <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', margin: '0.15rem 0 0 0' }}>
+                      Keeps this product securely registered in the central Product Catalog with instant 1-click import into any buying guide.
+                    </p>
+                  </div>
+                </div>
+
+                {editingProduct && (
+                  <button
+                    type="button"
+                    onClick={() => downloadProductJson(editingProduct)}
+                    className="btn btn-secondary btn-sm"
+                    style={{ fontSize: '0.75rem', display: 'inline-flex', alignItems: 'center', gap: '0.35rem', whiteSpace: 'nowrap' }}
+                    title="Export complete JSON backup of this product"
+                  >
+                    <Download size={13} />
+                    <span>Export JSON Backup</span>
+                  </button>
+                )}
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', marginTop: '0.5rem' }}>
                 <button type="button" onClick={() => setShowModal(false)} className="btn btn-secondary btn-sm">
                   Cancel
                 </button>
