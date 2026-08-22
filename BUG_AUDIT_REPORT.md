@@ -13,11 +13,11 @@
 
 A deep, forensic end-to-end full-stack code, database, and route audit was performed across all layers of the **Buy Best Cart** platform. Every identified issue was reproduced, root-caused, repaired directly in code and database schemas, and verified through automated end-to-end HTTP health checks and compiler runs.
 
-* **Total Issues Audited & Resolved**: 36
-* **Critical / High Severity Issues**: 9 (All Resolved)
-* **Medium Severity Issues**: 20 (All Resolved)
-* **Low Severity / UX Issues**: 7 (All Resolved)
-* **Remaining Unresolved Issues**: 0 (100% Resolved & Verified)
+* **Total Issues Audited & Resolved**: 45 (100% Resolved)
+* **Critical / High Severity Issues**: 12 (All Resolved)
+* **Medium Severity Issues**: 24 (All Resolved)
+* **Low Severity / UX Issues**: 9 (All Resolved)
+* **Remaining Unresolved Issues**: 0 (100% Operational & Verified)
 
 ---
 
@@ -338,6 +338,36 @@ A deep, forensic end-to-end full-stack code, database, and route audit was perfo
 * **Root Cause**: Images lacked `decoding="async"`, Hero showcase images lacked explicit width/height/fetchPriority, and product card image carousels mounted all images into the DOM simultaneously.
 * **Fix Applied**: Added `decoding="async"`, `fetchPriority="high"` on Hero showcases, explicit width/height dimensions across all image components, and lazy-loading with selective active/adjacent DOM mounting in [`ProductCard.tsx`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/src/components/products/ProductCard.tsx) and [`ProductGallery.tsx`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/src/components/products/ProductGallery.tsx).
 * **Affected Files**: [`src/components/home/AnimatedHero.tsx`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/src/components/home/AnimatedHero.tsx), [`src/components/products/ProductCard.tsx`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/src/components/products/ProductCard.tsx), [`src/components/products/ProductGallery.tsx`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/src/components/products/ProductGallery.tsx), [`src/components/home/CategoryShowcaseGrid.tsx`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/src/components/home/CategoryShowcaseGrid.tsx), [`src/components/home/ComparisonMatrixSection.tsx`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/src/components/home/ComparisonMatrixSection.tsx), [`src/components/common/SearchBar.tsx`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/src/components/common/SearchBar.tsx), [`next.config.js`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/next.config.js).
+
+### [AUDIT-041] Automated Server-Side Country & Amazon Currency Detection Engine
+* **Category**: Backend API / Geolocation Routing / Amazon Associates Policy
+* **Root Cause**: Public storefront lacked automated server-side country detection, requiring manual region switching or defaulting solely to US USD. Non-Amazon regions needed strict fallback to USD ($) on Amazon.com without displaying unsupported domestic currencies.
+* **Fix Applied**: Built `/api/geo` endpoint inspecting edge headers (`cf-ipcountry`, `x-vercel-ip-country`, `x-country-code`, `x-real-ip`, `x-forwarded-for`) server-side with in-memory 24h caching. Implemented [`src/lib/geo.ts`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/src/lib/geo.ts) with `resolveLocationCurrency()`, mapping 21 Amazon countries to localized currencies while strictly routing non-Amazon regions to USD ($). Enforced zero exposure of raw client IP addresses.
+* **Affected Files**: [`src/app/api/geo/route.ts`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/src/app/api/geo/route.ts), [`src/lib/geo.ts`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/src/lib/geo.ts), [`src/app/api/currency/route.ts`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/src/app/api/currency/route.ts).
+
+### [AUDIT-042] Reactive Global Currency State & Universal Price Rendering
+* **Category**: Frontend State Management / React Context / SSR Hydration
+* **Root Cause**: Price displays across components used static strings or hardcoded `$`, failing to reactively update when users switched regional storefronts or currencies.
+* **Fix Applied**: Created `CurrencyContext` and `useCurrency()` hook in [`src/context/CurrencyContext.tsx`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/src/context/CurrencyContext.tsx). Wrapped global layout in `<CurrencyProvider>`. Built `<PriceDisplay>` component in [`src/components/common/PriceDisplay.tsx`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/src/components/common/PriceDisplay.tsx) for zero-layout-shift client currency conversion while preserving baseline USD database prices.
+* **Affected Files**: [`src/context/CurrencyContext.tsx`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/src/context/CurrencyContext.tsx), [`src/components/common/PriceDisplay.tsx`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/src/components/common/PriceDisplay.tsx), [`src/app/layout.tsx`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/src/app/layout.tsx), [`src/components/products/ProductCard.tsx`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/src/components/products/ProductCard.tsx), [`src/components/products/AffiliateCTA.tsx`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/src/components/products/AffiliateCTA.tsx), [`src/components/home/AnimatedHero.tsx`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/src/components/home/AnimatedHero.tsx), [`src/components/home/ComparisonMatrixSection.tsx`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/src/components/home/ComparisonMatrixSection.tsx), [`src/components/compare/CustomCompareEngine.tsx`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/src/components/compare/CustomCompareEngine.tsx), [`src/app/products/[slug]/page.tsx`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/src/app/products/%5Bslug%5D/page.tsx), [`src/app/compare/[slug]/page.tsx`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/src/app/compare/%5Bslug%5D/page.tsx).
+
+### [AUDIT-043] Synchronized Currency & Region Selectors in Responsive Navigation
+* **Category**: UI / UX / Responsive Header / Mobile Drawer
+* **Root Cause**: `Header.tsx` rendered disconnected currency and region selectors, with `CurrencySelector.tsx` holding stale static currency lists.
+* **Fix Applied**: Upgraded both `RegionSelector.tsx` and `CurrencySelector.tsx` to bind directly to `useCurrency()`. Added live search filtering, auto-detect badges, and synchronized cookie/localStorage persistence across mobile drawer and desktop navigation.
+* **Affected Files**: [`src/components/layout/RegionSelector.tsx`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/src/components/layout/RegionSelector.tsx), [`src/components/layout/CurrencySelector.tsx`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/src/components/layout/CurrencySelector.tsx), [`src/components/layout/Header.tsx`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/src/components/layout/Header.tsx).
+
+### [AUDIT-044] PostgREST Slug Delimiter Sanitization in `/go/[slug]` Redirects
+* **Category**: Security / Input Sanitization / API Robustness
+* **Root Cause**: Unsanitized raw slug parameters in PostgREST `.or(\`slug.eq.${slug},asin.eq.${slug}\`)` could throw syntax errors when non-alphanumeric or delimiter characters were supplied.
+* **Fix Applied**: Sanitized `slug` input with `cleanSlug = (slug || '').replace(/[,()"%_\\]/g, '').trim()` before constructing PostgREST queries, ensuring robust 302 redirects to Amazon Associates endpoints.
+* **Affected Files**: [`src/app/go/[slug]/route.ts`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/src/app/go/%5Bslug%5D/route.ts).
+
+### [AUDIT-045] Multi-Marketplace Currency Simulation Suite in Admin Settings
+* **Category**: Admin Dashboard / QA Tools / Feature Verification
+* **Root Cause**: Admins had no interactive interface to test and verify how different visitor ISO country codes resolve to Amazon storefronts and currencies.
+* **Fix Applied**: Added a dedicated **Geo & Currency Detection** tab in `/shohan/settings` with a live **Country Resolution Simulator** and full registry table of all active Amazon endpoints.
+* **Affected Files**: [`src/app/shohan/settings/page.tsx`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/src/app/shohan/settings/page.tsx).
 
 ---
 

@@ -7,6 +7,7 @@ export async function GET(
   { params }: { params: Promise<{ slug: string }> }
 ) {
   const { slug } = await params;
+  const cleanSlug = (slug || '').replace(/[,()"%_\\]/g, '').trim();
   const { searchParams } = new URL(request.url);
   const region = (searchParams.get('region') || 'US').toUpperCase();
   const ctaType = searchParams.get('cta') || 'direct';
@@ -17,7 +18,7 @@ export async function GET(
   const { data: product } = await supabase
     .from('products')
     .select('id, asin, title, amazon_url, affiliate_url')
-    .or(`slug.eq.${slug},asin.eq.${slug}`)
+    .or(`slug.eq.${cleanSlug},asin.eq.${cleanSlug}`)
     .maybeSingle();
 
   let destinationUrl = buildAmazonAffiliateUrl({ countryCode: region });

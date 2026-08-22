@@ -1,47 +1,48 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { DollarSign, ChevronDown } from 'lucide-react';
-import { getExchangeRates } from '@/lib/api/currency';
+import React, { useState, useRef, useEffect } from 'react';
+import { ChevronDown, DollarSign, Check, Sparkles } from 'lucide-react';
+import { useCurrency } from '@/context/CurrencyContext';
+import { AVAILABLE_CURRENCIES } from '@/lib/geo';
 
 interface CurrencySelectorProps {
-  onCurrencyChange?: (currency: string, rates: Record<string, number>) => void;
   compact?: boolean;
 }
 
-export default function CurrencySelector({ onCurrencyChange, compact = false }: CurrencySelectorProps) {
-  const [selectedCurrency, setSelectedCurrency] = useState<string>('USD');
+export default function CurrencySelector({ compact = false }: CurrencySelectorProps) {
+  const { currency, setCurrency, isAutoDetected } = useCurrency();
   const [isOpen, setIsOpen] = useState<boolean>(false);
-  const [rates, setRates] = useState<Record<string, number>>({ USD: 1.0 });
-
-  const currencies = [
-    { code: 'USD', name: 'US Dollar', symbol: '$' },
-    { code: 'EUR', name: 'Euro', symbol: '€' },
-    { code: 'GBP', name: 'British Pound', symbol: '£' },
-    { code: 'CAD', name: 'Canadian Dollar', symbol: 'CA$' },
-    { code: 'AUD', name: 'Australian Dollar', symbol: 'A$' },
-    { code: 'JPY', name: 'Japanese Yen', symbol: '¥' },
-    { code: 'INR', name: 'Indian Rupee', symbol: '₹' },
-  ];
+  const dropdownRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    getExchangeRates().then((data) => {
-      setRates(data);
-    });
-  }, []);
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setIsOpen(false);
+    };
+    const handleClickOutside = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener('keydown', handleKeyDown);
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isOpen]);
 
   const handleSelect = (code: string) => {
-    setSelectedCurrency(code);
+    setCurrency(code);
     setIsOpen(false);
-    if (onCurrencyChange) {
-      onCurrencyChange(code, rates);
-    }
   };
 
-  const current = currencies.find((c) => c.code === selectedCurrency) || currencies[0];
+  const current = AVAILABLE_CURRENCIES.find((c) => c.code === currency) || AVAILABLE_CURRENCIES[0];
 
   return (
-    <div style={{ position: 'relative', display: 'inline-block' }}>
+    <div ref={dropdownRef} style={{ position: 'relative', display: 'inline-block' }}>
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="currency-selector-btn"
@@ -60,68 +61,87 @@ export default function CurrencySelector({ onCurrencyChange, compact = false }: 
           color: compact ? '#A3A3A3' : 'var(--text-primary)',
           cursor: 'pointer',
           whiteSpace: 'nowrap',
+          transition: 'all 0.15s ease',
         }}
-        aria-label="Select Currency"
+        aria-label={`Select Currency (Currently ${current.code})`}
       >
-        <DollarSign size={16} color="var(--green-gold)" />
+        <span style={{ fontWeight: 800, color: 'var(--green-accent)', fontSize: '0.85rem' }}>
+          {current.symbol}
+        </span>
         <span className="currency-selector-text" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}>
           <span>{current.code}</span>
-          <span style={{ color: 'var(--text-muted)', fontSize: '0.6875rem' }}>({current.symbol})</span>
         </span>
-        <ChevronDown size={13} color="var(--text-muted)" />
+        <ChevronDown size={12} color="var(--text-muted)" style={{ transform: isOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.15s ease' }} />
       </button>
 
       {isOpen && (
-        <>
-          <div
-            style={{ position: 'fixed', inset: 0, zIndex: 100 }}
-            onClick={() => setIsOpen(false)}
-          />
-          <div
-            style={{
-              position: 'absolute',
-              top: 'calc(100% + 0.25rem)',
-              right: 0,
-              background: 'var(--bg-surface)',
-              border: '1px solid var(--border-strong)',
-              borderRadius: 'var(--radius-xs)',
-              boxShadow: 'var(--shadow-hover)',
-              zIndex: 200,
-              minWidth: '180px',
-              padding: '0.375rem',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '0.125rem',
-            }}
-          >
-            <div style={{ fontSize: '0.6875rem', fontWeight: 700, color: 'var(--text-muted)', padding: '0.375rem 0.5rem', textTransform: 'uppercase', fontFamily: 'var(--font-mono)' }}>
-              Select Display Currency
-            </div>
-            {currencies.map((c) => (
-              <button
-                key={c.code}
-                onClick={() => handleSelect(c.code)}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  padding: '0.45rem 0.75rem',
-                  borderRadius: 'var(--radius-xs)',
-                  background: selectedCurrency === c.code ? 'var(--green-light)' : 'transparent',
-                  color: selectedCurrency === c.code ? 'var(--green-deep)' : 'var(--text-primary)',
-                  border: selectedCurrency === c.code ? '1px solid var(--green-border)' : '1px solid transparent',
-                  fontSize: '0.8125rem',
-                  fontWeight: selectedCurrency === c.code ? 700 : 500,
-                  cursor: 'pointer',
-                  textAlign: 'left',
-                }}
-              >
-                <span>{c.name}</span>
-                <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 700 }}>{c.symbol}</span>
-              </button>
-            ))}
+        <div
+          style={{
+            position: 'absolute',
+            top: 'calc(100% + 0.35rem)',
+            right: 0,
+            background: 'var(--bg-surface)',
+            border: '1px solid var(--border-strong)',
+            borderRadius: 'var(--radius-md)',
+            boxShadow: 'var(--shadow-hover)',
+            zIndex: 300,
+            minWidth: '240px',
+            maxWidth: '90vw',
+            padding: '0.5rem',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '0.25rem',
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.25rem 0.5rem 0.5rem 0.5rem', borderBottom: '1px solid var(--border)' }}>
+            <span style={{ fontSize: '0.6875rem', fontWeight: 800, color: 'var(--text-muted)', textTransform: 'uppercase', fontFamily: 'var(--font-mono)' }}>
+              Select Currency
+            </span>
+            {isAutoDetected && (
+              <span style={{ fontSize: '0.625rem', color: 'var(--green-accent)', background: 'var(--green-light)', padding: '0.1rem 0.35rem', borderRadius: 'var(--radius-xs)', display: 'inline-flex', alignItems: 'center', gap: '0.2rem', fontWeight: 700 }}>
+                <Sparkles size={10} /> Auto-Detected
+              </span>
+            )}
           </div>
-        </>
+
+          <div style={{ maxHeight: '220px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '0.15rem' }}>
+            {AVAILABLE_CURRENCIES.map((c) => {
+              const isSelected = currency === c.code;
+              return (
+                <button
+                  key={c.code}
+                  onClick={() => handleSelect(c.code)}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    padding: '0.45rem 0.65rem',
+                    borderRadius: 'var(--radius-xs)',
+                    background: isSelected ? 'var(--green-light)' : 'transparent',
+                    color: isSelected ? 'var(--green-deep)' : 'var(--text-primary)',
+                    border: isSelected ? '1px solid var(--green-border)' : '1px solid transparent',
+                    fontSize: '0.8125rem',
+                    fontWeight: isSelected ? 800 : 500,
+                    cursor: 'pointer',
+                    textAlign: 'left',
+                    transition: 'all 0.1s ease',
+                  }}
+                >
+                  <span style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
+                    <span>{c.flag}</span>
+                    <span>{c.name}</span>
+                  </span>
+                  <span style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                    <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 700 }}>
+                      {c.code} ({c.symbol})
+                    </span>
+                    {isSelected && <Check size={12} color="var(--green-accent)" />}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
       )}
     </div>
   );
