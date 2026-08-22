@@ -8,7 +8,7 @@ import Breadcrumbs from '@/components/common/Breadcrumbs';
 import AffiliateCTA from '@/components/products/AffiliateCTA';
 import FAQSection from '@/components/common/FAQSection';
 import { generateProductJsonLd, optimizeSeoTitle } from '@/lib/seo';
-import { formatPrice } from '@/lib/region';
+import PriceDisplay from '@/components/common/PriceDisplay';
 import ProductGrid from '@/components/products/ProductGrid';
 import ProductGallery from '@/components/products/ProductGallery';
 
@@ -214,11 +214,11 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
           >
             <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.75rem', marginBottom: '0.35rem' }}>
               <span style={{ fontSize: '2rem', fontWeight: 800, color: 'var(--text-primary)' }}>
-                {formatPrice(product.price, product.currency || 'USD')}
+                <PriceDisplay amount={product.price} />
               </span>
               {product.list_price && product.list_price > (product.price || 0) && (
                 <span style={{ fontSize: '1.125rem', color: 'var(--text-muted)', textDecoration: 'line-through' }}>
-                  {formatPrice(product.list_price, product.currency || 'USD')}
+                  <PriceDisplay amount={product.list_price} />
                 </span>
               )}
             </div>

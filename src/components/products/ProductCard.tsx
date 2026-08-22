@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { Award, Star, ChevronLeft, ChevronRight, Images } from 'lucide-react';
 import { Product } from '@/types';
 import AffiliateCTA from './AffiliateCTA';
-import { formatPrice } from '@/lib/region';
+import { useCurrency } from '@/context/CurrencyContext';
 
 interface ProductCardProps {
   product: Product;
@@ -13,6 +13,7 @@ interface ProductCardProps {
 }
 
 export default function ProductCard({ product, rank }: ProductCardProps) {
+  const { formatPrice } = useCurrency();
   const displayRank = rank || product.global_rank || product.category_rank;
   const [isHovered, setIsHovered] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -270,11 +271,11 @@ export default function ProductCard({ product, rank }: ProductCardProps) {
         <div className="product-card-price-row">
           <div>
             <span className="price-current">
-              {formatPrice(product.price, product.currency || 'USD')}
+              {formatPrice(product.price)}
             </span>
             {product.list_price && product.list_price > (product.price || 0) && (
               <span className="price-list">
-                {formatPrice(product.list_price, product.currency || 'USD')}
+                {formatPrice(product.list_price)}
               </span>
             )}
           </div>

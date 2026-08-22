@@ -7,7 +7,7 @@ import { Sparkles, Award } from 'lucide-react';
 import SearchBar from '@/components/common/SearchBar';
 import { getAnimationProfile } from '@/lib/animation';
 import { Product } from '@/types';
-import { formatPrice } from '@/lib/region';
+import { useCurrency } from '@/context/CurrencyContext';
 
 interface AnimatedHeroProps {
   heading?: string;
@@ -24,6 +24,7 @@ export default function AnimatedHero({
   eyebrow = 'THE 2026 SHOPPING & PRODUCT REVIEW EDIT',
   featuredProduct,
 }: AnimatedHeroProps) {
+  const { formatPrice } = useCurrency();
   const containerRef = useRef<HTMLDivElement | null>(null);
   const eyebrowRef = useRef<HTMLDivElement | null>(null);
   const headingLine1Ref = useRef<HTMLHeadingElement | null>(null);
@@ -322,7 +323,7 @@ export default function AnimatedHero({
                       fontFamily: 'var(--font-display)',
                     }}
                   >
-                    {formatPrice(showcaseItem.price, 'USD')}
+                    {formatPrice(showcaseItem.price)}
                   </div>
                 </div>
 

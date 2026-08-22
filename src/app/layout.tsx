@@ -4,6 +4,7 @@ import './globals.css';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import SmoothProvider from '@/components/animation/SmoothProvider';
+import { CurrencyProvider } from '@/context/CurrencyContext';
 import { generateWebSiteJsonLd } from '@/lib/seo';
 import { getSiteConfiguration } from '@/lib/settings';
 import { Analytics } from '@vercel/analytics/react';
@@ -163,12 +164,14 @@ export default async function RootLayout({
         )}
       </head>
       <body>
-        <SmoothProvider>
-          <Header />
-          <main>{children}</main>
-          <Footer />
-        </SmoothProvider>
-        <Analytics />
+        <CurrencyProvider>
+          <SmoothProvider>
+            <Header />
+            <main>{children}</main>
+            <Footer />
+          </SmoothProvider>
+          <Analytics />
+        </CurrencyProvider>
       </body>
     </html>
   );

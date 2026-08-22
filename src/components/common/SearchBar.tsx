@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Search, X, Loader2, ArrowRight, Package } from 'lucide-react';
-import { formatPrice } from '@/lib/region';
+import { useCurrency } from '@/context/CurrencyContext';
 
 interface SearchResult {
   id: string;
@@ -30,6 +30,7 @@ export default function SearchBar({
   onResultClick,
   autoFocus = false,
 }: SearchBarProps) {
+  const { formatPrice } = useCurrency();
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<SearchResult[]>([]);
   const [isOpen, setIsOpen] = useState(false);
@@ -326,7 +327,7 @@ export default function SearchBar({
                             flexShrink: 0,
                           }}
                         >
-                          {formatPrice(product.price, product.currency || 'USD')}
+                          {formatPrice(product.price)}
                         </div>
                       )}
                     </div>

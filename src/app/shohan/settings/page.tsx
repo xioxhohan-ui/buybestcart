@@ -14,11 +14,15 @@ import {
   Award,
   Eye,
   RotateCcw,
+  Compass,
+  Coins,
 } from 'lucide-react';
 import { DEFAULT_SITE_CONFIG, SiteConfiguration } from '@/lib/settings';
+import { AMAZON_SUPPORTED_COUNTRIES, resolveLocationCurrency, AVAILABLE_CURRENCIES } from '@/lib/geo';
 
 export default function AdminSettingsAndThemePage() {
-  const [activeTab, setActiveTab] = useState<'branding' | 'theme' | 'hero' | 'legal' | 'flags'>('branding');
+  const [activeTab, setActiveTab] = useState<'branding' | 'theme' | 'hero' | 'legal' | 'flags' | 'geo'>('branding');
+  const [testCountry, setTestCountry] = useState<string>('BD');
   const [config, setConfig] = useState<SiteConfiguration>(DEFAULT_SITE_CONFIG);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -291,6 +295,27 @@ export default function AdminSettingsAndThemePage() {
         >
           <ToggleLeft size={13} />
           <span>Feature Flags</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setActiveTab('geo')}
+          style={{
+            padding: '0.45rem 0.85rem',
+            fontSize: '0.8125rem',
+            fontWeight: activeTab === 'geo' ? 700 : 500,
+            borderRadius: 'var(--radius-xs)',
+            border: activeTab === 'geo' ? '1px solid var(--green-border)' : '1px solid transparent',
+            background: activeTab === 'geo' ? 'var(--green-light)' : 'transparent',
+            color: activeTab === 'geo' ? 'var(--green-accent)' : 'var(--text-secondary)',
+            cursor: 'pointer',
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '0.35rem',
+          }}
+        >
+          <Compass size={13} />
+          <span>Geo &amp; Currency Detection</span>
         </button>
       </div>
 
@@ -710,6 +735,198 @@ export default function AdminSettingsAndThemePage() {
                 <label htmlFor="flag_news" style={{ fontSize: '0.8125rem', fontWeight: 600 }}>
                   Weekly Shopping Edit Newsletter
                 </label>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* TAB 6: GEO & CURRENCY DETECTION */}
+        {activeTab === 'geo' && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+            {/* Resolution Architecture Info Card */}
+            <div style={{ background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: 'var(--radius-lg)', padding: '1.75rem', boxShadow: 'var(--shadow-sm)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.75rem' }}>
+                <Compass size={18} color="var(--green-accent)" />
+                <h3 style={{ margin: 0, fontSize: '1.125rem' }}>Automatic Geo-IP &amp; Amazon Currency Detection</h3>
+              </div>
+              <p style={{ fontSize: '0.8125rem', color: 'var(--text-secondary)', lineHeight: 1.6, marginBottom: '1rem' }}>
+                Buy Best Cart inspects visitor IP and edge geolocation headers (Cloudflare <code>cf-ipcountry</code>, Vercel <code>x-vercel-ip-country</code>) server-side without exposing raw IP addresses to public HTML.
+              </p>
+
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1rem' }}>
+                <div style={{ background: 'var(--bg-subtle)', padding: '1rem', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border)' }}>
+                  <div style={{ fontSize: '0.8125rem', fontWeight: 700, color: 'var(--green-accent)', marginBottom: '0.35rem' }}>
+                    ✓ Amazon-Supported Countries
+                  </div>
+                  <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
+                    Visitors from direct Amazon shopping regions (e.g. UK, Germany, France, Canada, Australia, Japan) automatically see their official localized storefront currency (GBP £, EUR €, CAD CA$, AUD A$, JPY ¥).
+                  </div>
+                </div>
+
+                <div style={{ background: 'var(--bg-subtle)', padding: '1rem', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border)' }}>
+                  <div style={{ fontSize: '0.8125rem', fontWeight: 700, color: 'var(--primary)', marginBottom: '0.35rem' }}>
+                    ✓ Unsupported Country Standard (USD Default)
+                  </div>
+                  <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
+                    Visitors from countries outside Amazon's domestic shopping network strictly default to <strong>USD ($)</strong> on Amazon.com to prevent invalid non-Amazon local currency checkout mismatches.
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Interactive Country Resolution Simulator */}
+            <div style={{ background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: 'var(--radius-lg)', padding: '1.75rem', boxShadow: 'var(--shadow-sm)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
+                <Coins size={18} color="var(--green-accent)" />
+                <h3 style={{ margin: 0, fontSize: '1.125rem' }}>Country Resolution Simulator</h3>
+              </div>
+              <p style={{ fontSize: '0.8125rem', color: 'var(--text-secondary)', marginBottom: '1.25rem' }}>
+                Test any 2-letter ISO country code to verify the resolved currency and Amazon marketplace endpoint.
+              </p>
+
+              <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', marginBottom: '1.25rem', flexWrap: 'wrap' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <label htmlFor="test_country_input" style={{ fontSize: '0.8125rem', fontWeight: 700 }}>
+                    Enter ISO Country Code:
+                  </label>
+                  <input
+                    id="test_country_input"
+                    type="text"
+                    maxLength={3}
+                    value={testCountry}
+                    onChange={(e) => setTestCountry(e.target.value.toUpperCase())}
+                    style={{
+                      width: '80px',
+                      padding: '0.4rem 0.6rem',
+                      fontSize: '0.875rem',
+                      fontWeight: 800,
+                      fontFamily: 'var(--font-mono)',
+                      border: '1px solid var(--border-strong)',
+                      borderRadius: 'var(--radius-xs)',
+                      background: 'var(--bg-subtle)',
+                      textAlign: 'center',
+                    }}
+                  />
+                </div>
+
+                <div style={{ display: 'flex', gap: '0.35rem', flexWrap: 'wrap' }}>
+                  {['US', 'GB', 'DE', 'CA', 'AU', 'JP', 'BD', 'NG', 'IN', 'FR', 'BR'].map((quickCode) => (
+                    <button
+                      key={quickCode}
+                      type="button"
+                      onClick={() => setTestCountry(quickCode)}
+                      style={{
+                        padding: '0.25rem 0.5rem',
+                        fontSize: '0.75rem',
+                        fontWeight: 700,
+                        fontFamily: 'var(--font-mono)',
+                        borderRadius: 'var(--radius-xs)',
+                        border: '1px solid var(--border)',
+                        background: testCountry === quickCode ? 'var(--green-light)' : 'var(--bg-subtle)',
+                        color: testCountry === quickCode ? 'var(--green-accent)' : 'var(--text-secondary)',
+                        cursor: 'pointer',
+                      }}
+                    >
+                      {quickCode}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Resolved Simulation Result */}
+              {(() => {
+                const res = resolveLocationCurrency(testCountry);
+                return (
+                  <div
+                    style={{
+                      background: res.isAmazonSupported ? 'var(--green-light)' : 'var(--bg-subtle)',
+                      border: `1px solid ${res.isAmazonSupported ? 'var(--green-border)' : 'var(--border)'}`,
+                      borderRadius: 'var(--radius-sm)',
+                      padding: '1.25rem',
+                      display: 'grid',
+                      gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+                      gap: '1rem',
+                    }}
+                  >
+                    <div>
+                      <div style={{ fontSize: '0.6875rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase' }}>
+                        Input Country
+                      </div>
+                      <div style={{ fontSize: '1rem', fontWeight: 800, fontFamily: 'var(--font-mono)' }}>
+                        {testCountry || 'EMPTY'}
+                      </div>
+                    </div>
+
+                    <div>
+                      <div style={{ fontSize: '0.6875rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase' }}>
+                        Amazon Supported?
+                      </div>
+                      <div style={{ fontSize: '0.9375rem', fontWeight: 800, color: res.isAmazonSupported ? 'var(--green-accent)' : 'var(--text-muted)' }}>
+                        {res.isAmazonSupported ? '✓ Yes (Amazon Domestic)' : '✕ No (Defaults to USD)'}
+                      </div>
+                    </div>
+
+                    <div>
+                      <div style={{ fontSize: '0.6875rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase' }}>
+                        Displayed Currency
+                      </div>
+                      <div style={{ fontSize: '1.125rem', fontWeight: 800, color: 'var(--primary)' }}>
+                        {res.currency} ({res.marketplace.currency_symbol})
+                      </div>
+                    </div>
+
+                    <div>
+                      <div style={{ fontSize: '0.6875rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase' }}>
+                        Amazon Marketplace Endpoint
+                      </div>
+                      <div style={{ fontSize: '0.875rem', fontWeight: 700, fontFamily: 'var(--font-mono)' }}>
+                        {res.marketplace.flag_emoji} {res.marketplace.domain}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })()}
+            </div>
+
+            {/* Configured Amazon Countries Registry */}
+            <div style={{ background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: 'var(--radius-lg)', padding: '1.75rem', boxShadow: 'var(--shadow-sm)' }}>
+              <h3 style={{ margin: '0 0 1rem 0', fontSize: '1.125rem' }}>
+                Active Amazon Storefront &amp; Currency Registry ({Object.keys(AMAZON_SUPPORTED_COUNTRIES).length} Configured)
+              </h3>
+              <div style={{ overflowX: 'auto' }}>
+                <table className="editorial-table" style={{ width: '100%', fontSize: '0.8125rem' }}>
+                  <thead>
+                    <tr>
+                      <th style={{ textAlign: 'left', padding: '0.6rem 0.75rem' }}>Region / Country</th>
+                      <th style={{ textAlign: 'center', padding: '0.6rem 0.75rem' }}>ISO Code</th>
+                      <th style={{ textAlign: 'center', padding: '0.6rem 0.75rem' }}>Currency</th>
+                      <th style={{ textAlign: 'center', padding: '0.6rem 0.75rem' }}>Symbol</th>
+                      <th style={{ textAlign: 'left', padding: '0.6rem 0.75rem' }}>Amazon Storefront Domain</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {Object.values(AMAZON_SUPPORTED_COUNTRIES).map((mkt) => (
+                      <tr key={mkt.country_code}>
+                        <td style={{ padding: '0.6rem 0.75rem', fontWeight: 600 }}>
+                          <span style={{ marginRight: '0.5rem' }}>{mkt.flag_emoji}</span>
+                          <span>{mkt.country_name}</span>
+                        </td>
+                        <td style={{ padding: '0.6rem 0.75rem', textAlign: 'center', fontFamily: 'var(--font-mono)', fontWeight: 700 }}>
+                          {mkt.country_code}
+                        </td>
+                        <td style={{ padding: '0.6rem 0.75rem', textAlign: 'center', fontWeight: 800, color: 'var(--green-accent)' }}>
+                          {mkt.currency}
+                        </td>
+                        <td style={{ padding: '0.6rem 0.75rem', textAlign: 'center', fontFamily: 'var(--font-mono)' }}>
+                          {mkt.currency_symbol}
+                        </td>
+                        <td style={{ padding: '0.6rem 0.75rem', fontFamily: 'var(--font-mono)', color: 'var(--text-secondary)' }}>
+                          {mkt.domain}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
             </div>
           </div>

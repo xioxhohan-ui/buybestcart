@@ -20,7 +20,7 @@ import {
 } from 'lucide-react';
 import { Product, ProductSpecification } from '@/types';
 import AffiliateCTA from '@/components/products/AffiliateCTA';
-import { formatPrice } from '@/lib/region';
+import { useCurrency } from '@/context/CurrencyContext';
 
 interface CustomCompareEngineProps {
   allProducts: Product[];
@@ -31,6 +31,7 @@ export default function CustomCompareEngine({
   allProducts,
   initialSelectedSlugs = [],
 }: CustomCompareEngineProps) {
+  const { formatPrice } = useCurrency();
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -289,7 +290,7 @@ export default function CustomCompareEngine({
                         {product.title}
                       </div>
                       <div style={{ color: 'var(--primary)', fontWeight: 800, fontSize: '1.0625rem' }}>
-                        {formatPrice(product.price, product.currency || 'USD')}
+                        {formatPrice(product.price)}
                       </div>
                     </div>
                   </div>
@@ -429,7 +430,7 @@ export default function CustomCompareEngine({
                                   <span>{prod.brand?.name || 'Tech'}</span>
                                   <span>•</span>
                                   <span style={{ color: 'var(--green-accent)', fontWeight: 700 }}>
-                                    {formatPrice(prod.price, prod.currency || 'USD')}
+                                    {formatPrice(prod.price)}
                                   </span>
                                 </div>
                               </div>
@@ -504,11 +505,11 @@ export default function CustomCompareEngine({
                     {/* Price */}
                     <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'center', gap: '0.5rem', marginBottom: '0.85rem' }}>
                       <span style={{ color: 'var(--primary)', fontWeight: 800, fontSize: '1.35rem' }}>
-                        {formatPrice(p.price, p.currency || 'USD')}
+                        {formatPrice(p.price)}
                       </span>
                       {p.list_price && p.list_price > (p.price || 0) && (
                         <span style={{ color: 'var(--text-muted)', fontSize: '0.875rem', textDecoration: 'line-through' }}>
-                          {formatPrice(p.list_price, p.currency || 'USD')}
+                          {formatPrice(p.list_price)}
                         </span>
                       )}
                     </div>

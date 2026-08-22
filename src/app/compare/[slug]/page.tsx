@@ -5,7 +5,7 @@ import { Star, Award, Scale, Check, ArrowRight } from 'lucide-react';
 import { createServerClient } from '@/lib/supabase/server';
 import Breadcrumbs from '@/components/common/Breadcrumbs';
 import AffiliateCTA from '@/components/products/AffiliateCTA';
-import { formatPrice } from '@/lib/region';
+import PriceDisplay from '@/components/common/PriceDisplay';
 import { Product } from '@/types';
 
 interface ComparisonPageProps {
@@ -209,7 +209,7 @@ export default async function ComparisonDetailPage({ params }: ComparisonPagePro
                     </div>
                     {productA.price && (
                       <div style={{ color: 'var(--primary)', fontWeight: 800, fontSize: '1.125rem', marginBottom: '0.75rem' }}>
-                        {formatPrice(productA.price, productA.currency || 'USD')}
+                        <PriceDisplay amount={productA.price} />
                       </div>
                     )}
                     <AffiliateCTA productSlug={productA.slug} asin={productA.asin} price={productA.price} affiliateUrl={productA.affiliate_url} label="Buy on Amazon" size="sm" />
@@ -233,7 +233,7 @@ export default async function ComparisonDetailPage({ params }: ComparisonPagePro
                     </div>
                     {productB.price && (
                       <div style={{ color: 'var(--primary)', fontWeight: 800, fontSize: '1.125rem', marginBottom: '0.75rem' }}>
-                        {formatPrice(productB.price, productB.currency || 'USD')}
+                        <PriceDisplay amount={productB.price} />
                       </div>
                     )}
                     <AffiliateCTA productSlug={productB.slug} asin={productB.asin} price={productB.price} affiliateUrl={productB.affiliate_url} label="Buy on Amazon" size="sm" />

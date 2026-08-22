@@ -1,39 +1,84 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { MARKETPLACES } from '@/lib/affiliate';
-import { getStoredRegion, setStoredRegion } from '@/lib/region';
-import { ChevronDown, Globe } from 'lucide-react';
+import React, { useState, useRef, useEffect } from 'react';
+import { useCurrency } from '@/context/CurrencyContext';
+import { AVAILABLE_CURRENCIES, AMAZON_SUPPORTED_COUNTRIES } from '@/lib/geo';
+import { ChevronDown, Globe, Sparkles, Check, Search } from 'lucide-react';
 
 interface RegionSelectorProps {
   compact?: boolean;
 }
 
 export default function RegionSelector({ compact = false }: RegionSelectorProps) {
-  const [selectedRegion, setSelectedRegion] = useState<string>('US');
+  const {
+    currency,
+    countryCode,
+    marketplace,
+    isAmazonSupported,
+    isAutoDetected,
+    setCurrency,
+    setRegion,
+  } = useCurrency();
+
   const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [searchQuery, setSearchQuery] = useState<string>('');
+  const dropdownRef = useRef<HTMLDivElement | null>(null);
 
+  // Close on Escape or click outside
   useEffect(() => {
-    setSelectedRegion(getStoredRegion());
-  }, []);
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setIsOpen(false);
+    };
+    const handleClickOutside = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setIsOpen(false);
+      }
+    };
 
-  const handleSelect = (code: string) => {
-    setSelectedRegion(code);
-    setStoredRegion(code);
+    if (isOpen) {
+      document.addEventListener('keydown', handleKeyDown);
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isOpen]);
+
+  const filteredCurrencies = AVAILABLE_CURRENCIES.filter((c) => {
+    const q = searchQuery.toLowerCase().trim();
+    if (!q) return true;
+    return (
+      c.code.toLowerCase().includes(q) ||
+      c.name.toLowerCase().includes(q) ||
+      c.countryCode.toLowerCase().includes(q) ||
+      c.symbol.toLowerCase().includes(q)
+    );
+  });
+
+  const handleSelectCurrency = (code: string) => {
+    setCurrency(code);
     setIsOpen(false);
-    window.location.reload();
+    setSearchQuery('');
   };
 
-  const current = MARKETPLACES[selectedRegion] || MARKETPLACES.US;
+  const handleSelectCountry = (country: string) => {
+    setRegion(country);
+    setIsOpen(false);
+    setSearchQuery('');
+  };
+
+  const flag = marketplace.flag_emoji || '🇺🇸';
+  const symbol = marketplace.currency_symbol || '$';
 
   return (
-    <div style={{ position: 'relative', display: 'inline-block' }}>
+    <div ref={dropdownRef} style={{ position: 'relative', display: 'inline-block' }}>
       <button
         onClick={() => setIsOpen(!isOpen)}
         style={{
           display: 'flex',
           alignItems: 'center',
-          gap: '0.35rem',
+          gap: '0.4rem',
           background: compact ? 'transparent' : 'var(--bg-surface)',
           border: compact ? 'none' : '1px solid var(--border)',
           borderRadius: 'var(--radius-sm)',
@@ -47,69 +92,165 @@ export default function RegionSelector({ compact = false }: RegionSelectorProps)
           whiteSpace: 'nowrap',
           transition: 'all 0.15s ease',
         }}
-        aria-label="Select Amazon Marketplace Region"
+        aria-label={`Select Currency and Amazon Marketplace (Currently ${countryCode} / ${currency})`}
       >
-        <Globe size={13} color="var(--green-accent)" />
-        <span>{current.country_code}</span>
-        <span style={{ color: 'var(--text-muted)', fontSize: '0.6875rem', fontWeight: 600 }}>({current.currency})</span>
-        <ChevronDown size={13} color="var(--text-muted)" />
+        <span style={{ fontSize: '0.9rem', lineHeight: 1 }}>{flag}</span>
+        <span style={{ fontWeight: 800, color: 'var(--green-accent)' }}>{symbol}</span>
+        <span>{currency}</span>
+        <ChevronDown size={12} color="var(--text-muted)" style={{ transform: isOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.15s ease' }} />
       </button>
 
       {isOpen && (
-        <>
-          <div
-            style={{ position: 'fixed', inset: 0, zIndex: 'var(--z-header, 100)' as unknown as number }}
-            onClick={() => setIsOpen(false)}
-          />
+        <div
+          style={{
+            position: 'absolute',
+            top: 'calc(100% + 0.35rem)',
+            right: 0,
+            background: 'var(--bg-surface)',
+            border: '1px solid var(--border-strong)',
+            borderRadius: 'var(--radius-md)',
+            boxShadow: 'var(--shadow-hover)',
+            zIndex: 300,
+            width: '320px',
+            maxWidth: '90vw',
+            padding: '0.75rem',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '0.5rem',
+          }}
+        >
+          {/* Header & Auto-Detection Status */}
+          <div style={{ borderBottom: '1px solid var(--border)', paddingBottom: '0.5rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.25rem' }}>
+              <span style={{ fontSize: '0.6875rem', fontWeight: 800, color: 'var(--text-primary)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                Currency &amp; Marketplace
+              </span>
+              {isAutoDetected ? (
+                <span
+                  style={{
+                    fontSize: '0.625rem',
+                    fontWeight: 700,
+                    color: 'var(--green-accent)',
+                    background: 'var(--green-light)',
+                    padding: '0.15rem 0.4rem',
+                    borderRadius: 'var(--radius-xs)',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '0.2rem',
+                  }}
+                >
+                  <Sparkles size={10} /> Auto-Detected
+                </span>
+              ) : (
+                <span
+                  style={{
+                    fontSize: '0.625rem',
+                    fontWeight: 600,
+                    color: 'var(--text-muted)',
+                    background: 'var(--bg-subtle)',
+                    padding: '0.15rem 0.4rem',
+                    borderRadius: 'var(--radius-xs)',
+                  }}
+                >
+                  Custom Selected
+                </span>
+              )}
+            </div>
+            <p style={{ fontSize: '0.6875rem', color: 'var(--text-secondary)', lineHeight: 1.4, margin: 0 }}>
+              Live prices convert automatically for your region. Amazon-supported countries display official localized storefront currencies; all other countries default to USD ($).
+            </p>
+          </div>
+
+          {/* Quick Search */}
+          <div style={{ position: 'relative' }}>
+            <Search size={12} color="var(--text-muted)" style={{ position: 'absolute', left: '0.6rem', top: '50%', transform: 'translateY(-50%)' }} />
+            <input
+              type="text"
+              placeholder="Search currency, country, symbol..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              style={{
+                width: '100%',
+                padding: '0.35rem 0.5rem 0.35rem 1.8rem',
+                fontSize: '0.75rem',
+                border: '1px solid var(--border)',
+                borderRadius: 'var(--radius-xs)',
+                background: 'var(--bg-subtle)',
+                color: 'var(--text-primary)',
+                outline: 'none',
+              }}
+            />
+          </div>
+
+          {/* Currency List */}
           <div
             style={{
-              position: 'absolute',
-              top: 'calc(100% + 0.25rem)',
-              right: 0,
-              background: 'var(--bg-surface)',
-              border: '1px solid var(--border-strong)',
-              borderRadius: 'var(--radius-xs)',
-              boxShadow: 'var(--shadow-hover)',
-              zIndex: 'var(--z-search-dropdown, 200)' as unknown as number,
-              minWidth: '240px',
-              padding: '0.375rem',
+              maxHeight: '220px',
+              overflowY: 'auto',
               display: 'flex',
               flexDirection: 'column',
-              gap: '0.125rem',
+              gap: '0.2rem',
+              paddingRight: '0.25rem',
             }}
           >
-            <div style={{ fontSize: '0.6875rem', fontWeight: 700, color: 'var(--text-muted)', padding: '0.375rem 0.5rem', textTransform: 'uppercase', fontFamily: 'var(--font-mono)' }}>
-              Select Amazon Endpoint
-            </div>
-            {Object.entries(MARKETPLACES).map(([code, mkt]) => (
-              <button
-                key={code}
-                onClick={() => handleSelect(code)}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  padding: '0.5rem 0.75rem',
-                  borderRadius: 'var(--radius-xs)',
-                  background: selectedRegion === code ? 'var(--green-light)' : 'transparent',
-                  color: selectedRegion === code ? 'var(--green-deep)' : 'var(--text-primary)',
-                  border: selectedRegion === code ? '1px solid var(--green-border)' : '1px solid transparent',
-                  fontSize: '0.8125rem',
-                  fontWeight: selectedRegion === code ? 700 : 500,
-                  fontFamily: 'var(--font-mono)',
-                  cursor: 'pointer',
-                  textAlign: 'left',
-                }}
-              >
-                <span style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  <span style={{ fontSize: '0.7rem', fontWeight: 800, padding: '0.1rem 0.35rem', borderRadius: '3px', background: 'var(--bg-subtle)', color: 'var(--text-secondary)' }}>{code}</span>
-                  <span>{mkt.country}</span>
-                </span>
-                <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{mkt.currency}</span>
-              </button>
-            ))}
+            {filteredCurrencies.map((item) => {
+              const isSelected = currency === item.code;
+              return (
+                <button
+                  key={item.code}
+                  onClick={() => handleSelectCurrency(item.code)}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    padding: '0.45rem 0.6rem',
+                    borderRadius: 'var(--radius-xs)',
+                    background: isSelected ? 'var(--green-light)' : 'transparent',
+                    color: isSelected ? 'var(--green-deep)' : 'var(--text-primary)',
+                    border: isSelected ? '1px solid var(--green-border)' : '1px solid transparent',
+                    cursor: 'pointer',
+                    textAlign: 'left',
+                    transition: 'all 0.1s ease',
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <span style={{ fontSize: '0.95rem' }}>{item.flag}</span>
+                    <div>
+                      <div style={{ fontSize: '0.75rem', fontWeight: isSelected ? 800 : 600 }}>
+                        {item.code} <span style={{ color: 'var(--text-muted)', fontWeight: 500 }}>({item.symbol})</span>
+                      </div>
+                      <div style={{ fontSize: '0.65rem', color: 'var(--text-secondary)' }}>
+                        {item.name}
+                      </div>
+                    </div>
+                  </div>
+                  {isSelected && <Check size={13} color="var(--green-accent)" />}
+                </button>
+              );
+            })}
+
+            {filteredCurrencies.length === 0 && (
+              <div style={{ padding: '1rem', textAlign: 'center', fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                No matching currency found.
+              </div>
+            )}
           </div>
-        </>
+
+          {/* Amazon Affiliate Guidance Note */}
+          <div
+            style={{
+              background: 'var(--bg-subtle)',
+              border: '1px solid var(--border)',
+              borderRadius: 'var(--radius-xs)',
+              padding: '0.45rem 0.6rem',
+              fontSize: '0.65rem',
+              color: 'var(--text-muted)',
+              lineHeight: 1.4,
+            }}
+          >
+            <strong>Amazon Partner Integration:</strong> When clicking out to purchase, you are directed to your active regional Amazon storefront ({marketplace.domain}).
+          </div>
+        </div>
       )}
     </div>
   );

@@ -5,13 +5,14 @@ import Link from 'next/link';
 import { Star } from 'lucide-react';
 import { Product } from '@/types';
 import AffiliateCTA from '@/components/products/AffiliateCTA';
-import { formatPrice } from '@/lib/region';
+import { useCurrency } from '@/context/CurrencyContext';
 
 interface ComparisonMatrixSectionProps {
   products: Product[];
 }
 
 export default function ComparisonMatrixSection({ products }: ComparisonMatrixSectionProps) {
+  const { formatPrice } = useCurrency();
   // Use first 3 products for head-to-head showdown
   const comparisonItems = products.slice(0, 3);
 
@@ -96,7 +97,7 @@ export default function ComparisonMatrixSection({ products }: ComparisonMatrixSe
               <th style={{ background: '#F8F7F2' }}>Verified Price</th>
               {comparisonItems.map((item) => (
                 <td key={item.id} style={{ textAlign: 'center', fontSize: '1.25rem', fontWeight: 800, fontFamily: 'var(--font-display)', color: 'var(--text-primary)' }}>
-                  {formatPrice(item.price, item.currency || 'USD')}
+                  {formatPrice(item.price)}
                 </td>
               ))}
             </tr>
