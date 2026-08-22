@@ -23,7 +23,7 @@ export async function generateMetadata({ params }: ComparisonPageProps): Promise
     .select('title, description, seo_title, seo_description')
     .eq('slug', slug)
     .eq('status', 'published')
-    .single();
+    .maybeSingle();
 
   if (!comparison) {
     return { title: 'Comparison Not Found | Buy Best Cart' };
@@ -80,7 +80,7 @@ export default async function ComparisonDetailPage({ params }: ComparisonPagePro
     .select('*, product_a:products!product_a_id(*), product_b:products!product_b_id(*), winner:products!winner_product_id(*)')
     .eq('slug', slug)
     .eq('status', 'published')
-    .single();
+    .maybeSingle();
 
   if (!comparison) {
     notFound();

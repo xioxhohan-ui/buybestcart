@@ -28,7 +28,7 @@ export async function generateMetadata({ params }: GuidePageProps): Promise<Meta
     .from('articles')
     .select('title, excerpt, featured_image, seo_title, seo_description, canonical_url, og_image, status, publish_date, published_at, updated_at, modified_date, author_name, tags')
     .eq('slug', slug)
-    .single();
+    .maybeSingle();
 
   if (!article || article.status !== 'published') return { title: 'Guide Not Found | Buy Best Cart' };
 
@@ -95,7 +95,7 @@ export default async function GuideDetailPage({ params }: GuidePageProps) {
       .from('articles')
       .select('*, category:categories(id, name, slug)')
       .eq('slug', slug)
-      .single(),
+      .maybeSingle(),
     supabase
       .from('articles')
       .select('id, title, slug, excerpt, featured_image, created_at, reading_time_minutes, top_products, category:categories(name)')

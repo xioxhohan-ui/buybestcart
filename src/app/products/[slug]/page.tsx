@@ -25,7 +25,7 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
     .from('products')
     .select('title, short_description, thumbnail_url, seo_title, seo_description, canonical_url, og_image, status')
     .eq('slug', slug)
-    .single();
+    .maybeSingle();
 
   if (!product || !['active', 'featured', 'published'].includes(product.status)) {
     return { title: 'Product Not Found | Buy Best Cart' };
@@ -87,7 +87,7 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
     .from('products')
     .select('*, brand:brands(*), category:categories(*), specifications:product_specifications(*), features:product_features(*), images:product_images(*)')
     .eq('slug', slug)
-    .single();
+    .maybeSingle();
 
   if (!product || !['active', 'featured', 'published'].includes(product.status)) {
     notFound();

@@ -18,6 +18,9 @@ export const revalidate = 60;
 
 export async function generateMetadata({ params }: CategoryPageProps): Promise<Metadata> {
   const { slug } = await params;
+  if (!slug || !Array.isArray(slug) || slug.length === 0) {
+    return { title: 'Category Not Found | Buy Best Cart' };
+  }
   const categorySlug = slug[slug.length - 1];
   const supabase = createServerClient();
 
@@ -25,7 +28,7 @@ export async function generateMetadata({ params }: CategoryPageProps): Promise<M
     .from('categories')
     .select('name, description, seo_title, seo_description')
     .eq('slug', categorySlug)
-    .single();
+    .maybeSingle();
 
   if (!category) {
     return { title: 'Category Not Found | Buy Best Cart' };
@@ -39,6 +42,9 @@ export async function generateMetadata({ params }: CategoryPageProps): Promise<M
 
 export default async function CategoryPage({ params, searchParams }: CategoryPageProps) {
   const { slug } = await params;
+  if (!slug || !Array.isArray(slug) || slug.length === 0) {
+    notFound();
+  }
   const resolvedSearchParams = await searchParams;
   const categorySlug = slug[slug.length - 1];
   const supabase = createServerClient();
@@ -47,7 +53,7 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
     .from('categories')
     .select('*')
     .eq('slug', categorySlug)
-    .single();
+    .maybeSingle();
 
   if (!category) {
     notFound();
