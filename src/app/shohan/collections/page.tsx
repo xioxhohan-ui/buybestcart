@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase/client';
+import { triggerRevalidation } from '@/lib/revalidate';
 import { Layers, Plus, Trash2, Edit3, Eye, CheckCircle2 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -100,9 +101,9 @@ export default function AdminCollectionsPage() {
         .eq('id', editingCollection.id);
 
       if (!error) {
-        await fetch('/api/revalidate', { method: 'POST' }).catch(() => {});
         setShowModal(false);
-        fetchCollections();
+        await fetchCollections();
+        triggerRevalidation();
       } else {
         alert(`Error updating collection: ${error.message}`);
       }
@@ -113,9 +114,9 @@ export default function AdminCollectionsPage() {
       });
 
       if (!error) {
-        await fetch('/api/revalidate', { method: 'POST' }).catch(() => {});
         setShowModal(false);
-        fetchCollections();
+        await fetchCollections();
+        triggerRevalidation();
       } else {
         alert(`Error creating collection: ${error.message}`);
       }
@@ -125,8 +126,8 @@ export default function AdminCollectionsPage() {
   const handleDelete = async (id: string, title: string) => {
     if (confirm(`Are you sure you want to delete collection "${title}"?`)) {
       await supabase.from('collections').delete().eq('id', id);
-      await fetch('/api/revalidate', { method: 'POST' }).catch(() => {});
-      fetchCollections();
+      await fetchCollections();
+      triggerRevalidation();
     }
   };
 

@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase/client';
+import { triggerRevalidation } from '@/lib/revalidate';
 import {
   Layout,
   ArrowUp,
@@ -49,7 +50,7 @@ export default function AdminVisualHomepageManagerPage() {
       .from('settings')
       .select('*')
       .eq('key', 'homepage_layout')
-      .single();
+      .maybeSingle();
 
     if (data && Array.isArray(data.value)) {
       setSections(data.value);
@@ -101,8 +102,8 @@ export default function AdminVisualHomepageManagerPage() {
     });
 
     if (!error) {
-      await fetch('/api/revalidate', { method: 'POST' }).catch(() => {});
       setSaved(true);
+      triggerRevalidation();
       setTimeout(() => setSaved(false), 3000);
     } else {
       alert(`Error saving homepage layout: ${error.message}`);

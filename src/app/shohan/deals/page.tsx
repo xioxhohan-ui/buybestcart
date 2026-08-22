@@ -185,6 +185,9 @@ export default function AdminDealsPage() {
         .eq('id', editingDeal.id);
 
       if (!error) {
+        if (payload.product_id) {
+          await supabase.from('products').update({ is_deal: payload.status === 'active' }).eq('id', payload.product_id);
+        }
         setShowModal(false);
         fetchData();
         triggerRevalidation();
@@ -195,6 +198,9 @@ export default function AdminDealsPage() {
       const { error } = await supabase.from('deals').insert(payload);
 
       if (!error) {
+        if (payload.product_id) {
+          await supabase.from('products').update({ is_deal: payload.status === 'active' }).eq('id', payload.product_id);
+        }
         setShowModal(false);
         fetchData();
         triggerRevalidation();
@@ -206,6 +212,10 @@ export default function AdminDealsPage() {
 
   const handleDelete = async (id: string, title: string) => {
     if (confirm(`Delete deal "${title}"?`)) {
+      const target = deals.find((d) => d.id === id);
+      if (target?.product_id) {
+        await supabase.from('products').update({ is_deal: false }).eq('id', target.product_id);
+      }
       await supabase.from('deals').delete().eq('id', id);
       fetchData();
       triggerRevalidation();

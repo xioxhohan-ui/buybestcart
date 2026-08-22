@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase/client';
+import { triggerRevalidation } from '@/lib/revalidate';
 import { Product, Comparison } from '@/types';
 import { Scale, Plus, Trash2, Edit3, Eye, Award, ExternalLink, CheckCircle2 } from 'lucide-react';
 import Link from 'next/link';
@@ -100,9 +101,9 @@ export default function AdminComparisonsPage() {
         .eq('id', editingComparison.id);
 
       if (!error) {
-        await fetch('/api/revalidate', { method: 'POST' }).catch(() => {});
         setShowModal(false);
-        fetchData();
+        await fetchData();
+        triggerRevalidation();
       } else {
         alert(`Error updating comparison: ${error.message}`);
       }
@@ -113,9 +114,9 @@ export default function AdminComparisonsPage() {
       });
 
       if (!error) {
-        await fetch('/api/revalidate', { method: 'POST' }).catch(() => {});
         setShowModal(false);
-        fetchData();
+        await fetchData();
+        triggerRevalidation();
       } else {
         alert(`Error creating comparison: ${error.message}`);
       }
@@ -125,8 +126,8 @@ export default function AdminComparisonsPage() {
   const handleDelete = async (id: string, title: string) => {
     if (confirm(`Delete comparison showdown "${title}"?`)) {
       await supabase.from('comparisons').delete().eq('id', id);
-      await fetch('/api/revalidate', { method: 'POST' }).catch(() => {});
-      fetchData();
+      await fetchData();
+      triggerRevalidation();
     }
   };
 

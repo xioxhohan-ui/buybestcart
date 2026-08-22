@@ -714,6 +714,11 @@ export default function AdminProductsPage() {
 
   const handleDelete = async (id: string, title: string) => {
     if (confirm(`Are you sure you want to delete product "${title}"?`)) {
+      await Promise.all([
+        supabase.from('product_images').delete().eq('product_id', id),
+        supabase.from('product_features').delete().eq('product_id', id),
+        supabase.from('product_specifications').delete().eq('product_id', id),
+      ]);
       await supabase.from('products').delete().eq('id', id);
       await fetchData();
       triggerRevalidation();

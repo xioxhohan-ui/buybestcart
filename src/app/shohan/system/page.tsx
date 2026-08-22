@@ -2,8 +2,8 @@
 
 import React, { useState } from 'react';
 import { Activity, Database, RefreshCw, CheckCircle2, Server, ShieldCheck, Zap, HardDrive } from 'lucide-react';
-
 import { supabase } from '@/lib/supabase/client';
+import { triggerRevalidation } from '@/lib/revalidate';
 
 export default function AdminSystemPage() {
   const [syncing, setSyncing] = useState(false);
@@ -20,7 +20,7 @@ export default function AdminSystemPage() {
           created_at: new Date().toISOString(),
         },
       ]);
-      await fetch('/api/revalidate', { method: 'POST' }).catch(() => {});
+      triggerRevalidation();
       alert('Background sync completed: 11 regional Amazon storefronts verified and caches refreshed.');
     } catch {
       alert('Sync executed.');
@@ -31,7 +31,7 @@ export default function AdminSystemPage() {
 
   const handleClearCache = async () => {
     try {
-      await fetch('/api/revalidate', { method: 'POST' });
+      await triggerRevalidation();
       setCacheCleared(true);
       setTimeout(() => setCacheCleared(false), 3000);
     } catch (err: unknown) {

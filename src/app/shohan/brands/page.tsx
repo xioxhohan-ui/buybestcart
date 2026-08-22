@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase/client';
+import { triggerRevalidation } from '@/lib/revalidate';
 import { Brand } from '@/types';
 import { Tag, Plus, Trash2, Edit3, Globe, CheckCircle2, XCircle } from 'lucide-react';
 
@@ -89,9 +90,9 @@ export default function AdminBrandsPage() {
         .eq('id', editingBrand.id);
 
       if (!error) {
-        await fetch('/api/revalidate', { method: 'POST' }).catch(() => {});
         setShowModal(false);
-        fetchBrands();
+        await fetchBrands();
+        triggerRevalidation();
       } else {
         alert(`Error updating brand: ${error.message}`);
       }
@@ -102,9 +103,9 @@ export default function AdminBrandsPage() {
       });
 
       if (!error) {
-        await fetch('/api/revalidate', { method: 'POST' }).catch(() => {});
         setShowModal(false);
-        fetchBrands();
+        await fetchBrands();
+        triggerRevalidation();
       } else {
         alert(`Error creating brand: ${error.message}`);
       }
@@ -114,8 +115,8 @@ export default function AdminBrandsPage() {
   const handleDelete = async (id: string, name: string) => {
     if (confirm(`Are you sure you want to delete brand "${name}"?`)) {
       await supabase.from('brands').delete().eq('id', id);
-      await fetch('/api/revalidate', { method: 'POST' }).catch(() => {});
-      fetchBrands();
+      await fetchBrands();
+      triggerRevalidation();
     }
   };
 

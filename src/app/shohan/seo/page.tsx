@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase/client';
+import { triggerRevalidation } from '@/lib/revalidate';
 import {
   Globe,
   Save,
@@ -122,7 +123,7 @@ export default function AdminSEOPage() {
 
   useEffect(() => {
     const fetchTemplates = async () => {
-      const { data } = await supabase.from('settings').select('*').eq('key', 'seo').single();
+      const { data } = await supabase.from('settings').select('*').eq('key', 'seo').maybeSingle();
       if (data && data.value) {
         setTemplates((prev) => ({ ...prev, ...data.value }));
       }
@@ -142,6 +143,7 @@ export default function AdminSEOPage() {
     });
     setSaving(false);
     setSaved(true);
+    triggerRevalidation();
     setTimeout(() => setSaved(false), 3000);
   };
 

@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase/client';
+import { triggerRevalidation } from '@/lib/revalidate';
 import { FileText, Save, CheckCircle2, ShieldCheck, Scale, Award, HelpCircle } from 'lucide-react';
 
 interface LegalPolicies {
@@ -47,7 +48,7 @@ export default function AdminLegalPagesCMS() {
       .from('settings')
       .select('*')
       .eq('key', 'legal_policies')
-      .single();
+      .maybeSingle();
 
     if (data && data.value) {
       setPolicies({ ...DEFAULT_POLICIES, ...data.value });
@@ -73,8 +74,8 @@ export default function AdminLegalPagesCMS() {
     });
 
     if (!error) {
-      await fetch('/api/revalidate', { method: 'POST' }).catch(() => {});
       setSaved(true);
+      triggerRevalidation();
       setTimeout(() => setSaved(false), 3000);
     } else {
       alert(`Error saving legal policies: ${error.message}`);

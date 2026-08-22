@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase/client';
+import { triggerRevalidation } from '@/lib/revalidate';
 import { Compass, Plus, Trash2, ArrowUp, ArrowDown, Save, CheckCircle2, RotateCcw, Link2 } from 'lucide-react';
 import { Category, Article } from '@/types';
 
@@ -38,7 +39,7 @@ export default function AdminNavigationPage() {
   const fetchNavigation = async () => {
     setLoading(true);
     const [navRes, catRes, guideRes] = await Promise.all([
-      supabase.from('settings').select('*').eq('key', 'navigation_config').single(),
+      supabase.from('settings').select('*').eq('key', 'navigation_config').maybeSingle(),
       supabase.from('categories').select('id, name, slug').order('name', { ascending: true }),
       supabase.from('articles').select('id, title, slug').order('title', { ascending: true }),
     ]);
@@ -113,8 +114,8 @@ export default function AdminNavigationPage() {
     });
 
     if (!error) {
-      await fetch('/api/revalidate', { method: 'POST' }).catch(() => {});
       setSaved(true);
+      triggerRevalidation();
       setTimeout(() => setSaved(false), 3000);
     } else {
       alert(`Error saving navigation: ${error.message}`);

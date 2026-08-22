@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase/client';
+import { triggerRevalidation } from '@/lib/revalidate';
 import {
   Settings,
   Palette,
@@ -129,9 +130,9 @@ export default function AdminSettingsAndThemePage() {
       }),
     ]);
 
-    await fetch('/api/revalidate', { method: 'POST' }).catch(() => {});
     setSaving(false);
     setSaved(true);
+    triggerRevalidation();
     setTimeout(() => setSaved(false), 3000);
   };
 

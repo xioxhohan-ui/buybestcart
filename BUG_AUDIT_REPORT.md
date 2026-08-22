@@ -302,6 +302,38 @@ A comprehensive, forensic end-to-end full-stack code, database, and route audit 
 
 ---
 
+### [AUDIT-036] Referential Integrity & Foreign Key Cascade Cleanup on Product Deletions
+* **Category**: Database / Referential Integrity & Data Hygiene
+* **Root Cause**: Deleting a product from the database left child records in `product_images`, `product_features`, and `product_specifications` orphaned because foreign key constraints lacked `ON DELETE CASCADE`.
+* **Fix Applied**: Added explicit `ON DELETE CASCADE` foreign key constraints to `public.product_images`, `public.product_features`, and `public.product_specifications` in PostgreSQL, and updated `handleDelete` in [`src/app/shohan/products/page.tsx`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/src/app/shohan/products/page.tsx) to explicitly clean child relations.
+* **Affected Files**: Supabase PostgreSQL child tables & [`src/app/shohan/products/page.tsx`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/src/app/shohan/products/page.tsx).
+
+---
+
+### [AUDIT-037] Product Deal State Synchronization Across Catalog & Deals Hub
+* **Category**: Admin CMS & Public Storefront / Deals Management
+* **Root Cause**: Creating or archiving deals in `/shohan/deals` updated the `deals` table but left `products.is_deal` desynchronized in the main `products` catalog.
+* **Fix Applied**: Enhanced `handleSave` and `handleDelete` in [`src/app/shohan/deals/page.tsx`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/src/app/shohan/deals/page.tsx) to automatically synchronize `is_deal` on the linked product in PostgreSQL when deals are activated, scheduled, expired, or deleted.
+* **Affected Files**: [`src/app/shohan/deals/page.tsx`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/src/app/shohan/deals/page.tsx).
+
+---
+
+### [AUDIT-038] Centralized On-Demand Edge Cache Invalidation (`triggerRevalidation`)
+* **Category**: Server / Cache Management & Revalidation
+* **Root Cause**: Several admin CMS pages (`brands`, `comparisons`, `faqs`, `legal`, `settings`, `homepage`, `navigation`, `collections`, `system`) relied on raw, unhandled `fetch('/api/revalidate')` calls that bypassed unified revalidation logging and error recovery.
+* **Fix Applied**: Refactored all admin CMS save and delete actions to use the centralized [`triggerRevalidation()`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/src/lib/revalidate.ts) helper with resilient error handling.
+* **Affected Files**: [`src/app/shohan/brands/page.tsx`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/src/app/shohan/brands/page.tsx), [`src/app/shohan/comparisons/page.tsx`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/src/app/shohan/comparisons/page.tsx), [`src/app/shohan/faqs/page.tsx`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/src/app/shohan/faqs/page.tsx), [`src/app/shohan/legal/page.tsx`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/src/app/shohan/legal/page.tsx), [`src/app/shohan/settings/page.tsx`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/src/app/shohan/settings/page.tsx), [`src/app/shohan/settings/homepage/page.tsx`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/src/app/shohan/settings/homepage/page.tsx), [`src/app/shohan/navigation/page.tsx`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/src/app/shohan/navigation/page.tsx), [`src/app/shohan/collections/page.tsx`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/src/app/shohan/collections/page.tsx), [`src/app/shohan/system/page.tsx`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/src/app/shohan/system/page.tsx).
+
+---
+
+### [AUDIT-039] PostgREST Single-Row Null Safety Across Admin Settings
+* **Category**: Admin CMS / PostgREST Query Safety
+* **Root Cause**: Loading configuration in `legal`, `homepage`, `seo`, and `navigation` admin pages used `.single()`, which throws PostgREST 406 exceptions if records do not exist yet.
+* **Fix Applied**: Updated all settings queries to `.maybeSingle()`, allowing graceful fallback to default configurations.
+* **Affected Files**: [`src/app/shohan/legal/page.tsx`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/src/app/shohan/legal/page.tsx), [`src/app/shohan/settings/homepage/page.tsx`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/src/app/shohan/settings/homepage/page.tsx), [`src/app/shohan/seo/page.tsx`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/src/app/shohan/seo/page.tsx), [`src/app/shohan/navigation/page.tsx`](file:///home/shohan/Music/Best%20Buy%20Cart%20v2/src/app/shohan/navigation/page.tsx).
+
+---
+
 ## 3. Security & Vulnerability Defense
 
 1. **SQL & PostgREST Filter Sanitization**:

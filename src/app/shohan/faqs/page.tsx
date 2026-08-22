@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase/client';
+import { triggerRevalidation } from '@/lib/revalidate';
 import { FAQ } from '@/types';
 import { HelpCircle, Plus, Trash2, Edit3, CheckCircle2, Save, Sparkles } from 'lucide-react';
 
@@ -77,9 +78,9 @@ export default function AdminFAQsPage() {
         .eq('id', editingFaq.id);
 
       if (!error) {
-        await fetch('/api/revalidate', { method: 'POST' }).catch(() => {});
         setShowModal(false);
-        fetchFaqs();
+        await fetchFaqs();
+        triggerRevalidation();
       } else {
         alert(`Error updating FAQ: ${error.message}`);
       }
@@ -87,9 +88,9 @@ export default function AdminFAQsPage() {
       const { error } = await supabase.from('faqs').insert(payload);
 
       if (!error) {
-        await fetch('/api/revalidate', { method: 'POST' }).catch(() => {});
         setShowModal(false);
-        fetchFaqs();
+        await fetchFaqs();
+        triggerRevalidation();
       } else {
         alert(`Error creating FAQ: ${error.message}`);
       }
@@ -99,8 +100,8 @@ export default function AdminFAQsPage() {
   const handleDelete = async (id: string, q: string) => {
     if (confirm(`Delete FAQ "${q}"?`)) {
       await supabase.from('faqs').delete().eq('id', id);
-      await fetch('/api/revalidate', { method: 'POST' }).catch(() => {});
-      fetchFaqs();
+      await fetchFaqs();
+      triggerRevalidation();
     }
   };
 
