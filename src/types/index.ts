@@ -264,12 +264,32 @@ export interface ArticleVideo {
   display_order?: number;
 }
 
+export interface EvaluationCriterion {
+  name: string;
+  weight?: string;
+  description?: string;
+}
+
+export interface HowWeTestedData {
+  enabled?: boolean;
+  title?: string;
+  summary?: string;
+  testing_process?: string;
+  testing_environment?: string;
+  what_was_tested?: string[];
+  performance_observations?: string;
+  comparison_method?: string;
+  real_world_usage?: string;
+  evaluation_criteria?: EvaluationCriterion[];
+}
+
 export interface Article {
   id: string;
   title: string;
   slug: string;
   excerpt?: string;
   introduction?: string;
+  how_we_tested?: HowWeTestedData;
   content: string;
   body?: string;
   featured_image?: string;

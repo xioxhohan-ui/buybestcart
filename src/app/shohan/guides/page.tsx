@@ -40,15 +40,19 @@ import {
   FileText,
   Sliders,
   Award,
+  FlaskConical,
 } from 'lucide-react';
 import Link from 'next/link';
 import TopProductsManager from '@/components/admin/TopProductsManager';
+import HowWeTestedManager from '@/components/admin/HowWeTestedManager';
 import VideoEmbedManager from '@/components/admin/VideoEmbedManager';
 import SeoTitleAdvisor from '@/components/admin/SeoTitleAdvisor';
 import TopProductsSection from '@/components/guides/TopProductsSection';
 import DetailedProductReviewsSection from '@/components/guides/DetailedProductReviewsSection';
+import HowWeTestedSection from '@/components/guides/HowWeTestedSection';
 import ArticleContentRenderer from '@/components/guides/ArticleContentRenderer';
 import PriceDisplay from '@/components/common/PriceDisplay';
+import { HowWeTestedData } from '@/types';
 
 export default function AdminBlogGuidesPage() {
   const [guides, setGuides] = useState<Article[]>([]);
@@ -64,7 +68,7 @@ export default function AdminBlogGuidesPage() {
   // WordPress-Style Editor View Settings
   const [layoutMode, setLayoutMode] = useState<'split' | 'editor' | 'preview'>('split');
   const [previewDevice, setPreviewDevice] = useState<'desktop' | 'tablet' | 'mobile'>('desktop');
-  const [activeTab, setActiveTab] = useState<'content' | 'top_products' | 'videos' | 'seo' | 'author'>('content');
+  const [activeTab, setActiveTab] = useState<'content' | 'top_products' | 'how_we_tested' | 'videos' | 'seo' | 'author'>('content');
 
   // Form State (Live 2-way data binding)
   const [formData, setFormData] = useState<{
@@ -73,6 +77,7 @@ export default function AdminBlogGuidesPage() {
     category_id: string;
     excerpt: string;
     introduction: string;
+    how_we_tested?: HowWeTestedData;
     content: string;
     featured_image: string;
     status: ArticleStatus;
@@ -94,6 +99,28 @@ export default function AdminBlogGuidesPage() {
     category_id: '',
     excerpt: '',
     introduction: 'The hardware landscape has shifted significantly over the past 12 months with the rollout of new processor architectures, enhanced acoustic silicon, and aggressive pricing adjustments across Amazon marketplaces.\n\nIn this comprehensive buying guide, our editorial testing team evaluates what is currently available, compares the top performing contenders head-to-head, and outlines which models deliver the best real-world performance for your budget.',
+    how_we_tested: {
+      enabled: true,
+      title: '4. How We Tested & Editorial Methodology',
+      summary: 'Our testing lab conducted over 40 hours of calibrated measurements, battery loops, and real-world trials to evaluate performance and reliability.',
+      testing_process: 'Each product underwent a multi-stage benchmark protocol evaluating hardware specifications, thermal stability, battery longevity, and ergonomic comfort.',
+      testing_environment: 'Testing was conducted in our calibrated hardware lab under controlled ambient temperatures with standardized measurement rigs.',
+      what_was_tested: [
+        'Hardware Performance & Benchmark Metrics',
+        'Continuous Battery Endurance & Recharging Speeds',
+        'Build Quality, Ergonomics & Daily Wear Fatigue',
+        'Price-to-Performance Value across Amazon Storefronts',
+      ],
+      performance_observations: 'Flagship contenders maintained high performance stability with minimal throttling, while value picks delivered over 90% of core functionality at substantial cost savings.',
+      comparison_method: 'We tested all models side-by-side under identical parameters to ensure transparent, repeatable, and objective comparative data.',
+      real_world_usage: 'We integrated every product into daily productivity, travel, and commuting workflows to evaluate real-world durability and practical user experience.',
+      evaluation_criteria: [
+        { name: 'Core Performance & Reliability', weight: '35%', description: 'Sustained throughput, benchmark speed, and stability under heavy workload.' },
+        { name: 'Build Quality & Ergonomics', weight: '25%', description: 'Materials, long-duration comfort, and physical durability.' },
+        { name: 'Battery Longevity & Power', weight: '20%', description: 'Measured runtime and fast-charging efficiency.' },
+        { name: 'Value & Amazon Pricing', weight: '20%', description: 'Real-world feature set relative to verified retail cost.' },
+      ],
+    },
     content: `## Lab Testing Methodology & Evaluation Criteria\n\nWe spent over 40 lab hours evaluating acoustic isolation, active battery endurance, thermal throttling, and overall build longevity.\n\n### Why Trust Our Lab\n\nOur engineers evaluate retail sample units and measure real-world performance without merchant sponsor intervention.\n\n> "A top-tier recommendation must not only benchmark well in the lab, but withstand real-world commuting, drops, and prolonged battery stress."`,
     featured_image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&auto=format&fit=crop&q=80',
     status: 'published',
@@ -135,6 +162,27 @@ export default function AdminBlogGuidesPage() {
       category_id: categories[0]?.id || '',
       excerpt: '',
       introduction: 'The hardware landscape has shifted significantly over the past 12 months with the rollout of new processor architectures, enhanced acoustic silicon, and aggressive pricing adjustments across Amazon marketplaces.\n\nIn this comprehensive buying guide, our editorial testing team evaluates what is currently available, compares the top performing contenders head-to-head, and outlines which models deliver the best real-world performance for your budget.',
+      how_we_tested: {
+        enabled: true,
+        title: '4. How We Tested & Editorial Methodology',
+        summary: 'Our testing lab conducted over 40 hours of calibrated measurements, battery loops, and real-world trials.',
+        testing_process: 'Each product underwent a multi-stage benchmark protocol evaluating hardware specifications, thermal stability, battery longevity, and ergonomic comfort.',
+        testing_environment: 'Testing was conducted in our calibrated hardware lab under controlled ambient temperatures with standardized measurement rigs.',
+        what_was_tested: [
+          'Hardware Performance & Benchmark Metrics',
+          'Continuous Battery Endurance & Recharging Speeds',
+          'Build Quality, Ergonomics & Daily Wear Fatigue',
+        ],
+        performance_observations: 'Flagship contenders maintained high performance stability, while value picks delivered high quality at lower price points.',
+        comparison_method: 'We tested all models side-by-side under identical parameters for objective comparison.',
+        real_world_usage: 'We integrated every product into daily productivity workflows to evaluate real-world durability.',
+        evaluation_criteria: [
+          { name: 'Core Performance', weight: '35%', description: 'Sustained throughput and benchmark stability.' },
+          { name: 'Build Quality', weight: '25%', description: 'Materials and physical durability.' },
+          { name: 'Battery Longevity', weight: '20%', description: 'Measured runtime and fast-charging efficiency.' },
+          { name: 'Value for Money', weight: '20%', description: 'Features relative to verified Amazon price.' },
+        ],
+      },
       content: `## Lab Testing Methodology & Evaluation Criteria\n\nWe spent over 40 lab hours evaluating acoustic isolation, active battery endurance, thermal throttling, and overall build longevity.\n\n### Why Trust Our Lab\n\nOur engineers evaluate retail sample units and measure real-world performance without merchant sponsor intervention.\n\n> "A top-tier recommendation must not only benchmark well in the lab, but withstand real-world commuting, drops, and prolonged battery stress."`,
       featured_image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&auto=format&fit=crop&q=80',
       status: 'published',
@@ -163,6 +211,23 @@ export default function AdminBlogGuidesPage() {
       category_id: g.category_id || (categories[0]?.id || ''),
       excerpt: g.excerpt || '',
       introduction: g.introduction || 'The hardware landscape has shifted significantly over the past 12 months with new product releases and competitive pricing across Amazon.\n\nIn this guide, we break down what is currently available and identify the top performers for every budget.',
+      how_we_tested: g.how_we_tested || {
+        enabled: true,
+        title: '4. How We Tested & Editorial Methodology',
+        summary: 'Our testing lab conducted calibrated measurements and real-world trials.',
+        testing_process: 'Standardized multi-stage testing protocol across lab benches.',
+        testing_environment: 'Calibrated laboratory conditions.',
+        what_was_tested: ['Performance', 'Battery Endurance', 'Ergonomics'],
+        performance_observations: 'Tested models benchmarked across all key parameters.',
+        comparison_method: 'Side-by-side A/B testing.',
+        real_world_usage: 'Daily practical workflows.',
+        evaluation_criteria: [
+          { name: 'Performance', weight: '35%' },
+          { name: 'Build Quality', weight: '25%' },
+          { name: 'Battery', weight: '20%' },
+          { name: 'Value', weight: '20%' },
+        ],
+      },
       content: g.content || g.body || '',
       featured_image: g.featured_image || 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&auto=format&fit=crop&q=80',
       status: g.status || 'published',
@@ -228,6 +293,7 @@ export default function AdminBlogGuidesPage() {
       seo_description: formData.seo_description || formData.excerpt,
       canonical_url: formData.canonical_url || `https://buybestcart.shop/guides/${cleanSlug}`,
       top_products: formData.top_products,
+      how_we_tested: formData.how_we_tested,
       videos: formData.videos,
       schema_type: 'Article',
       updated_at: new Date().toISOString(),
@@ -542,11 +608,12 @@ export default function AdminBlogGuidesPage() {
                 }}
               >
                 {[
-                  { id: 'content', label: '1. Introduction & Content', icon: BookOpen },
-                  { id: 'top_products', label: `2. Our Top Picks (${formData.top_products.length})`, icon: Sparkles },
-                  { id: 'videos', label: `3. Videos & Media (${formData.videos.length})`, icon: Video },
-                  { id: 'seo', label: '4. SEO & SERP', icon: Search },
-                  { id: 'author', label: '5. Author & Date', icon: User },
+                  { id: 'content', label: '1. Intro & Content', icon: BookOpen },
+                  { id: 'top_products', label: `2. Top Picks & Reviews (${formData.top_products.length})`, icon: Sparkles },
+                  { id: 'how_we_tested', label: '3. How We Tested', icon: FlaskConical },
+                  { id: 'videos', label: `4. Videos & Media (${formData.videos.length})`, icon: Video },
+                  { id: 'seo', label: '5. SEO & SERP', icon: Search },
+                  { id: 'author', label: '6. Author & Date', icon: User },
                 ].map((tab) => (
                   <button
                     key={tab.id}
@@ -733,7 +800,15 @@ export default function AdminBlogGuidesPage() {
                   />
                 )}
 
-                {/* TAB 3: VIDEOS & MULTIMEDIA */}
+                {/* TAB 3: HOW WE TESTED METHODOLOGY */}
+                {activeTab === 'how_we_tested' && (
+                  <HowWeTestedManager
+                    data={formData.how_we_tested}
+                    onChange={(updated) => setFormData({ ...formData, how_we_tested: updated })}
+                  />
+                )}
+
+                {/* TAB 4: VIDEOS & MULTIMEDIA */}
                 {activeTab === 'videos' && (
                   <VideoEmbedManager
                     videos={formData.videos}
@@ -1029,6 +1104,11 @@ export default function AdminBlogGuidesPage() {
                   {/* 3. Detailed Product Sections Live Review Preview */}
                   {formData.top_products.length > 0 && (
                     <DetailedProductReviewsSection products={formData.top_products} title="3. In-Depth Product Reviews &amp; Lab Scores" subtitle="Detailed hardware analysis, customizable specifications, performance observations, pros/cons, and verified Amazon deals for each ranked pick." />
+                  )}
+
+                  {/* 4. How We Tested Methodology Live Preview */}
+                  {formData.how_we_tested && formData.how_we_tested.enabled !== false && (
+                    <HowWeTestedSection data={formData.how_we_tested} />
                   )}
 
                   {/* Rich Article Body Content */}
