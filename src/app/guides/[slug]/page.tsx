@@ -8,6 +8,7 @@ import { generateArticleJsonLd } from '@/lib/seo';
 import { Article } from '@/types';
 import { BookOpen, Award, Sparkles, Clock, Calendar, User, ShieldCheck, ArrowRight, Share2 } from 'lucide-react';
 import TopProductsSection from '@/components/guides/TopProductsSection';
+import DetailedProductReviewsSection from '@/components/guides/DetailedProductReviewsSection';
 import ArticleContentRenderer from '@/components/guides/ArticleContentRenderer';
 
 interface GuidePageProps {
@@ -205,9 +206,14 @@ export default async function GuideDetailPage({ params }: GuidePageProps) {
         </section>
       )}
 
-      {/* 2. Top Products Section (Rendered if populated) */}
+      {/* 2. Top Products Summary & Jump Nav */}
       {topProducts.length > 0 && (
         <TopProductsSection products={topProducts} title="2. Our Top Picks" subtitle="Independently tested, ranked, and verified by our editorial lab staff." />
+      )}
+
+      {/* 3. Detailed Product Sections (Full Reviews, Specs, Galleries, Pros/Cons, Who It Is Best For) */}
+      {topProducts.length > 0 && (
+        <DetailedProductReviewsSection products={topProducts} title="3. In-Depth Product Reviews &amp; Lab Scores" subtitle="Detailed hardware analysis, customizable specifications, performance observations, pros/cons, and verified Amazon deals for each ranked pick." />
       )}
 
       {/* Rich Article Body Content */}

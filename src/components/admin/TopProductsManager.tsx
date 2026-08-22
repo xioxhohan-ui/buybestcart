@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { TopProductItem, Product } from '@/types';
+import { TopProductItem, Product, ProductSpecItem } from '@/types';
 import { supabase } from '@/lib/supabase/client';
 import {
   Plus,
@@ -18,6 +18,12 @@ import {
   Award,
   DollarSign,
   Tag,
+  Table as TableIcon,
+  Video,
+  UserCheck,
+  AlertTriangle,
+  Zap,
+  Image as ImageIcon,
 } from 'lucide-react';
 
 interface TopProductsManagerProps {
@@ -38,6 +44,16 @@ const PRESET_AWARD_LABELS = [
   'Top Runner-Up',
 ];
 
+const COMMON_SPEC_SUGGESTIONS = [
+  { name: 'Dimensions', value: '' },
+  { name: 'Weight', value: '' },
+  { name: 'Battery Life', value: '' },
+  { name: 'Connectivity', value: '' },
+  { name: 'Materials', value: '' },
+  { name: 'Driver / Screen Size', value: '' },
+  { name: 'Warranty', value: '1-Year Limited' },
+];
+
 export default function TopProductsManager({ products = [], onChange }: TopProductsManagerProps) {
   const [catalogProducts, setCatalogProducts] = useState<Product[]>([]);
   const [loadingCatalog, setLoadingCatalog] = useState(false);
@@ -48,7 +64,7 @@ export default function TopProductsManager({ products = [], onChange }: TopProdu
       setLoadingCatalog(true);
       const { data } = await supabase
         .from('products')
-        .select('id, title, slug, asin, price, list_price, thumbnail_url, short_description, affiliate_url, badge_text, rating, review_count')
+        .select('id, title, slug, asin, price, list_price, thumbnail_url, short_description, description, affiliate_url, badge_text, rating, review_count')
         .in('status', ['active', 'featured', 'published'])
         .order('title', { ascending: true });
 
@@ -78,13 +94,28 @@ export default function TopProductsManager({ products = [], onChange }: TopProdu
       badge: defaultBadge,
       price: 199.99,
       list_price: 249.99,
+      availability: 'In Stock',
       thumbnail_url: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500&auto=format&fit=crop&q=70',
+      gallery_images: [],
       short_description: 'Key testing takeaways, lab benchmark scores, and real-world performance evaluation...',
+      full_description: 'In our prolonged lab evaluations, this product stood out for its responsive engineering, dependable durability, and balanced acoustic/performance tuning.',
       cta_text: 'Buy on Amazon',
       affiliate_url: 'https://www.amazon.com?tag=bestbuycart-20',
-      highlights: ['Class-leading performance', 'Exceptional build quality'],
-      pros: ['Great battery life', 'Premium acoustic fidelity'],
+      highlights: ['Class-leading performance', 'Exceptional build quality', 'Long-lasting battery endurance'],
+      important_features: ['Active ANC', 'Fast Charging', 'Spatial Audio'],
+      specifications: [
+        { name: 'Weight', value: '250g' },
+        { name: 'Battery Life', value: '30 Hours' },
+        { name: 'Connectivity', value: 'Bluetooth 5.2 / USB-C' },
+        { name: 'Materials', value: 'Recycled Aluminum & Foam' },
+      ],
+      pros: ['Great battery life', 'Premium acoustic fidelity', 'Comfortable ear cups'],
       cons: ['Premium price point'],
+      best_for: 'Frequent commuters, office professionals, and audiophiles seeking top acoustic suppression.',
+      avoid_if: 'Budget shoppers seeking entry-level sub-$50 alternatives.',
+      performance_notes: 'Measured 94% noise cancellation across low airplane rumblings and 30.5 hours continuous playback.',
+      video_url: '',
+      video_title: '',
     };
 
     const updated = [...products, newItem];
@@ -112,15 +143,29 @@ export default function TopProductsManager({ products = [], onChange }: TopProdu
       badge: defaultBadge,
       price: found.price || 199.99,
       list_price: found.list_price || undefined,
+      availability: 'In Stock',
       thumbnail_url: found.thumbnail_url || 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500&auto=format&fit=crop&q=70',
+      gallery_images: [],
       short_description: found.short_description || 'Tested in our editorial lab with high performance scores.',
+      full_description: found.description || 'Our testing engineers put this product through calibrated bench tests measuring build quality, thermal behavior, and real-world durability.',
       cta_text: 'Buy on Amazon',
       affiliate_url: found.affiliate_url || (found.asin ? `https://www.amazon.com/dp/${found.asin}?tag=bestbuycart-20` : 'https://www.amazon.com?tag=bestbuycart-20'),
       rating: found.rating,
       review_count: found.review_count,
-      highlights: ['Lab verified hardware specifications', 'Authentic merchant warranty'],
+      highlights: ['Lab verified hardware specifications', 'Authentic merchant warranty', 'High-grade components'],
+      important_features: ['Verified Stock', 'Fast Shipping'],
+      specifications: [
+        { name: 'ASIN', value: found.asin || 'N/A' },
+        { name: 'Availability', value: 'In Stock' },
+        { name: 'Warranty', value: '1-Year Manufacturer Warranty' },
+      ],
       pros: ['High build quality', 'Reliable performance in testing'],
       cons: [],
+      best_for: 'Buyers looking for verified Amazon authentic hardware.',
+      avoid_if: '',
+      performance_notes: '',
+      video_url: '',
+      video_title: '',
     };
 
     const updated = [...products, newItem];
@@ -131,6 +176,29 @@ export default function TopProductsManager({ products = [], onChange }: TopProdu
   const handleUpdateItem = (index: number, field: keyof TopProductItem, value: any) => {
     const copy = [...products];
     copy[index] = { ...copy[index], [field]: value };
+    onChange(copy);
+  };
+
+  // Dynamic Specs Row Management
+  const handleAddSpecRow = (prodIndex: number, name = 'Spec Name', value = '') => {
+    const copy = [...products];
+    const currentSpecs = copy[prodIndex].specifications || [];
+    copy[prodIndex].specifications = [...currentSpecs, { name, value }];
+    onChange(copy);
+  };
+
+  const handleUpdateSpecRow = (prodIndex: number, specIndex: number, field: 'name' | 'value', val: string) => {
+    const copy = [...products];
+    const currentSpecs = [...(copy[prodIndex].specifications || [])];
+    currentSpecs[specIndex] = { ...currentSpecs[specIndex], [field]: val };
+    copy[prodIndex].specifications = currentSpecs;
+    onChange(copy);
+  };
+
+  const handleDeleteSpecRow = (prodIndex: number, specIndex: number) => {
+    const copy = [...products];
+    const currentSpecs = (copy[prodIndex].specifications || []).filter((_, idx) => idx !== specIndex);
+    copy[prodIndex].specifications = currentSpecs;
     onChange(copy);
   };
 
@@ -172,10 +240,10 @@ export default function TopProductsManager({ products = [], onChange }: TopProdu
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '1rem', fontWeight: 800, color: 'var(--text-primary)' }}>
             <Sparkles size={16} color="var(--green-accent)" />
-            <span>2. Our Top Picks Builder ({products.length} Products Included)</span>
+            <span>2. Our Top Picks &amp; Detailed Review Builder ({products.length} Products Included)</span>
           </div>
           <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', margin: '0.25rem 0 0 0' }}>
-            Choose any number of products (Top 5, Top 6, Top 7, Top 8, Top 9, Top 10, Top 15, Top 20+). Reorder and customize award text, clickable product names, live prices, and Amazon links.
+            Choose any number of products (Top 5, Top 6, Top 7, Top 8, Top 9, Top 10, Top 15, Top 20+). Configure customizable specifications, galleries, pros/cons, &quot;best for&quot; callouts, and Amazon CTA buttons.
           </p>
         </div>
 
@@ -228,7 +296,7 @@ export default function TopProductsManager({ products = [], onChange }: TopProdu
             No Top Picks Added Yet
           </div>
           <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginBottom: '1rem' }}>
-            Add ranked products to create a rich Top 5, Top 10, or Top 20 buying guide with live prices, custom ranking labels, and Amazon buy buttons.
+            Add ranked products to create a rich Top 5, Top 10, or Top 20 buying guide with live prices, custom specifications, pros/cons, and Amazon buy buttons.
           </p>
           <button
             type="button"
@@ -311,6 +379,8 @@ export default function TopProductsManager({ products = [], onChange }: TopProdu
                         <span style={{ fontWeight: 700, color: '#B45309', background: '#FEF3C7', padding: '0 0.35rem', borderRadius: '2px' }}>
                           {item.badge || `Top Pick #${rank}`}
                         </span>
+                        <span>•</span>
+                        <span>{(item.specifications || []).length} specs</span>
                       </div>
                     </div>
                   </div>
@@ -355,7 +425,7 @@ export default function TopProductsManager({ products = [], onChange }: TopProdu
 
                 {/* Expanded Form Fields */}
                 {isExpanded && (
-                  <div style={{ padding: '1.25rem', borderTop: '1px solid var(--border)', display: 'flex', flexDirection: 'column', gap: '1rem', background: '#FAFAF9' }}>
+                  <div style={{ padding: '1.5rem', borderTop: '1px solid var(--border)', display: 'flex', flexDirection: 'column', gap: '1.25rem', background: '#FAFAF9' }}>
                     {/* Rank & Title */}
                     <div style={{ display: 'grid', gridTemplateColumns: '80px 1fr', gap: '0.75rem' }}>
                       <div>
@@ -373,7 +443,7 @@ export default function TopProductsManager({ products = [], onChange }: TopProdu
 
                       <div>
                         <label style={{ display: 'block', fontSize: '0.6875rem', fontWeight: 800, textTransform: 'uppercase', marginBottom: '0.25rem' }}>
-                          Product Name * (Clickable on public website)
+                          Product Name * (Clickable link on public website)
                         </label>
                         <input
                           type="text"
@@ -393,7 +463,7 @@ export default function TopProductsManager({ products = [], onChange }: TopProdu
                           <span>Custom Ranking Label / Award *</span>
                         </label>
                         <span style={{ fontSize: '0.6875rem', color: 'var(--text-muted)' }}>
-                          Type any custom label or click a preset below:
+                          Click a preset or type any custom award:
                         </span>
                       </div>
 
@@ -432,7 +502,7 @@ export default function TopProductsManager({ products = [], onChange }: TopProdu
                       </div>
                     </div>
 
-                    {/* Price, Currency & CTA Controls */}
+                    {/* Price, Availability & CTA Controls */}
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '0.75rem' }}>
                       <div>
                         <label style={{ display: 'block', fontSize: '0.6875rem', fontWeight: 800, textTransform: 'uppercase', marginBottom: '0.25rem' }}>
@@ -462,6 +532,19 @@ export default function TopProductsManager({ products = [], onChange }: TopProdu
 
                       <div>
                         <label style={{ display: 'block', fontSize: '0.6875rem', fontWeight: 800, textTransform: 'uppercase', marginBottom: '0.25rem' }}>
+                          Availability Status
+                        </label>
+                        <input
+                          type="text"
+                          value={item.availability || 'In Stock'}
+                          onChange={(e) => handleUpdateItem(idx, 'availability', e.target.value)}
+                          placeholder="e.g. In Stock, Ships Fast"
+                          style={{ width: '100%', padding: '0.4rem 0.6rem', fontSize: '0.8125rem', borderRadius: 'var(--radius-xs)', border: '1px solid var(--border-strong)' }}
+                        />
+                      </div>
+
+                      <div>
+                        <label style={{ display: 'block', fontSize: '0.6875rem', fontWeight: 800, textTransform: 'uppercase', marginBottom: '0.25rem' }}>
                           Amazon ASIN
                         </label>
                         <input
@@ -476,7 +559,7 @@ export default function TopProductsManager({ products = [], onChange }: TopProdu
 
                       <div>
                         <label style={{ display: 'block', fontSize: '0.6875rem', fontWeight: 800, textTransform: 'uppercase', marginBottom: '0.25rem' }}>
-                          Button CTA Text
+                          CTA Button Label
                         </label>
                         <input
                           type="text"
@@ -488,11 +571,11 @@ export default function TopProductsManager({ products = [], onChange }: TopProdu
                       </div>
                     </div>
 
-                    {/* Image & Affiliate Links */}
+                    {/* Image & Gallery URLs */}
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
                       <div>
                         <label style={{ display: 'block', fontSize: '0.6875rem', fontWeight: 800, textTransform: 'uppercase', marginBottom: '0.25rem' }}>
-                          Product Thumbnail URL
+                          Primary Thumbnail URL
                         </label>
                         <input
                           type="url"
@@ -517,18 +600,163 @@ export default function TopProductsManager({ products = [], onChange }: TopProdu
                       </div>
                     </div>
 
-                    {/* Short Description */}
+                    {/* Additional Gallery Images */}
                     <div>
                       <label style={{ display: 'block', fontSize: '0.6875rem', fontWeight: 800, textTransform: 'uppercase', marginBottom: '0.25rem' }}>
-                        Short Review Description &amp; Lab Takeaways
+                        Additional Gallery Image URLs (comma separated)
+                      </label>
+                      <input
+                        type="text"
+                        value={(item.gallery_images || []).join(', ')}
+                        onChange={(e) => handleUpdateItem(idx, 'gallery_images', e.target.value.split(',').map((s) => s.trim()).filter(Boolean))}
+                        placeholder="https://images.unsplash.com/img1.jpg, https://images.unsplash.com/img2.jpg"
+                        style={{ width: '100%', padding: '0.4rem 0.6rem', fontSize: '0.8125rem', borderRadius: 'var(--radius-xs)', border: '1px solid var(--border-strong)' }}
+                      />
+                    </div>
+
+                    {/* Short Description Quote */}
+                    <div>
+                      <label style={{ display: 'block', fontSize: '0.6875rem', fontWeight: 800, textTransform: 'uppercase', marginBottom: '0.25rem' }}>
+                        Short Review Verdict / Quote
                       </label>
                       <textarea
                         rows={2}
                         value={item.short_description || ''}
                         onChange={(e) => handleUpdateItem(idx, 'short_description', e.target.value)}
-                        placeholder="Why this product made the ranking list..."
+                        placeholder="Key takeaway quote summarizing why this product is ranked..."
                         style={{ width: '100%', padding: '0.4rem 0.6rem', fontSize: '0.8125rem', borderRadius: 'var(--radius-xs)', border: '1px solid var(--border-strong)' }}
                       />
+                    </div>
+
+                    {/* Full Detailed Description */}
+                    <div>
+                      <label style={{ display: 'block', fontSize: '0.6875rem', fontWeight: 800, textTransform: 'uppercase', marginBottom: '0.25rem' }}>
+                        Full In-Depth Product Review / Lab Assessment
+                      </label>
+                      <textarea
+                        rows={4}
+                        value={item.full_description || ''}
+                        onChange={(e) => handleUpdateItem(idx, 'full_description', e.target.value)}
+                        placeholder="Write multiple in-depth paragraphs describing sound quality, ergonomics, daily battery endurance, real-world quirks, and hardware durability..."
+                        style={{ width: '100%', padding: '0.4rem 0.6rem', fontSize: '0.8125rem', lineHeight: 1.6, borderRadius: 'var(--radius-xs)', border: '1px solid var(--border-strong)' }}
+                      />
+                    </div>
+
+                    {/* Key Highlights & Important Features */}
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+                      <div>
+                        <label style={{ display: 'block', fontSize: '0.6875rem', fontWeight: 800, textTransform: 'uppercase', marginBottom: '0.25rem' }}>
+                          Key Highlights (comma separated)
+                        </label>
+                        <input
+                          type="text"
+                          value={(item.highlights || []).join(', ')}
+                          onChange={(e) => handleUpdateItem(idx, 'highlights', e.target.value.split(',').map((s) => s.trim()).filter(Boolean))}
+                          placeholder="30-hour battery, ANC optimizer, 8-mic array"
+                          style={{ width: '100%', padding: '0.4rem 0.6rem', fontSize: '0.8125rem', borderRadius: 'var(--radius-xs)', border: '1px solid var(--border-strong)' }}
+                        />
+                      </div>
+
+                      <div>
+                        <label style={{ display: 'block', fontSize: '0.6875rem', fontWeight: 800, textTransform: 'uppercase', marginBottom: '0.25rem' }}>
+                          Important Features Pills (comma separated)
+                        </label>
+                        <input
+                          type="text"
+                          value={(item.important_features || []).join(', ')}
+                          onChange={(e) => handleUpdateItem(idx, 'important_features', e.target.value.split(',').map((s) => s.trim()).filter(Boolean))}
+                          placeholder="Active ANC, Fast Charge, Multipoint Bluetooth"
+                          style={{ width: '100%', padding: '0.4rem 0.6rem', fontSize: '0.8125rem', borderRadius: 'var(--radius-xs)', border: '1px solid var(--border-strong)' }}
+                        />
+                      </div>
+                    </div>
+
+                    {/* DYNAMIC CUSTOMIZABLE SPECIFICATIONS BUILDER */}
+                    <div style={{ background: '#FFF', border: '1px solid var(--border)', borderRadius: 'var(--radius-md)', padding: '1rem' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+                        <div>
+                          <div style={{ fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '0.35rem', color: 'var(--text-primary)' }}>
+                            <TableIcon size={13} color="var(--green-accent)" />
+                            <span>Customizable Specifications ({(item.specifications || []).length} Specs Added)</span>
+                          </div>
+                          <p style={{ fontSize: '0.6875rem', color: 'var(--text-muted)', margin: 0 }}>
+                            Add, remove, or customize any key-value spec rows (Dimensions, Weight, Battery, Connectivity, Materials, Custom).
+                          </p>
+                        </div>
+
+                        <div style={{ display: 'flex', gap: '0.35rem', flexWrap: 'wrap' }}>
+                          <button
+                            type="button"
+                            onClick={() => handleAddSpecRow(idx, 'New Spec', '')}
+                            className="btn btn-secondary btn-sm"
+                            style={{ fontSize: '0.6875rem', padding: '0.2rem 0.5rem', display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}
+                          >
+                            <Plus size={11} />
+                            <span>Add Row</span>
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Quick Spec Presets */}
+                      <div style={{ display: 'flex', gap: '0.3rem', flexWrap: 'wrap', marginBottom: '0.75rem', padding: '0.35rem 0', borderBottom: '1px solid var(--border-subtle)' }}>
+                        <span style={{ fontSize: '0.6875rem', color: 'var(--text-muted)', fontWeight: 700, alignSelf: 'center' }}>
+                          Quick Add:
+                        </span>
+                        {COMMON_SPEC_SUGGESTIONS.map((preset) => (
+                          <button
+                            key={preset.name}
+                            type="button"
+                            onClick={() => handleAddSpecRow(idx, preset.name, preset.value)}
+                            style={{
+                              fontSize: '0.6875rem',
+                              padding: '0.15rem 0.4rem',
+                              borderRadius: 'var(--radius-xs)',
+                              border: '1px solid var(--border)',
+                              background: 'var(--bg-subtle)',
+                              color: 'var(--text-secondary)',
+                              cursor: 'pointer',
+                            }}
+                          >
+                            + {preset.name}
+                          </button>
+                        ))}
+                      </div>
+
+                      {/* Spec Rows Table */}
+                      {(item.specifications || []).length === 0 ? (
+                        <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textAlign: 'center', padding: '0.75rem' }}>
+                          No specifications added. Click &quot;Add Row&quot; or a quick preset above.
+                        </div>
+                      ) : (
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
+                          {item.specifications?.map((spec, sIdx) => (
+                            <div key={sIdx} style={{ display: 'grid', gridTemplateColumns: '1.2fr 2fr auto', gap: '0.4rem', alignItems: 'center' }}>
+                              <input
+                                type="text"
+                                value={spec.name}
+                                onChange={(e) => handleUpdateSpecRow(idx, sIdx, 'name', e.target.value)}
+                                placeholder="e.g. Weight"
+                                style={{ padding: '0.35rem 0.5rem', fontSize: '0.75rem', fontWeight: 700, borderRadius: 'var(--radius-xs)', border: '1px solid var(--border)' }}
+                              />
+                              <input
+                                type="text"
+                                value={spec.value}
+                                onChange={(e) => handleUpdateSpecRow(idx, sIdx, 'value', e.target.value)}
+                                placeholder="e.g. 250g / 8.8 oz"
+                                style={{ padding: '0.35rem 0.5rem', fontSize: '0.75rem', borderRadius: 'var(--radius-xs)', border: '1px solid var(--border)' }}
+                              />
+                              <button
+                                type="button"
+                                onClick={() => handleDeleteSpecRow(idx, sIdx)}
+                                style={{ background: 'none', border: 'none', color: 'var(--danger)', cursor: 'pointer', padding: '0.2rem' }}
+                                title="Remove spec"
+                              >
+                                <Trash2 size={13} />
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      )}
                     </div>
 
                     {/* Pros & Cons */}
@@ -558,6 +786,77 @@ export default function TopProductsManager({ products = [], onChange }: TopProdu
                           style={{ width: '100%', padding: '0.4rem 0.6rem', fontSize: '0.8125rem', borderRadius: 'var(--radius-xs)', border: '1px solid var(--border-strong)' }}
                         />
                       </div>
+                    </div>
+
+                    {/* "Who it is best for" & "Who should avoid it" */}
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+                      <div>
+                        <label style={{ display: 'block', fontSize: '0.6875rem', fontWeight: 800, textTransform: 'uppercase', marginBottom: '0.25rem', color: 'var(--green-accent)' }}>
+                          Who It Is Best For
+                        </label>
+                        <textarea
+                          rows={2}
+                          value={item.best_for || ''}
+                          onChange={(e) => handleUpdateItem(idx, 'best_for', e.target.value)}
+                          placeholder="e.g. Frequent flyers, office workers, and remote professionals needing top-tier isolation."
+                          style={{ width: '100%', padding: '0.4rem 0.6rem', fontSize: '0.8125rem', borderRadius: 'var(--radius-xs)', border: '1px solid var(--border-strong)' }}
+                        />
+                      </div>
+
+                      <div>
+                        <label style={{ display: 'block', fontSize: '0.6875rem', fontWeight: 800, textTransform: 'uppercase', marginBottom: '0.25rem', color: 'var(--amber-deal)' }}>
+                          Who Should Avoid It
+                        </label>
+                        <textarea
+                          rows={2}
+                          value={item.avoid_if || ''}
+                          onChange={(e) => handleUpdateItem(idx, 'avoid_if', e.target.value)}
+                          placeholder="e.g. Gym enthusiasts needing IPX8 waterproof rating or folding headbands."
+                          style={{ width: '100%', padding: '0.4rem 0.6rem', fontSize: '0.8125rem', borderRadius: 'var(--radius-xs)', border: '1px solid var(--border-strong)' }}
+                        />
+                      </div>
+                    </div>
+
+                    {/* Product Video & Performance Notes */}
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+                      <div>
+                        <label style={{ display: 'block', fontSize: '0.6875rem', fontWeight: 800, textTransform: 'uppercase', marginBottom: '0.25rem' }}>
+                          Product Video URL (YouTube / Vimeo / MP4)
+                        </label>
+                        <input
+                          type="url"
+                          value={item.video_url || ''}
+                          onChange={(e) => handleUpdateItem(idx, 'video_url', e.target.value)}
+                          placeholder="https://www.youtube.com/watch?v=..."
+                          style={{ width: '100%', padding: '0.4rem 0.6rem', fontSize: '0.8125rem', borderRadius: 'var(--radius-xs)', border: '1px solid var(--border-strong)' }}
+                        />
+                      </div>
+
+                      <div>
+                        <label style={{ display: 'block', fontSize: '0.6875rem', fontWeight: 800, textTransform: 'uppercase', marginBottom: '0.25rem' }}>
+                          Video Title
+                        </label>
+                        <input
+                          type="text"
+                          value={item.video_title || ''}
+                          onChange={(e) => handleUpdateItem(idx, 'video_title', e.target.value)}
+                          placeholder="e.g. Real-world Noise Cancellation Lab Test"
+                          style={{ width: '100%', padding: '0.4rem 0.6rem', fontSize: '0.8125rem', borderRadius: 'var(--radius-xs)', border: '1px solid var(--border-strong)' }}
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label style={{ display: 'block', fontSize: '0.6875rem', fontWeight: 800, textTransform: 'uppercase', marginBottom: '0.25rem' }}>
+                        Performance &amp; Battery Lab Benchmark Notes
+                      </label>
+                      <input
+                        type="text"
+                        value={item.performance_notes || ''}
+                        onChange={(e) => handleUpdateItem(idx, 'performance_notes', e.target.value)}
+                        placeholder="e.g. Measured 94% low-frequency cancellation and 30.5 hours continuous runtime."
+                        style={{ width: '100%', padding: '0.4rem 0.6rem', fontSize: '0.8125rem', borderRadius: 'var(--radius-xs)', border: '1px solid var(--border-strong)' }}
+                      />
                     </div>
                   </div>
                 )}

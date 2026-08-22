@@ -46,6 +46,7 @@ import TopProductsManager from '@/components/admin/TopProductsManager';
 import VideoEmbedManager from '@/components/admin/VideoEmbedManager';
 import SeoTitleAdvisor from '@/components/admin/SeoTitleAdvisor';
 import TopProductsSection from '@/components/guides/TopProductsSection';
+import DetailedProductReviewsSection from '@/components/guides/DetailedProductReviewsSection';
 import ArticleContentRenderer from '@/components/guides/ArticleContentRenderer';
 import PriceDisplay from '@/components/common/PriceDisplay';
 
@@ -1023,6 +1024,11 @@ export default function AdminBlogGuidesPage() {
                   {/* 2. Numbered Top Products Live Section */}
                   {formData.top_products.length > 0 && (
                     <TopProductsSection products={formData.top_products} title="2. Our Top Picks" subtitle="Independently tested, ranked, and verified by our editorial lab staff." />
+                  )}
+
+                  {/* 3. Detailed Product Sections Live Review Preview */}
+                  {formData.top_products.length > 0 && (
+                    <DetailedProductReviewsSection products={formData.top_products} title="3. In-Depth Product Reviews &amp; Lab Scores" subtitle="Detailed hardware analysis, customizable specifications, performance observations, pros/cons, and verified Amazon deals for each ranked pick." />
                   )}
 
                   {/* Rich Article Body Content */}

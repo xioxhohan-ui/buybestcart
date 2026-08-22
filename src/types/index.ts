@@ -218,20 +218,36 @@ export type ArticleType =
 
 export type ArticleStatus = 'draft' | 'published' | 'archived';
 
+export interface ProductSpecItem {
+  name: string;
+  value: string;
+}
+
 export interface TopProductItem {
   id?: string;
   product_id?: string;
   position: number;
   title: string;
   thumbnail_url?: string;
+  gallery_images?: string[];
   price?: number;
   list_price?: number;
   currency?: string;
+  availability?: string;
   badge?: string;
   short_description?: string;
+  full_description?: string;
   highlights?: string[];
+  specifications?: ProductSpecItem[];
+  important_features?: string[];
   pros?: string[];
   cons?: string[];
+  best_for?: string;
+  avoid_if?: string;
+  performance_notes?: string;
+  custom_notes?: string;
+  video_url?: string;
+  video_title?: string;
   affiliate_url?: string;
   cta_text?: string;
   asin?: string;
