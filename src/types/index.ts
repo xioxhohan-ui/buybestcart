@@ -218,6 +218,36 @@ export type ArticleType =
 
 export type ArticleStatus = 'draft' | 'published' | 'archived';
 
+export interface TopProductItem {
+  id?: string;
+  product_id?: string;
+  position: number;
+  title: string;
+  thumbnail_url?: string;
+  price?: number;
+  list_price?: number;
+  currency?: string;
+  badge?: string;
+  short_description?: string;
+  highlights?: string[];
+  pros?: string[];
+  cons?: string[];
+  affiliate_url?: string;
+  cta_text?: string;
+  asin?: string;
+  product_slug?: string;
+  rating?: number;
+  review_count?: number;
+}
+
+export interface ArticleVideo {
+  id: string;
+  title?: string;
+  url: string;
+  caption?: string;
+  display_order?: number;
+}
+
 export interface Article {
   id: string;
   title: string;
@@ -231,6 +261,9 @@ export interface Article {
   status: ArticleStatus;
   category_id?: string;
   author_id?: string;
+  author_name?: string;
+  author_role?: string;
+  author_avatar?: string;
   reading_time_minutes?: number;
   seo_title?: string;
   seo_description?: string;
@@ -246,6 +279,9 @@ export interface Article {
   category?: Category;
   author?: Profile;
   product_ids?: string[];
+  top_products?: TopProductItem[];
+  tags?: string[];
+  videos?: ArticleVideo[];
 }
 
 export type DealStatus = 'draft' | 'scheduled' | 'active' | 'expired' | 'archived';
