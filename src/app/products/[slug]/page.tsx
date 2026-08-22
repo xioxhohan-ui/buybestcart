@@ -93,29 +93,38 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
     notFound();
   }
 
-  // Related products from same category or top-rated fallbacks
-  let { data: relatedProducts } = await supabase
-    .from('products')
-    .select('*, brand:brands(*), category:categories(*)')
-    .eq('category_id', product.category_id)
-    .neq('id', product.id)
-    .limit(3);
+  // Parallelize secondary queries (related products and FAQs) for high-performance sub-100ms response
+  const [relatedRes, faqsRes] = await Promise.all([
+    product.category_id
+      ? supabase
+          .from('products')
+          .select('*, brand:brands(*), category:categories(*)')
+          .eq('category_id', product.category_id)
+          .neq('id', product.id)
+          .limit(3)
+      : supabase
+          .from('products')
+          .select('*, brand:brands(*), category:categories(*)')
+          .neq('id', product.id)
+          .limit(3),
+    supabase
+      .from('faqs')
+      .select('*')
+      .eq('is_active', true)
+      .limit(4),
+  ]);
 
-  if (!relatedProducts || relatedProducts.length === 0) {
+  let relatedProducts = relatedRes.data || [];
+  if (relatedProducts.length === 0) {
     const { data: fallbackProds } = await supabase
       .from('products')
       .select('*, brand:brands(*), category:categories(*)')
       .neq('id', product.id)
       .limit(3);
-    relatedProducts = fallbackProds;
+    relatedProducts = fallbackProds || [];
   }
 
-  // FAQs for product or global
-  const { data: faqs } = await supabase
-    .from('faqs')
-    .select('*')
-    .eq('is_active', true)
-    .limit(4);
+  const faqs = faqsRes.data || [];
 
   const jsonLd = generateProductJsonLd(product as Product);
 

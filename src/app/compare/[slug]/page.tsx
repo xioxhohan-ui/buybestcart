@@ -197,6 +197,10 @@ export default async function ComparisonDetailPage({ params }: ComparisonPagePro
                       <img
                         src={productA.thumbnail_url}
                         alt={productA.title}
+                        loading="lazy"
+                        decoding="async"
+                        width={90}
+                        height={90}
                         style={{ width: '90px', height: '90px', objectFit: 'contain', margin: '0 auto 0.75rem auto' }}
                       />
                     )}
@@ -217,6 +221,10 @@ export default async function ComparisonDetailPage({ params }: ComparisonPagePro
                       <img
                         src={productB.thumbnail_url}
                         alt={productB.title}
+                        loading="lazy"
+                        decoding="async"
+                        width={90}
+                        height={90}
                         style={{ width: '90px', height: '90px', objectFit: 'contain', margin: '0 auto 0.75rem auto' }}
                       />
                     )}

@@ -71,21 +71,23 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
     query = query.order('category_rank', { ascending: true, nullsFirst: false });
   }
 
-  const { data: products } = await query;
+  const [productsRes, subcategoriesRes, faqsRes] = await Promise.all([
+    query,
+    supabase
+      .from('categories')
+      .select('*')
+      .eq('parent_id', category.id)
+      .eq('is_active', true),
+    supabase
+      .from('faqs')
+      .select('*')
+      .eq('is_active', true)
+      .limit(4),
+  ]);
 
-  // Subcategories
-  const { data: subcategories } = await supabase
-    .from('categories')
-    .select('*')
-    .eq('parent_id', category.id)
-    .eq('is_active', true);
-
-  // FAQs
-  const { data: faqs } = await supabase
-    .from('faqs')
-    .select('*')
-    .eq('is_active', true)
-    .limit(4);
+  const products = productsRes.data || [];
+  const subcategories = subcategoriesRes.data || [];
+  const faqs = faqsRes.data || [];
 
   const breadcrumbs = [
     { name: 'Categories', url: '/category' },

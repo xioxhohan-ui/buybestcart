@@ -53,82 +53,77 @@ export default function AdminSettingsAndThemePage() {
 
     const now = new Date().toISOString();
 
-    // 1. General & Hero
-    await supabase.from('settings').upsert({
-      key: 'general',
-      category: 'general',
-      value: {
-        site_name: config.site_name,
-        tagline: config.tagline,
-        hero_heading: config.hero_heading,
-        hero_subheading: config.hero_subheading,
-        hero_description: config.hero_description,
-        marquee_text: config.marquee_text,
-        support_email: config.support_email,
-        contact_email: config.contact_email,
-      },
-      updated_at: now,
-    });
-
-    // 2. Branding
-    await supabase.from('settings').upsert({
-      key: 'branding',
-      category: 'branding',
-      value: {
-        company_name: config.company_name,
-        brand_description: config.brand_description,
-        logo_url: config.logo_url,
-        logo_dark_url: config.logo_dark_url,
-        logo_mobile_url: config.logo_mobile_url,
-        favicon_url: config.favicon_url,
-        footer_logo_url: config.footer_logo_url,
-        browser_theme_color: config.browser_theme_color,
-        og_default_image: config.og_default_image,
-        default_social_image: config.default_social_image,
-        social_links: config.social_links,
-      },
-      updated_at: now,
-    });
-
-    // 3. Theme Tokens
-    await supabase.from('settings').upsert({
-      key: 'theme',
-      category: 'theme',
-      value: {
-        primary_color: config.primary_color,
-        secondary_color: config.secondary_color,
-        accent_color: config.accent_color,
-        background_color: config.background_color,
-        surface_color: config.surface_color,
-        text_color: config.text_color,
-        muted_text_color: config.muted_text_color,
-        border_color: config.border_color,
-        button_radius: config.button_radius,
-        card_radius: config.card_radius,
-        shadow_intensity: config.shadow_intensity,
-        font_family: config.font_family,
-        heading_weight: config.heading_weight,
-        body_weight: config.body_weight,
-        layout_density: config.layout_density,
-      },
-      updated_at: now,
-    });
-
-    // 4. Affiliate
-    await supabase.from('settings').upsert({
-      key: 'affiliate',
-      category: 'affiliate',
-      value: { disclosure_text: config.disclosure_text },
-      updated_at: now,
-    });
-
-    // 5. Feature Flags
-    await supabase.from('settings').upsert({
-      key: 'feature_flags',
-      category: 'system',
-      value: config.feature_flags,
-      updated_at: now,
-    });
+    // Parallelize all settings upserts for immediate save feedback
+    await Promise.all([
+      supabase.from('settings').upsert({
+        key: 'general',
+        category: 'general',
+        value: {
+          site_name: config.site_name,
+          tagline: config.tagline,
+          hero_heading: config.hero_heading,
+          hero_subheading: config.hero_subheading,
+          hero_description: config.hero_description,
+          marquee_text: config.marquee_text,
+          support_email: config.support_email,
+          contact_email: config.contact_email,
+        },
+        updated_at: now,
+      }),
+      supabase.from('settings').upsert({
+        key: 'branding',
+        category: 'branding',
+        value: {
+          company_name: config.company_name,
+          brand_description: config.brand_description,
+          logo_url: config.logo_url,
+          logo_dark_url: config.logo_dark_url,
+          logo_mobile_url: config.logo_mobile_url,
+          favicon_url: config.favicon_url,
+          footer_logo_url: config.footer_logo_url,
+          browser_theme_color: config.browser_theme_color,
+          og_default_image: config.og_default_image,
+          default_social_image: config.default_social_image,
+          social_links: config.social_links,
+        },
+        updated_at: now,
+      }),
+      supabase.from('settings').upsert({
+        key: 'theme',
+        category: 'theme',
+        value: {
+          primary_color: config.primary_color,
+          secondary_color: config.secondary_color,
+          accent_color: config.accent_color,
+          background_color: config.background_color,
+          surface_color: config.surface_color,
+          text_color: config.text_color,
+          muted_text_color: config.muted_text_color,
+          border_color: config.border_color,
+          button_radius: config.button_radius,
+          card_radius: config.card_radius,
+          font_family: config.font_family,
+          heading_weight: config.heading_weight,
+          body_weight: config.body_weight,
+          layout_density: config.layout_density,
+        },
+        updated_at: now,
+      }),
+      supabase.from('settings').upsert({
+        key: 'affiliate',
+        category: 'affiliate',
+        value: {
+          disclosure_text: config.disclosure_text,
+        },
+        updated_at: now,
+      }),
+      supabase.from('settings').upsert({
+        key: 'feature_flags',
+        category: 'system',
+        value: config.feature_flags,
+        updated_at: now,
+      }),
+    ]);
 
     await fetch('/api/revalidate', { method: 'POST' }).catch(() => {});
     setSaving(false);

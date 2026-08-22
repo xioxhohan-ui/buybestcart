@@ -179,23 +179,34 @@ export default function ProductGallery({
 
         {/* Main Image with Smooth Crossfade */}
         <div style={{ width: '100%', height: '340px', position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          {imageList.map((url, idx) => (
-            <img
-              key={idx}
-              src={url}
-              alt={`${title} view ${idx + 1}`}
-              style={{
-                position: 'absolute',
-                maxHeight: '340px',
-                maxWidth: '100%',
-                objectFit: 'contain',
-                opacity: idx === selectedIndex ? 1 : 0,
-                transition: 'opacity 0.35s ease-in-out, transform 0.35s ease-out',
-                transform: idx === selectedIndex ? 'scale(1)' : 'scale(0.98)',
-                pointerEvents: idx === selectedIndex ? 'auto' : 'none',
-              }}
-            />
-          ))}
+          {imageList.map((url, idx) => {
+            const isVisible = idx === selectedIndex;
+            const isAdjacent = idx === (selectedIndex + 1) % imageList.length || idx === (selectedIndex - 1 + imageList.length) % imageList.length;
+            if (!isVisible && !isAdjacent && idx !== 0) return null;
+
+            return (
+              <img
+                key={idx}
+                src={url}
+                alt={`${title} view ${idx + 1}`}
+                loading={idx === 0 ? 'eager' : 'lazy'}
+                decoding="async"
+                width={400}
+                height={340}
+                fetchPriority={idx === 0 ? 'high' : 'auto'}
+                style={{
+                  position: 'absolute',
+                  maxHeight: '340px',
+                  maxWidth: '100%',
+                  objectFit: 'contain',
+                  opacity: idx === selectedIndex ? 1 : 0,
+                  transition: 'opacity 0.35s ease-in-out, transform 0.35s ease-out',
+                  transform: idx === selectedIndex ? 'scale(1)' : 'scale(0.98)',
+                  pointerEvents: idx === selectedIndex ? 'auto' : 'none',
+                }}
+              />
+            );
+          })}
         </div>
 
         {/* Next Button */}
@@ -236,7 +247,7 @@ export default function ProductGallery({
             display: 'flex',
             gap: '0.625rem',
             overflowX: 'auto',
-            paddingBottom: '0.35rem',
+            paddingBottom: '0.5rem',
             scrollbarWidth: 'thin',
           }}
         >
@@ -266,6 +277,10 @@ export default function ProductGallery({
               <img
                 src={url}
                 alt={`${title} thumbnail ${idx + 1}`}
+                loading="lazy"
+                decoding="async"
+                width={64}
+                height={64}
                 style={{
                   maxHeight: '100%',
                   maxWidth: '100%',

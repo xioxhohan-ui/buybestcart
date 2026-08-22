@@ -125,7 +125,14 @@ export default async function GuideDetailPage({ params }: GuidePageProps) {
         <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', fontSize: '0.8125rem', color: 'var(--text-muted)' }}>
           <span>By Editorial Testing Staff</span>
           <span>•</span>
-          <span>{new Date(article.published_at || article.created_at).toLocaleDateString()}</span>
+          <span>
+            {new Date(article.published_at || article.created_at).toLocaleDateString('en-US', {
+              year: 'numeric',
+              month: 'short',
+              day: 'numeric',
+              timeZone: 'UTC',
+            })}
+          </span>
           <span>•</span>
           <span>{article.reading_time_minutes || 7} min read</span>
         </div>
@@ -137,6 +144,8 @@ export default async function GuideDetailPage({ params }: GuidePageProps) {
           <img
             src={article.featured_image}
             alt={article.title}
+            loading="eager"
+            decoding="async"
             style={{ width: '100%', height: 'auto', maxHeight: '420px', objectFit: 'cover' }}
           />
         </div>
