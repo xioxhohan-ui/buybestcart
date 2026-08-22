@@ -10,12 +10,13 @@ import { Product } from '@/types';
 export const revalidate = 60;
 
 export const metadata: Metadata = {
-  title: "Today's Best Tech Deals & Price Drops | Buy Best Cart",
-  description: 'Verified hardware price drops, seasonal discounts, and curated tech savings evaluated by our editorial staff.',
+  title: "Today's Best Tech Deals & Amazon Price History Tracker | Buy Best Cart",
+  description: 'Verified hardware price drops, seasonal discounts, and curated tech savings evaluated by our editorial staff. Use our Amazon price history tracker to find the best time to buy electronics on Amazon.',
+  keywords: ['amazon price history tracker', 'how to find amazon deals', 'best time to buy electronics on amazon', 'tech deals 2026', 'verified price drops', 'buy best cart deals'],
   openGraph: {
-    title: "Today's Best Tech Deals & Price Drops | Buy Best Cart",
-    description: 'Verified hardware price drops, seasonal discounts, and curated tech savings evaluated by our editorial staff.',
-    images: [{ url: 'https://buybestcart.shop/og-image.png', width: 1200, height: 630, alt: "Today's Best Deals" }],
+    title: "Today's Best Tech Deals & Amazon Price History Tracker | Buy Best Cart",
+    description: 'Verified hardware price drops, seasonal discounts, and curated tech savings. Learn how to find Amazon deals and track 120-day price drops.',
+    images: [{ url: 'https://buybestcart.shop/og-image.png', width: 1200, height: 630, alt: "Today's Best Tech Deals & Amazon Price History Tracker" }],
   },
 };
 
