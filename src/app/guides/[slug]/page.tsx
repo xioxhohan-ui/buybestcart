@@ -191,9 +191,23 @@ export default async function GuideDetailPage({ params }: GuidePageProps) {
         </div>
       )}
 
-      {/* Top Products Section (Rendered if populated) */}
+      {/* 1. Introduction & 2026 Market Overview Section */}
+      {article.introduction && (
+        <section style={{ marginBottom: '3rem' }}>
+          <h2 style={{ fontSize: '1.75rem', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '1rem', fontFamily: 'var(--font-display)' }}>
+            1. Introduction &amp; 2026 Market Overview
+          </h2>
+          <div style={{ fontSize: '1.0625rem', lineHeight: 1.8, color: 'var(--text-primary)' }}>
+            {article.introduction.split('\n').filter((p: string) => p.trim()).map((para: string, pIdx: number) => (
+              <p key={pIdx} style={{ marginBottom: '1.25rem' }}>{para}</p>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* 2. Top Products Section (Rendered if populated) */}
       {topProducts.length > 0 && (
-        <TopProductsSection products={topProducts} />
+        <TopProductsSection products={topProducts} title="2. Our Top Picks" subtitle="Independently tested, ranked, and verified by our editorial lab staff." />
       )}
 
       {/* Rich Article Body Content */}

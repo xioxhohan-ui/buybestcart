@@ -39,6 +39,7 @@ import {
   ShieldCheck,
   FileText,
   Sliders,
+  Award,
 } from 'lucide-react';
 import Link from 'next/link';
 import TopProductsManager from '@/components/admin/TopProductsManager';
@@ -70,6 +71,7 @@ export default function AdminBlogGuidesPage() {
     slug: string;
     category_id: string;
     excerpt: string;
+    introduction: string;
     content: string;
     featured_image: string;
     status: ArticleStatus;
@@ -90,7 +92,8 @@ export default function AdminBlogGuidesPage() {
     slug: '',
     category_id: '',
     excerpt: '',
-    content: '',
+    introduction: 'The hardware landscape has shifted significantly over the past 12 months with the rollout of new processor architectures, enhanced acoustic silicon, and aggressive pricing adjustments across Amazon marketplaces.\n\nIn this comprehensive buying guide, our editorial testing team evaluates what is currently available, compares the top performing contenders head-to-head, and outlines which models deliver the best real-world performance for your budget.',
+    content: `## Lab Testing Methodology & Evaluation Criteria\n\nWe spent over 40 lab hours evaluating acoustic isolation, active battery endurance, thermal throttling, and overall build longevity.\n\n### Why Trust Our Lab\n\nOur engineers evaluate retail sample units and measure real-world performance without merchant sponsor intervention.\n\n> "A top-tier recommendation must not only benchmark well in the lab, but withstand real-world commuting, drops, and prolonged battery stress."`,
     featured_image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&auto=format&fit=crop&q=80',
     status: 'published',
     content_type: 'buying_guide',
@@ -99,7 +102,7 @@ export default function AdminBlogGuidesPage() {
     author_name: 'Editorial Testing Staff',
     author_role: 'Senior Tech & Hardware Analyst',
     author_avatar: '',
-    tags: ['Tech', 'Buying Guide', 'Amazon Deals'],
+    tags: ['Hardware', 'Buying Guide', 'Amazon Deals', '2026 Picks'],
     seo_title: '',
     seo_description: '',
     canonical_url: '',
@@ -130,7 +133,8 @@ export default function AdminBlogGuidesPage() {
       slug: '',
       category_id: categories[0]?.id || '',
       excerpt: '',
-      content: `## Testing Methodology & Evaluation Criteria\n\nWe tested these devices for over 40 lab hours evaluating acoustic isolation, active battery endurance, thermal throttling, and overall value.\n\n### Why Trust Our Lab\n\nOur engineers purchase or test retail sample units and measure real-world performance without sponsor intervention.\n\n> "A great product should not only test well in the lab, but hold up to daily commuting and prolonged productivity sessions."`,
+      introduction: 'The hardware landscape has shifted significantly over the past 12 months with the rollout of new processor architectures, enhanced acoustic silicon, and aggressive pricing adjustments across Amazon marketplaces.\n\nIn this comprehensive buying guide, our editorial testing team evaluates what is currently available, compares the top performing contenders head-to-head, and outlines which models deliver the best real-world performance for your budget.',
+      content: `## Lab Testing Methodology & Evaluation Criteria\n\nWe spent over 40 lab hours evaluating acoustic isolation, active battery endurance, thermal throttling, and overall build longevity.\n\n### Why Trust Our Lab\n\nOur engineers evaluate retail sample units and measure real-world performance without merchant sponsor intervention.\n\n> "A top-tier recommendation must not only benchmark well in the lab, but withstand real-world commuting, drops, and prolonged battery stress."`,
       featured_image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&auto=format&fit=crop&q=80',
       status: 'published',
       content_type: 'buying_guide',
@@ -157,6 +161,7 @@ export default function AdminBlogGuidesPage() {
       slug: g.slug || '',
       category_id: g.category_id || (categories[0]?.id || ''),
       excerpt: g.excerpt || '',
+      introduction: g.introduction || 'The hardware landscape has shifted significantly over the past 12 months with new product releases and competitive pricing across Amazon.\n\nIn this guide, we break down what is currently available and identify the top performers for every budget.',
       content: g.content || g.body || '',
       featured_image: g.featured_image || 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&auto=format&fit=crop&q=80',
       status: g.status || 'published',
@@ -205,6 +210,7 @@ export default function AdminBlogGuidesPage() {
       slug: cleanSlug,
       category_id: formData.category_id || null,
       excerpt: formData.excerpt,
+      introduction: formData.introduction,
       content: formData.content,
       body: formData.content,
       featured_image: formData.featured_image,
@@ -535,8 +541,8 @@ export default function AdminBlogGuidesPage() {
                 }}
               >
                 {[
-                  { id: 'content', label: '1. Content & Text', icon: BookOpen },
-                  { id: 'top_products', label: `2. Top Products (${formData.top_products.length})`, icon: Sparkles },
+                  { id: 'content', label: '1. Introduction & Content', icon: BookOpen },
+                  { id: 'top_products', label: `2. Our Top Picks (${formData.top_products.length})`, icon: Sparkles },
                   { id: 'videos', label: `3. Videos & Media (${formData.videos.length})`, icon: Video },
                   { id: 'seo', label: '4. SEO & SERP', icon: Search },
                   { id: 'author', label: '5. Author & Date', icon: User },
@@ -643,11 +649,31 @@ export default function AdminBlogGuidesPage() {
                       />
                     </div>
 
+                    {/* STRUCTURE 1: DEDICATED INTRODUCTION SECTION */}
+                    <div style={{ background: '#F8FAFC', border: '1px solid var(--border)', borderRadius: 'var(--radius-md)', padding: '1rem' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.35rem' }}>
+                        <label style={{ fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', color: 'var(--primary)', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                          <BookOpen size={14} />
+                          <span>1. Introduction &amp; Market Overview *</span>
+                        </label>
+                        <span style={{ fontSize: '0.6875rem', color: 'var(--text-muted)' }}>
+                          Current market state, what changed recently, &amp; what this guide covers
+                        </span>
+                      </div>
+                      <textarea
+                        rows={5}
+                        value={formData.introduction}
+                        onChange={(e) => setFormData({ ...formData, introduction: e.target.value })}
+                        placeholder="Explain the current situation in the market, what has changed recently, what products are currently available, and what this article is going to cover..."
+                        style={{ width: '100%', padding: '0.65rem 0.75rem', fontSize: '0.8125rem', lineHeight: 1.6, borderRadius: 'var(--radius-xs)', border: '1px solid var(--border-strong)' }}
+                      />
+                    </div>
+
                     {/* Rich Markdown Visual Editor */}
                     <div>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.35rem' }}>
                         <label style={{ fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase' }}>
-                          Article Body Content (Markdown &amp; Video Embeds)
+                          Editorial Deep-Dive &amp; Testing Results (Markdown &amp; Video Embeds)
                         </label>
                         <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
                           {formData.content.length} chars
@@ -680,10 +706,10 @@ export default function AdminBlogGuidesPage() {
                       </div>
 
                       <textarea
-                        rows={14}
+                        rows={10}
                         value={formData.content}
                         onChange={(e) => setFormData({ ...formData, content: e.target.value })}
-                        placeholder="Write your article content here..."
+                        placeholder="Write your detailed product breakdown, benchmark charts, acoustic graphs, and verdict summaries here..."
                         style={{
                           width: '100%',
                           padding: '0.75rem',
@@ -980,9 +1006,23 @@ export default function AdminBlogGuidesPage() {
                     </div>
                   )}
 
-                  {/* Numbered Top Products Live Section */}
+                  {/* 1. Introduction & Market Overview Section (Live Preview) */}
+                  {formData.introduction && (
+                    <section style={{ marginBottom: '2.5rem' }}>
+                      <h2 style={{ fontSize: '1.625rem', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '0.875rem', fontFamily: 'var(--font-display)' }}>
+                        1. Introduction &amp; 2026 Market Overview
+                      </h2>
+                      <div style={{ fontSize: '1rem', lineHeight: 1.75, color: 'var(--text-primary)' }}>
+                        {formData.introduction.split('\n').filter((p) => p.trim()).map((para, pIdx) => (
+                          <p key={pIdx} style={{ marginBottom: '1rem' }}>{para}</p>
+                        ))}
+                      </div>
+                    </section>
+                  )}
+
+                  {/* 2. Numbered Top Products Live Section */}
                   {formData.top_products.length > 0 && (
-                    <TopProductsSection products={formData.top_products} />
+                    <TopProductsSection products={formData.top_products} title="2. Our Top Picks" subtitle="Independently tested, ranked, and verified by our editorial lab staff." />
                   )}
 
                   {/* Rich Article Body Content */}
@@ -1085,7 +1125,7 @@ export default function AdminBlogGuidesPage() {
             <span>Blog &amp; Buying Guides Builder</span>
           </h1>
           <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem', margin: 0 }}>
-            WordPress-style split-screen editor with instant live preview, Top 5 to Top 20+ ranked product showdowns, video reviews, and live SEO controls.
+            WordPress-style split-screen editor with instant live preview, dedicated Introduction &amp; Market Analysis, Top 5 to Top 20+ ranked product showdowns, video reviews, and live SEO controls.
           </p>
         </div>
 

@@ -253,6 +253,7 @@ export interface Article {
   title: string;
   slug: string;
   excerpt?: string;
+  introduction?: string;
   content: string;
   body?: string;
   featured_image?: string;

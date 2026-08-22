@@ -16,12 +16,27 @@ import {
   ChevronDown,
   ChevronUp,
   Award,
+  DollarSign,
+  Tag,
 } from 'lucide-react';
 
 interface TopProductsManagerProps {
   products: TopProductItem[];
   onChange: (updated: TopProductItem[]) => void;
 }
+
+const PRESET_AWARD_LABELS = [
+  'Best Overall',
+  'Best Budget',
+  'Best Premium',
+  'Best for Gaming',
+  'Best Value',
+  'Best for Professionals',
+  'Best Battery Life',
+  'Editor\'s Choice',
+  'Best Noise Cancelling',
+  'Top Runner-Up',
+];
 
 export default function TopProductsManager({ products = [], onChange }: TopProductsManagerProps) {
   const [catalogProducts, setCatalogProducts] = useState<Product[]>([]);
@@ -45,15 +60,26 @@ export default function TopProductsManager({ products = [], onChange }: TopProdu
 
   const handleAddBlankProduct = () => {
     const newPos = products.length + 1;
+    const defaultBadge =
+      newPos === 1
+        ? 'Best Overall'
+        : newPos === 2
+        ? 'Top Runner-Up'
+        : newPos === 3
+        ? 'Best Budget'
+        : newPos === 4
+        ? 'Best Value'
+        : `Top Ranked #${newPos}`;
+
     const newItem: TopProductItem = {
       id: `top-prod-${Date.now()}`,
       position: newPos,
       title: `Top Pick #${newPos}`,
-      badge: newPos === 1 ? 'Best Overall Pick' : newPos === 2 ? 'Top Runner-Up' : newPos === 3 ? 'Best Budget Pick' : `Top Ranked #${newPos}`,
+      badge: defaultBadge,
       price: 199.99,
       list_price: 249.99,
       thumbnail_url: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500&auto=format&fit=crop&q=70',
-      short_description: 'Key testing takeaways and lab performance scores...',
+      short_description: 'Key testing takeaways, lab benchmark scores, and real-world performance evaluation...',
       cta_text: 'Buy on Amazon',
       affiliate_url: 'https://www.amazon.com?tag=bestbuycart-20',
       highlights: ['Class-leading performance', 'Exceptional build quality'],
@@ -72,6 +98,10 @@ export default function TopProductsManager({ products = [], onChange }: TopProdu
     if (!found) return;
 
     const newPos = products.length + 1;
+    const defaultBadge =
+      found.badge_text ||
+      (newPos === 1 ? 'Best Overall' : newPos === 2 ? 'Top Runner-Up' : newPos === 3 ? 'Best Budget' : `Top Ranked #${newPos}`);
+
     const newItem: TopProductItem = {
       id: `top-prod-${Date.now()}`,
       product_id: found.id,
@@ -79,7 +109,7 @@ export default function TopProductsManager({ products = [], onChange }: TopProdu
       asin: found.asin,
       position: newPos,
       title: found.title,
-      badge: found.badge_text || (newPos === 1 ? 'Best Overall Pick' : newPos === 2 ? 'Top Runner-Up' : `Top Ranked #${newPos}`),
+      badge: defaultBadge,
       price: found.price || 199.99,
       list_price: found.list_price || undefined,
       thumbnail_url: found.thumbnail_url || 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500&auto=format&fit=crop&q=70',
@@ -142,10 +172,10 @@ export default function TopProductsManager({ products = [], onChange }: TopProdu
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '1rem', fontWeight: 800, color: 'var(--text-primary)' }}>
             <Sparkles size={16} color="var(--green-accent)" />
-            <span>Top Products / Numbered Ranked Picks ({products.length} Products Included)</span>
+            <span>2. Our Top Picks Builder ({products.length} Products Included)</span>
           </div>
           <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', margin: '0.25rem 0 0 0' }}>
-            Choose any number of products (Top 3, Top 5, Top 8, Top 10, Top 20+). Reorder and customize titles, prices, badges, and Amazon buy links.
+            Choose any number of products (Top 5, Top 6, Top 7, Top 8, Top 9, Top 10, Top 15, Top 20+). Reorder and customize award text, clickable product names, live prices, and Amazon links.
           </p>
         </div>
 
@@ -170,10 +200,10 @@ export default function TopProductsManager({ products = [], onChange }: TopProdu
             }}
             defaultValue=""
           >
-            <option value="" disabled>+ Auto-Fill from Product Catalog...</option>
+            <option value="" disabled>+ Auto-Fill from Catalog...</option>
             {catalogProducts.map((p) => (
               <option key={p.id} value={p.id}>
-                {p.title.slice(0, 45)}... (${p.price || 0})
+                {p.title.slice(0, 42)}... (${p.price || 0})
               </option>
             ))}
           </select>
@@ -195,10 +225,10 @@ export default function TopProductsManager({ products = [], onChange }: TopProdu
         <div style={{ background: 'var(--bg-surface)', border: '1px dashed var(--border-strong)', borderRadius: 'var(--radius-md)', padding: '2.5rem', textAlign: 'center' }}>
           <ShoppingBag size={28} color="var(--text-muted)" style={{ margin: '0 auto 0.75rem auto' }} />
           <div style={{ fontSize: '0.875rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '0.35rem' }}>
-            No Top Products Added Yet
+            No Top Picks Added Yet
           </div>
           <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginBottom: '1rem' }}>
-            Add ranked products to create a rich Top 5, Top 10, or Top 20 buying guide with live prices and Amazon buy buttons.
+            Add ranked products to create a rich Top 5, Top 10, or Top 20 buying guide with live prices, custom ranking labels, and Amazon buy buttons.
           </p>
           <button
             type="button"
@@ -207,7 +237,7 @@ export default function TopProductsManager({ products = [], onChange }: TopProdu
             style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}
           >
             <Plus size={13} />
-            <span>Add First Ranked Product</span>
+            <span>Add #1 Ranked Pick</span>
           </button>
         </div>
       ) : (
@@ -273,12 +303,14 @@ export default function TopProductsManager({ products = [], onChange }: TopProdu
                       <div style={{ fontSize: '0.8125rem', fontWeight: 700, color: 'var(--text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                         {item.title}
                       </div>
-                      <div style={{ fontSize: '0.6875rem', color: 'var(--text-muted)', display: 'flex', gap: '0.5rem' }}>
+                      <div style={{ fontSize: '0.6875rem', color: 'var(--text-muted)', display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
                         <span style={{ color: 'var(--green-accent)', fontWeight: 700 }}>
                           ${Number(item.price || 0).toFixed(2)}
                         </span>
                         <span>•</span>
-                        <span>{item.badge || 'No award badge'}</span>
+                        <span style={{ fontWeight: 700, color: '#B45309', background: '#FEF3C7', padding: '0 0.35rem', borderRadius: '2px' }}>
+                          {item.badge || `Top Pick #${rank}`}
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -324,50 +356,86 @@ export default function TopProductsManager({ products = [], onChange }: TopProdu
                 {/* Expanded Form Fields */}
                 {isExpanded && (
                   <div style={{ padding: '1.25rem', borderTop: '1px solid var(--border)', display: 'flex', flexDirection: 'column', gap: '1rem', background: '#FAFAF9' }}>
-                    <div style={{ display: 'grid', gridTemplateColumns: '80px 1.5fr 1fr', gap: '0.75rem' }}>
+                    {/* Rank & Title */}
+                    <div style={{ display: 'grid', gridTemplateColumns: '80px 1fr', gap: '0.75rem' }}>
                       <div>
-                        <label style={{ display: 'block', fontSize: '0.6875rem', fontWeight: 700, marginBottom: '0.25rem' }}>
-                          Position #
+                        <label style={{ display: 'block', fontSize: '0.6875rem', fontWeight: 800, textTransform: 'uppercase', marginBottom: '0.25rem' }}>
+                          Rank #
                         </label>
                         <input
                           type="number"
                           min="1"
                           value={item.position || idx + 1}
                           onChange={(e) => handleUpdateItem(idx, 'position', parseInt(e.target.value) || idx + 1)}
-                          style={{ width: '100%', padding: '0.4rem', fontSize: '0.8125rem', fontWeight: 800, borderRadius: 'var(--radius-xs)', border: '1px solid var(--border-strong)', textAlign: 'center' }}
+                          style={{ width: '100%', padding: '0.45rem', fontSize: '0.875rem', fontWeight: 800, borderRadius: 'var(--radius-xs)', border: '1px solid var(--border-strong)', textAlign: 'center' }}
                         />
                       </div>
 
                       <div>
-                        <label style={{ display: 'block', fontSize: '0.6875rem', fontWeight: 700, marginBottom: '0.25rem' }}>
-                          Product Title / Model Name *
+                        <label style={{ display: 'block', fontSize: '0.6875rem', fontWeight: 800, textTransform: 'uppercase', marginBottom: '0.25rem' }}>
+                          Product Name * (Clickable on public website)
                         </label>
                         <input
                           type="text"
                           value={item.title}
                           onChange={(e) => handleUpdateItem(idx, 'title', e.target.value)}
-                          placeholder="e.g. Sony WH-1000XM5 Wireless Headphones"
-                          style={{ width: '100%', padding: '0.4rem 0.6rem', fontSize: '0.8125rem', borderRadius: 'var(--radius-xs)', border: '1px solid var(--border-strong)' }}
-                        />
-                      </div>
-
-                      <div>
-                        <label style={{ display: 'block', fontSize: '0.6875rem', fontWeight: 700, marginBottom: '0.25rem' }}>
-                          Award / Highlight Badge
-                        </label>
-                        <input
-                          type="text"
-                          value={item.badge || ''}
-                          onChange={(e) => handleUpdateItem(idx, 'badge', e.target.value)}
-                          placeholder="e.g. Best Overall, Best Budget"
-                          style={{ width: '100%', padding: '0.4rem 0.6rem', fontSize: '0.8125rem', borderRadius: 'var(--radius-xs)', border: '1px solid var(--border-strong)' }}
+                          placeholder="e.g. Sony WH-1000XM5 Wireless Noise-Canceling Headphones"
+                          style={{ width: '100%', padding: '0.45rem 0.65rem', fontSize: '0.875rem', fontWeight: 700, borderRadius: 'var(--radius-xs)', border: '1px solid var(--border-strong)' }}
                         />
                       </div>
                     </div>
 
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '0.75rem' }}>
+                    {/* Custom Award / Ranking Label Section */}
+                    <div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.25rem' }}>
+                        <label style={{ fontSize: '0.6875rem', fontWeight: 800, textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '0.3rem', color: '#B45309' }}>
+                          <Award size={13} />
+                          <span>Custom Ranking Label / Award *</span>
+                        </label>
+                        <span style={{ fontSize: '0.6875rem', color: 'var(--text-muted)' }}>
+                          Type any custom label or click a preset below:
+                        </span>
+                      </div>
+
+                      <input
+                        type="text"
+                        value={item.badge || ''}
+                        onChange={(e) => handleUpdateItem(idx, 'badge', e.target.value)}
+                        placeholder="e.g. Best Overall, Best Budget, Best for Gaming, Best for Professionals, or custom text"
+                        style={{ width: '100%', padding: '0.5rem 0.65rem', fontSize: '0.8125rem', fontWeight: 700, borderRadius: 'var(--radius-xs)', border: '1px solid var(--border-strong)', marginBottom: '0.4rem' }}
+                      />
+
+                      {/* Preset Award Chips */}
+                      <div style={{ display: 'flex', gap: '0.3rem', flexWrap: 'wrap' }}>
+                        {PRESET_AWARD_LABELS.map((preset) => {
+                          const isSelected = item.badge === preset;
+                          return (
+                            <button
+                              key={preset}
+                              type="button"
+                              onClick={() => handleUpdateItem(idx, 'badge', preset)}
+                              style={{
+                                fontSize: '0.6875rem',
+                                fontWeight: 700,
+                                padding: '0.15rem 0.45rem',
+                                borderRadius: 'var(--radius-xs)',
+                                border: isSelected ? '1px solid #D97706' : '1px solid var(--border)',
+                                background: isSelected ? '#FEF3C7' : 'var(--bg-surface)',
+                                color: isSelected ? '#B45309' : 'var(--text-secondary)',
+                                cursor: 'pointer',
+                              }}
+                            >
+                              {preset}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    {/* Price, Currency & CTA Controls */}
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '0.75rem' }}>
                       <div>
-                        <label style={{ display: 'block', fontSize: '0.6875rem', fontWeight: 700, marginBottom: '0.25rem' }}>
+                        <label style={{ display: 'block', fontSize: '0.6875rem', fontWeight: 800, textTransform: 'uppercase', marginBottom: '0.25rem' }}>
                           Verified Price ($ USD)
                         </label>
                         <input
@@ -375,13 +443,13 @@ export default function TopProductsManager({ products = [], onChange }: TopProdu
                           step="0.01"
                           value={item.price ?? ''}
                           onChange={(e) => handleUpdateItem(idx, 'price', parseFloat(e.target.value) || 0)}
-                          style={{ width: '100%', padding: '0.4rem 0.6rem', fontSize: '0.8125rem', borderRadius: 'var(--radius-xs)', border: '1px solid var(--border-strong)' }}
+                          style={{ width: '100%', padding: '0.4rem 0.6rem', fontSize: '0.8125rem', fontWeight: 700, borderRadius: 'var(--radius-xs)', border: '1px solid var(--border-strong)' }}
                         />
                       </div>
 
                       <div>
-                        <label style={{ display: 'block', fontSize: '0.6875rem', fontWeight: 700, marginBottom: '0.25rem' }}>
-                          List / Original Price ($ USD)
+                        <label style={{ display: 'block', fontSize: '0.6875rem', fontWeight: 800, textTransform: 'uppercase', marginBottom: '0.25rem' }}>
+                          List Price ($ USD)
                         </label>
                         <input
                           type="number"
@@ -393,8 +461,8 @@ export default function TopProductsManager({ products = [], onChange }: TopProdu
                       </div>
 
                       <div>
-                        <label style={{ display: 'block', fontSize: '0.6875rem', fontWeight: 700, marginBottom: '0.25rem' }}>
-                          Amazon ASIN (10-char)
+                        <label style={{ display: 'block', fontSize: '0.6875rem', fontWeight: 800, textTransform: 'uppercase', marginBottom: '0.25rem' }}>
+                          Amazon ASIN
                         </label>
                         <input
                           type="text"
@@ -407,47 +475,51 @@ export default function TopProductsManager({ products = [], onChange }: TopProdu
                       </div>
 
                       <div>
-                        <label style={{ display: 'block', fontSize: '0.6875rem', fontWeight: 700, marginBottom: '0.25rem' }}>
-                          Button CTA Label
+                        <label style={{ display: 'block', fontSize: '0.6875rem', fontWeight: 800, textTransform: 'uppercase', marginBottom: '0.25rem' }}>
+                          Button CTA Text
                         </label>
                         <input
                           type="text"
                           value={item.cta_text || 'Buy on Amazon'}
                           onChange={(e) => handleUpdateItem(idx, 'cta_text', e.target.value)}
                           placeholder="e.g. Buy on Amazon"
+                          style={{ width: '100%', padding: '0.4rem 0.6rem', fontSize: '0.8125rem', fontWeight: 700, borderRadius: 'var(--radius-xs)', border: '1px solid var(--border-strong)' }}
+                        />
+                      </div>
+                    </div>
+
+                    {/* Image & Affiliate Links */}
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+                      <div>
+                        <label style={{ display: 'block', fontSize: '0.6875rem', fontWeight: 800, textTransform: 'uppercase', marginBottom: '0.25rem' }}>
+                          Product Thumbnail URL
+                        </label>
+                        <input
+                          type="url"
+                          value={item.thumbnail_url || ''}
+                          onChange={(e) => handleUpdateItem(idx, 'thumbnail_url', e.target.value)}
+                          placeholder="https://images.unsplash.com/..."
+                          style={{ width: '100%', padding: '0.4rem 0.6rem', fontSize: '0.8125rem', borderRadius: 'var(--radius-xs)', border: '1px solid var(--border-strong)' }}
+                        />
+                      </div>
+
+                      <div>
+                        <label style={{ display: 'block', fontSize: '0.6875rem', fontWeight: 800, textTransform: 'uppercase', marginBottom: '0.25rem' }}>
+                          Amazon Affiliate Link *
+                        </label>
+                        <input
+                          type="url"
+                          value={item.affiliate_url || ''}
+                          onChange={(e) => handleUpdateItem(idx, 'affiliate_url', e.target.value)}
+                          placeholder="https://www.amazon.com/dp/B09XS7JWHH?tag=bestbuycart-20"
                           style={{ width: '100%', padding: '0.4rem 0.6rem', fontSize: '0.8125rem', borderRadius: 'var(--radius-xs)', border: '1px solid var(--border-strong)' }}
                         />
                       </div>
                     </div>
 
+                    {/* Short Description */}
                     <div>
-                      <label style={{ display: 'block', fontSize: '0.6875rem', fontWeight: 700, marginBottom: '0.25rem' }}>
-                        Product Image Thumbnail URL
-                      </label>
-                      <input
-                        type="url"
-                        value={item.thumbnail_url || ''}
-                        onChange={(e) => handleUpdateItem(idx, 'thumbnail_url', e.target.value)}
-                        placeholder="https://..."
-                        style={{ width: '100%', padding: '0.4rem 0.6rem', fontSize: '0.8125rem', borderRadius: 'var(--radius-xs)', border: '1px solid var(--border-strong)' }}
-                      />
-                    </div>
-
-                    <div>
-                      <label style={{ display: 'block', fontSize: '0.6875rem', fontWeight: 700, marginBottom: '0.25rem' }}>
-                        Amazon Affiliate Buy URL
-                      </label>
-                      <input
-                        type="url"
-                        value={item.affiliate_url || ''}
-                        onChange={(e) => handleUpdateItem(idx, 'affiliate_url', e.target.value)}
-                        placeholder="https://www.amazon.com/dp/.../?tag=bestbuycart-20"
-                        style={{ width: '100%', padding: '0.4rem 0.6rem', fontSize: '0.8125rem', borderRadius: 'var(--radius-xs)', border: '1px solid var(--border-strong)' }}
-                      />
-                    </div>
-
-                    <div>
-                      <label style={{ display: 'block', fontSize: '0.6875rem', fontWeight: 700, marginBottom: '0.25rem' }}>
+                      <label style={{ display: 'block', fontSize: '0.6875rem', fontWeight: 800, textTransform: 'uppercase', marginBottom: '0.25rem' }}>
                         Short Review Description &amp; Lab Takeaways
                       </label>
                       <textarea
@@ -459,29 +531,30 @@ export default function TopProductsManager({ products = [], onChange }: TopProdu
                       />
                     </div>
 
+                    {/* Pros & Cons */}
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
                       <div>
-                        <label style={{ display: 'block', fontSize: '0.6875rem', fontWeight: 700, marginBottom: '0.25rem', color: 'var(--green-deep)' }}>
+                        <label style={{ display: 'block', fontSize: '0.6875rem', fontWeight: 800, textTransform: 'uppercase', marginBottom: '0.25rem', color: 'var(--green-deep)' }}>
                           Pros (comma separated)
                         </label>
                         <input
                           type="text"
                           value={(item.pros || []).join(', ')}
                           onChange={(e) => handleUpdateItem(idx, 'pros', e.target.value.split(',').map((s) => s.trim()).filter(Boolean))}
-                          placeholder="Superior ANC, 30-hour battery, Lightweight"
+                          placeholder="Exceptional ANC, 30-hour battery, Lightweight"
                           style={{ width: '100%', padding: '0.4rem 0.6rem', fontSize: '0.8125rem', borderRadius: 'var(--radius-xs)', border: '1px solid var(--border-strong)' }}
                         />
                       </div>
 
                       <div>
-                        <label style={{ display: 'block', fontSize: '0.6875rem', fontWeight: 700, marginBottom: '0.25rem', color: '#9F1239' }}>
+                        <label style={{ display: 'block', fontSize: '0.6875rem', fontWeight: 800, textTransform: 'uppercase', marginBottom: '0.25rem', color: '#9F1239' }}>
                           Cons (comma separated)
                         </label>
                         <input
                           type="text"
                           value={(item.cons || []).join(', ')}
                           onChange={(e) => handleUpdateItem(idx, 'cons', e.target.value.split(',').map((s) => s.trim()).filter(Boolean))}
-                          placeholder="Non-folding hinge, High initial price"
+                          placeholder="Non-collapsible headband, Premium price"
                           style={{ width: '100%', padding: '0.4rem 0.6rem', fontSize: '0.8125rem', borderRadius: 'var(--radius-xs)', border: '1px solid var(--border-strong)' }}
                         />
                       </div>
