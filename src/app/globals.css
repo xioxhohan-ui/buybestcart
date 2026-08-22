@@ -662,37 +662,73 @@ h4 {
 .search-container {
   position: relative;
   width: 100%;
+  z-index: 30;
 }
 
 .search-input-wrap {
   position: relative;
   display: flex;
   align-items: center;
+  width: 100%;
 }
 
 .search-input {
   width: 100%;
-  padding: 0.5rem 0.875rem 0.5rem 2.25rem;
-  font-size: 0.8125rem;
+  padding: 0.55rem 2.25rem 0.55rem 2.35rem;
+  font-size: 0.875rem;
   font-family: var(--font-sans);
   background: var(--bg-surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
   outline: none;
-  height: 36px;
-  transition: all 0.2s ease;
+  height: 40px;
+  color: var(--text-primary);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .search-input:focus {
   border-color: var(--green-accent);
-  box-shadow: 0 0 0 2px var(--green-light);
+  box-shadow: 0 0 0 2px var(--green-light), 0 2px 8px rgba(0, 0, 0, 0.06);
 }
 
 .search-icon {
   position: absolute;
-  left: 0.75rem;
+  left: 0.8rem;
   color: var(--text-muted);
   pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+}
+
+/* Homepage Hero Search Specifics */
+.hero-search-wrapper {
+  position: relative;
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto 2rem auto;
+  z-index: 40;
+}
+
+.hero-search-wrapper .search-input {
+  height: 50px;
+  font-size: 1rem;
+  padding: 0.65rem 2.5rem 0.65rem 2.85rem;
+  border-radius: var(--radius-md);
+  border: 1.5px solid var(--border-strong, #D6D3D1);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0, 0, 0, 0.04);
+  background: #FFFFFF;
+}
+
+.hero-search-wrapper .search-input:focus {
+  border-color: var(--green-accent);
+  box-shadow: 0 0 0 3px var(--green-light), 0 8px 24px rgba(0, 0, 0, 0.08);
+}
+
+.hero-search-wrapper .search-icon {
+  left: 1rem;
 }
 
 .search-dropdown {
@@ -700,10 +736,10 @@ h4 {
   top: calc(100% + 0.35rem);
   left: 0;
   right: 0;
-  background: var(--bg-surface);
+  background: #FFFFFF;
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
-  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12), 0 2px 6px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.14), 0 2px 8px rgba(0, 0, 0, 0.06);
   z-index: 500;
   max-height: 420px;
   overflow: hidden;
@@ -1100,14 +1136,36 @@ section,
     padding: 0.4rem;
   }
 
-  /* Search Bar compact */
+  /* Search Bar compact in header, but prominent in hero */
   .search-input {
-    height: 34px;
-    font-size: 0.75rem;
-    padding: 0.35rem 0.65rem 0.35rem 1.85rem;
+    height: 40px;
+    font-size: 16px; /* Prevents iOS auto-zoom on input focus */
+    padding: 0.45rem 2rem 0.45rem 2.2rem;
   }
   .search-icon {
-    left: 0.55rem;
+    left: 0.65rem;
+  }
+
+  .hero-search-wrapper {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 auto 1.5rem auto !important;
+    position: relative !important;
+    z-index: 40 !important;
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+
+  .hero-search-wrapper .search-input {
+    height: 46px !important;
+    font-size: 16px !important;
+    padding: 0.55rem 2.25rem 0.55rem 2.5rem !important;
+    border-radius: var(--radius-md) !important;
+  }
+
+  .hero-search-wrapper .search-icon {
+    left: 0.85rem !important;
   }
 
   /* Product Cards mobile stacked view */
@@ -1182,14 +1240,24 @@ section,
     gap: 0.25rem;
   }
 
-  /* Ultra compact search input */
+  /* Compact search input */
   .search-input {
-    height: 32px;
-    font-size: 0.6875rem;
-    padding-left: 1.65rem;
+    height: 38px;
+    font-size: 16px;
+    padding-left: 2rem;
   }
   .search-icon {
-    left: 0.45rem;
+    left: 0.55rem;
+  }
+
+  .hero-search-wrapper .search-input {
+    height: 44px !important;
+    font-size: 16px !important;
+    padding: 0.5rem 2rem 0.5rem 2.25rem !important;
+  }
+
+  .hero-search-wrapper .search-icon {
+    left: 0.75rem !important;
   }
 
   /* Product Card compact padding */

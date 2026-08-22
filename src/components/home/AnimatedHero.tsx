@@ -37,55 +37,31 @@ export default function AnimatedHero({
     if (!containerRef.current) return;
     const profile = getAnimationProfile();
 
+    // If reduced motion is requested, do not run GSAP animations — elements stay 100% visible by default
     if (profile.isReduced) return;
 
     const ctx = gsap.context(() => {
-      const tl = gsap.timeline({
-        defaults: { ease: 'power3.out' },
-      });
-
-      tl.fromTo(
+      const elementsToAnimate = [
         eyebrowRef.current,
-        { opacity: 0, y: 15 },
-        { opacity: 1, y: 0, duration: 0.45 },
-        0.15
-      )
-        .fromTo(
-          headingLine1Ref.current,
-          { opacity: 0, y: 25 },
-          { opacity: 1, y: 0, duration: 0.65 },
-          0.25
-        )
-        .fromTo(
-          headingLine2Ref.current,
-          { opacity: 0, y: 25 },
-          { opacity: 1, y: 0, duration: 0.65 },
-          0.35
-        )
-        .fromTo(
-          descRef.current,
-          { opacity: 0, y: 15 },
-          { opacity: 1, y: 0, duration: 0.55 },
-          0.50
-        )
-        .fromTo(
-          searchRef.current,
-          { opacity: 0, y: 15 },
-          { opacity: 1, y: 0, duration: 0.45 },
-          0.60
-        )
-        .fromTo(
-          ctaRef.current,
-          { opacity: 0, y: 15 },
-          { opacity: 1, y: 0, duration: 0.45 },
-          0.70
-        )
-        .fromTo(
-          showcaseRef.current,
-          { opacity: 0, y: 30 },
-          { opacity: 1, y: 0, duration: 0.75, ease: 'power3.out' },
-          0.80
-        );
+        headingLine1Ref.current,
+        headingLine2Ref.current,
+        descRef.current,
+        searchRef.current,
+        ctaRef.current,
+        showcaseRef.current,
+      ].filter(Boolean);
+
+      gsap.fromTo(
+        elementsToAnimate,
+        { opacity: 0, y: 16 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.55,
+          stagger: 0.08,
+          ease: 'power3.out',
+        }
+      );
     }, containerRef);
 
     return () => ctx.revert();
@@ -111,22 +87,35 @@ export default function AnimatedHero({
       style={{
         borderBottom: '1px solid var(--border)',
         background: 'linear-gradient(180deg, #FAF9F5 0%, #F5F3EC 100%)',
-        padding: '5rem 0 4.5rem 0',
+        padding: '4.5rem 0 4rem 0',
+        position: 'relative',
+        zIndex: 10,
       }}
     >
       <div className="container">
         <div style={{ maxWidth: '860px', margin: '0 auto', textAlign: 'center' }}>
           {/* Eyebrow */}
-          <div ref={eyebrowRef} className="editorial-eyebrow" style={{ opacity: 0, justifyContent: 'center', display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}>
+          <div
+            ref={eyebrowRef}
+            className="editorial-eyebrow"
+            style={{
+              justifyContent: 'center',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.4rem',
+              marginBottom: '0.75rem',
+            }}
+          >
             <Sparkles size={12} color="var(--green-accent)" />
             <span>{eyebrow}</span>
           </div>
 
           {/* Editorial Serif Headline */}
-          <h1
-            style={{ marginBottom: '1.5rem', color: 'var(--text-primary)' }}
-          >
-            <span ref={headingLine1Ref} style={{ display: 'block', marginBottom: '0.25rem', opacity: 0 }}>
+          <h1 style={{ marginBottom: '1.25rem', color: 'var(--text-primary)' }}>
+            <span
+              ref={headingLine1Ref}
+              style={{ display: 'block', marginBottom: '0.25rem' }}
+            >
               {heading}
             </span>
             <span
@@ -136,7 +125,6 @@ export default function AnimatedHero({
                 fontWeight: 600,
                 color: 'var(--green-accent)',
                 display: 'block',
-                opacity: 0,
               }}
             >
               {subheading}
@@ -152,15 +140,24 @@ export default function AnimatedHero({
               lineHeight: 1.65,
               maxWidth: '680px',
               margin: '0 auto 2rem auto',
-              opacity: 0,
             }}
           >
             {description}
           </p>
 
-          {/* Search Bar */}
-          <div ref={searchRef} style={{ maxWidth: '580px', margin: '0 auto 1.75rem auto', opacity: 0 }}>
-            <SearchBar />
+          {/* Prominent Homepage Search Bar — Always Visible & Accessible on Mobile */}
+          <div
+            ref={searchRef}
+            className="hero-search-wrapper"
+            style={{
+              maxWidth: '600px',
+              margin: '0 auto 2rem auto',
+              width: '100%',
+              position: 'relative',
+              zIndex: 40,
+            }}
+          >
+            <SearchBar placeholder="Search 2026 gear, laptops, headphones, deals..." />
           </div>
 
           {/* Action CTAs */}
@@ -172,7 +169,6 @@ export default function AnimatedHero({
               gap: '1rem',
               flexWrap: 'wrap',
               marginBottom: '3.5rem',
-              opacity: 0,
             }}
           >
             <a href="#featured-picks" className="btn btn-primary btn-lg">
@@ -196,10 +192,19 @@ export default function AnimatedHero({
             maxWidth: '1020px',
             margin: '0 auto',
             boxShadow: 'var(--shadow)',
-            opacity: 0,
+            position: 'relative',
+            zIndex: 5,
           }}
         >
-          <div className="hero-showcase-grid" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1.2fr)', gap: '2.5rem', alignItems: 'center' }}>
+          <div
+            className="hero-showcase-grid"
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1.2fr)',
+              gap: '2.5rem',
+              alignItems: 'center',
+            }}
+          >
             {/* Image Preview */}
             <div
               style={{
@@ -211,7 +216,10 @@ export default function AnimatedHero({
               }}
             >
               <img
-                src={showcaseItem.thumbnail_url || 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=700&auto=format&fit=crop&q=80'}
+                src={
+                  showcaseItem.thumbnail_url ||
+                  'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=700&auto=format&fit=crop&q=80'
+                }
                 alt={showcaseItem.title}
                 style={{ maxHeight: '240px', margin: '0 auto', objectFit: 'contain' }}
               />
@@ -219,39 +227,106 @@ export default function AnimatedHero({
 
             {/* Editorial Feature Content */}
             <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.75rem' }}>
-                <span className="editorial-tag" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}>
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.75rem',
+                  marginBottom: '0.75rem',
+                }}
+              >
+                <span
+                  className="editorial-tag"
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '0.35rem',
+                  }}
+                >
                   <Award size={12} color="#FFFFFF" />
                   <span>EDITOR&apos;S #1 CHOICE OF 2026</span>
                 </span>
-                <span style={{ fontSize: '0.8125rem', color: 'var(--text-muted)', fontWeight: 600 }}>
+                <span
+                  style={{
+                    fontSize: '0.8125rem',
+                    color: 'var(--text-muted)',
+                    fontWeight: 600,
+                  }}
+                >
                   {showcaseItem.category?.name?.toUpperCase() || 'FLAGSHIP AUDIO'}
                 </span>
               </div>
 
-              <h2 style={{ fontSize: '1.5rem', marginBottom: '0.75rem', color: 'var(--text-primary)' }}>
+              <h2
+                style={{
+                  fontSize: '1.5rem',
+                  marginBottom: '0.75rem',
+                  color: 'var(--text-primary)',
+                }}
+              >
                 {showcaseItem.title}
               </h2>
 
-              <p style={{ fontSize: '0.9375rem', color: 'var(--text-secondary)', lineHeight: 1.6, marginBottom: '1.5rem' }}>
+              <p
+                style={{
+                  fontSize: '0.9375rem',
+                  color: 'var(--text-secondary)',
+                  lineHeight: 1.6,
+                  marginBottom: '1.5rem',
+                }}
+              >
                 {showcaseItem.short_description}
               </p>
 
-              <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', flexWrap: 'wrap' }}>
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '1.5rem',
+                  flexWrap: 'wrap',
+                }}
+              >
                 <div>
-                  <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase' }}>
+                  <div
+                    style={{
+                      fontSize: '0.75rem',
+                      color: 'var(--text-muted)',
+                      fontWeight: 600,
+                      textTransform: 'uppercase',
+                    }}
+                  >
                     Verified Price
                   </div>
-                  <div style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--text-primary)', fontFamily: 'var(--font-display)' }}>
+                  <div
+                    style={{
+                      fontSize: '1.5rem',
+                      fontWeight: 800,
+                      color: 'var(--text-primary)',
+                      fontFamily: 'var(--font-display)',
+                    }}
+                  >
                     {formatPrice(showcaseItem.price, 'USD')}
                   </div>
                 </div>
 
-                <div style={{ marginLeft: 'auto', display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
-                  <Link href={`/products/${showcaseItem.slug}`} className="btn btn-secondary btn-sm">
+                <div
+                  style={{
+                    marginLeft: 'auto',
+                    display: 'flex',
+                    gap: '0.75rem',
+                    flexWrap: 'wrap',
+                  }}
+                >
+                  <Link
+                    href={`/products/${showcaseItem.slug}`}
+                    className="btn btn-secondary btn-sm"
+                  >
                     In-Depth Review
                   </Link>
-                  <Link href={`/products/${showcaseItem.slug}`} className="btn btn-primary btn-sm">
+                  <Link
+                    href={`/products/${showcaseItem.slug}`}
+                    className="btn btn-primary btn-sm"
+                  >
                     View Product Details →
                   </Link>
                 </div>
