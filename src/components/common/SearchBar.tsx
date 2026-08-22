@@ -260,6 +260,10 @@ export default function SearchBar({
                             <img
                               src={product.thumbnail_url}
                               alt={product.title}
+                              loading="lazy"
+                              decoding="async"
+                              width={42}
+                              height={42}
                               onError={() => setBrokenImages((prev) => ({ ...prev, [product.id]: true }))}
                               style={{
                                 width: '100%',

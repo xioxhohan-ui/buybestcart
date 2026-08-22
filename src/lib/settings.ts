@@ -155,12 +155,25 @@ export const DEFAULT_SITE_CONFIG: SiteConfiguration = {
   ],
 };
 
+let cachedConfig: { data: SiteConfiguration; timestamp: number } | null = null;
+const CACHE_TTL_MS = 60 * 1000; // 60 seconds TTL
+
+export function clearSiteConfigCache() {
+  cachedConfig = null;
+}
+
 export async function getSiteConfiguration(): Promise<SiteConfiguration> {
+  const now = Date.now();
+  if (cachedConfig && now - cachedConfig.timestamp < CACHE_TTL_MS) {
+    return cachedConfig.data;
+  }
+
   try {
     const supabase = createServerClient();
     const { data } = await supabase.from('settings').select('*');
 
     if (!data || data.length === 0) {
+      cachedConfig = { data: DEFAULT_SITE_CONFIG, timestamp: now };
       return DEFAULT_SITE_CONFIG;
     }
 
@@ -193,6 +206,7 @@ export async function getSiteConfiguration(): Promise<SiteConfiguration> {
       }
     });
 
+    cachedConfig = { data: config, timestamp: now };
     return config;
   } catch {
     return DEFAULT_SITE_CONFIG;

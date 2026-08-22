@@ -141,31 +141,40 @@ export default function ProductCard({ product, rank }: ProductCardProps) {
         onTouchEnd={handleTouchEnd}
         style={{ position: 'relative', overflow: 'hidden' }}
       >
-        {imageList.map((imgUrl, idx) => (
-          <img
-            key={idx}
-            src={imgUrl}
-            alt={`${product.title} - View ${idx + 1}`}
-            className="product-card-image"
-            loading={idx === 0 ? 'eager' : 'lazy'}
-            style={{
-              position: idx === 0 ? 'relative' : 'absolute',
-              top: idx === 0 ? 'auto' : 0,
-              left: idx === 0 ? 'auto' : 0,
-              width: '100%',
-              height: '100%',
-              objectFit: 'contain',
-              padding: '2rem',
-              opacity: idx === currentIndex ? 1 : 0,
-              transition: 'opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1), transform 0.4s cubic-bezier(0.25, 1, 0.5, 1)',
-              transform: isHovered ? 'scale(1.05)' : 'scale(1.0)',
-              pointerEvents: idx === currentIndex ? 'auto' : 'none',
-            }}
-            onError={(e) => {
-              (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500&auto=format&fit=crop&q=60';
-            }}
-          />
-        ))}
+        {imageList.map((imgUrl, idx) => {
+          // Only render active image or initial/adjacent images to save mobile memory
+          const shouldRender = idx === currentIndex || idx === (currentIndex + 1) % imageList.length || idx === 0;
+          if (!shouldRender) return null;
+
+          return (
+            <img
+              key={idx}
+              src={imgUrl}
+              alt={`${product.title} - View ${idx + 1}`}
+              className="product-card-image"
+              loading={rank && rank <= 2 && idx === 0 ? 'eager' : 'lazy'}
+              decoding="async"
+              width={280}
+              height={280}
+              style={{
+                position: idx === 0 ? 'relative' : 'absolute',
+                top: idx === 0 ? 'auto' : 0,
+                left: idx === 0 ? 'auto' : 0,
+                width: '100%',
+                height: '100%',
+                objectFit: 'contain',
+                padding: '2rem',
+                opacity: idx === currentIndex ? 1 : 0,
+                transition: 'opacity 0.35s ease, transform 0.35s ease',
+                transform: isHovered ? 'scale(1.04)' : 'scale(1.0)',
+                pointerEvents: idx === currentIndex ? 'auto' : 'none',
+              }}
+              onError={(e) => {
+                (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500&auto=format&fit=crop&q=60';
+              }}
+            />
+          );
+        })}
 
         {/* Multi-Image Indicator Dot Bar */}
         {hasMultipleImages && (

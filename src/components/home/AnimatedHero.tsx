@@ -205,23 +205,40 @@ export default function AnimatedHero({
               alignItems: 'center',
             }}
           >
-            {/* Image Preview */}
+            {/* Image Preview — Optimized for Mobile LCP */}
             <div
               style={{
                 background: '#FAF9F6',
                 borderRadius: 'var(--radius-md)',
-                padding: '2rem',
+                padding: '1.5rem',
                 textAlign: 'center',
                 border: '1px solid var(--border)',
+                minHeight: '240px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
               }}
             >
               <img
                 src={
-                  showcaseItem.thumbnail_url ||
-                  'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=700&auto=format&fit=crop&q=80'
+                  showcaseItem.thumbnail_url
+                    ? (showcaseItem.thumbnail_url.includes('unsplash.com') ? showcaseItem.thumbnail_url.replace(/w=\d+/, 'w=500').replace(/q=\d+/, 'q=75') : showcaseItem.thumbnail_url)
+                    : 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500&auto=format&fit=crop&q=75'
                 }
                 alt={showcaseItem.title}
-                style={{ maxHeight: '240px', margin: '0 auto', objectFit: 'contain' }}
+                width={360}
+                height={240}
+                fetchPriority="high"
+                decoding="async"
+                style={{
+                  maxHeight: '240px',
+                  maxWidth: '100%',
+                  width: 'auto',
+                  height: 'auto',
+                  margin: '0 auto',
+                  objectFit: 'contain',
+                  display: 'block',
+                }}
               />
             </div>
 

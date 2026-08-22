@@ -57,7 +57,11 @@ export default function ComparisonMatrixSection({ products }: ComparisonMatrixSe
                   <img
                     src={item.thumbnail_url || 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&auto=format&fit=crop&q=60'}
                     alt={item.title}
-                    style={{ maxHeight: '120px', margin: '0 auto', objectFit: 'contain' }}
+                    loading="lazy"
+                    decoding="async"
+                    width={140}
+                    height={120}
+                    style={{ maxHeight: '120px', maxWidth: '100%', width: 'auto', height: 'auto', margin: '0 auto', objectFit: 'contain' }}
                   />
                 </td>
               ))}

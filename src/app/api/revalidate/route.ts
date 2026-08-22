@@ -1,8 +1,10 @@
 import { NextResponse } from 'next/server';
 import { revalidatePath } from 'next/cache';
+import { clearSiteConfigCache } from '@/lib/settings';
 
 export async function POST() {
   try {
+    clearSiteConfigCache();
     // 1. Revalidate Next.js cache routes for instant updates
     revalidatePath('/', 'layout');
     revalidatePath('/category');

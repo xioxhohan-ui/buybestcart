@@ -95,6 +95,9 @@ export default function CategoryShowcaseGrid({ categories }: CategoryShowcaseGri
                   alt={cat.name}
                   className="category-showcase-img"
                   loading="lazy"
+                  decoding="async"
+                  width={340}
+                  height={180}
                 />
               </div>
               <div style={{ padding: '1.75rem', display: 'flex', flexDirection: 'column', flex: 1 }}>
