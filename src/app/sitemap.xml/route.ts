@@ -3,7 +3,7 @@ import { createServerClient } from '@/lib/supabase/server';
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://buybestcart.shop';
+const SITE_URL = 'https://buybestcart.shop';
 
 interface UrlEntry {
   loc: string;
