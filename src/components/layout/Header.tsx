@@ -8,16 +8,7 @@ import {
   Flame,
   Scale,
   BookOpen,
-  Cpu,
-  Headphones,
-  Laptop,
-  Gamepad2,
-  Home,
   ShieldCheck,
-  Sparkles,
-  HeartPulse,
-  Dumbbell,
-  Tent,
   ChevronDown,
   ChevronUp,
   Info,
@@ -44,7 +35,7 @@ interface HeaderProps {
 
 export default function Header({
   siteName = 'Buy Best Cart',
-  announcementText = 'The 2026 Tech & Lifestyle Edit — 100% Independent Reviews & Verified Regional Amazon Stock',
+  announcementText = 'Free shipping on qualifying orders. Find the best deals across Amazon categories.',
   announcementLinkText = 'Testing Methodology →',
   announcementLinkUrl = '/how-we-rank',
   announcementEnabled = true,
@@ -425,7 +416,7 @@ export default function Header({
                   style={{ justifyContent: 'center', fontSize: '0.8125rem', gap: '0.4rem' }}
                 >
                   <Flame size={14} />
-                  <span>Today&apos;s Highlighted Deals</span>
+                  <span>Today&apos;s Deals</span>
                 </Link>
                 <Link
                   href="/guides"
@@ -434,7 +425,7 @@ export default function Header({
                   style={{ justifyContent: 'center', fontSize: '0.8125rem', gap: '0.4rem' }}
                 >
                   <BookOpen size={14} />
-                  <span>2026 Buying Guides & Reviews</span>
+                  <span>Buying Guides</span>
                 </Link>
                 <Link
                   href="/compare"
@@ -443,7 +434,7 @@ export default function Header({
                   style={{ justifyContent: 'center', fontSize: '0.8125rem', gap: '0.4rem' }}
                 >
                   <Scale size={14} />
-                  <span>Compare Flagships Side-by-Side</span>
+                  <span>Compare Products</span>
                 </Link>
                 <Link
                   href="/how-we-rank"
@@ -451,7 +442,7 @@ export default function Header({
                   style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.5rem 0.75rem', fontSize: '0.8125rem', fontWeight: 600, color: 'var(--text-secondary)' }}
                 >
                   <ShieldCheck size={15} color="var(--green-accent)" />
-                  <span>Our Testing Methodology</span>
+                  <span>How We Rank</span>
                 </Link>
                 <Link
                   href="/about"
@@ -459,7 +450,7 @@ export default function Header({
                   style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.5rem 0.75rem', fontSize: '0.8125rem', fontWeight: 600, color: 'var(--text-secondary)' }}
                 >
                   <Info size={15} color="var(--green-accent)" />
-                  <span>About the Publication</span>
+                  <span>About Us</span>
                 </Link>
                 <Link
                   href="/contact"
@@ -467,7 +458,7 @@ export default function Header({
                   style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.5rem 0.75rem', fontSize: '0.8125rem', fontWeight: 600, color: 'var(--text-secondary)' }}
                 >
                   <Mail size={15} color="var(--green-accent)" />
-                  <span>Contact Editorial Staff</span>
+                  <span>Contact Us</span>
                 </Link>
               </div>
 
