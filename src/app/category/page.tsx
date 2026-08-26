@@ -1,40 +1,31 @@
 import React from 'react';
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { Layers, ArrowRight } from 'lucide-react';
 import { createServerClient } from '@/lib/supabase/server';
 import Breadcrumbs from '@/components/common/Breadcrumbs';
 import { generateBreadcrumbJsonLd, generateItemListJsonLd } from '@/lib/seo';
 import { SITE_URL } from '@/lib/constants';
+import { Category } from '@/types';
 
 export const revalidate = 60;
 
 export const metadata: Metadata = {
-  title: 'Product Categories & Shopping Departments | Buy Best Cart',
-  description: 'Explore all verified tech, computing, audio, gaming, smart home, and lifestyle product categories curated by Buy Best Cart experts.',
+  title: 'Departments & Categories | Buy Best Cart',
+  description: 'Browse all shopping departments and categories on Buy Best Cart.',
   alternates: {
     canonical: `${SITE_URL}/category`,
   },
   openGraph: {
-    title: 'Product Categories & Shopping Departments | Buy Best Cart',
-    description: 'Explore all verified tech, computing, audio, gaming, smart home, and lifestyle product categories curated by Buy Best Cart experts.',
+    title: 'Departments & Categories | Buy Best Cart',
+    description: 'Browse all shopping departments and categories on Buy Best Cart.',
     url: `${SITE_URL}/category`,
     siteName: 'Buy Best Cart',
     type: 'website',
-    images: [
-      {
-        url: `${SITE_URL}/og-image.png`,
-        width: 1200,
-        height: 630,
-        alt: 'Buy Best Cart Shopping Categories',
-      },
-    ],
   },
   twitter: {
-    card: 'summary_large_image',
-    title: 'All Product Categories & Shopping Departments | Buy Best Cart',
-    description: 'Explore all verified tech, computing, audio, gaming, smart home, and lifestyle product categories.',
-    images: [`${SITE_URL}/og-image.png`],
+    card: 'summary',
+    title: 'Departments & Categories | Buy Best Cart',
+    description: 'Browse all shopping departments and categories on Buy Best Cart.',
   },
   robots: {
     index: true,
@@ -52,13 +43,14 @@ export const metadata: Metadata = {
 export default async function CategoriesIndexPage() {
   const supabase = createServerClient();
 
-  const { data: categories } = await supabase
+  const { data } = await supabase
     .from('categories')
-    .select('id, name, slug, description, image_url')
+    .select('id, name, slug, parent_id, display_order, is_active')
     .eq('is_active', true)
-    .order('name', { ascending: true });
+    .order('display_order', { ascending: true });
 
-  const categoryList = categories || [];
+  const allCategories = (data as Category[]) || [];
+  const departments = allCategories.filter((c) => !c.parent_id);
 
   const breadcrumbs = [
     { name: 'Categories', url: '/category' },
@@ -66,12 +58,11 @@ export default async function CategoriesIndexPage() {
 
   const breadcrumbJsonLd = generateBreadcrumbJsonLd(breadcrumbs);
   const itemListJsonLd = generateItemListJsonLd(
-    'All Product Categories & Departments',
-    'Curated departments for consumer electronics, computing, audio, and smart home hardware.',
-    categoryList.map((cat, idx) => ({
+    'Departments & Categories',
+    'Shopping departments and categories',
+    allCategories.map((cat, idx) => ({
       name: cat.name,
       url: `/category/${cat.slug}`,
-      image: cat.image_url || undefined,
       position: idx + 1,
     }))
   );
@@ -89,72 +80,92 @@ export default async function CategoriesIndexPage() {
 
       <Breadcrumbs items={breadcrumbs} />
 
-      <div style={{ marginBottom: '3rem', maxWidth: '760px' }}>
-        <div style={{ fontSize: '0.8125rem', fontWeight: 700, color: 'var(--primary)', textTransform: 'uppercase', marginBottom: '0.5rem', display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}>
-          <Layers size={13} />
-          <span>Curated Departments</span>
-        </div>
-        <h1 style={{ marginBottom: '0.75rem' }}>All Product Categories</h1>
-        <p style={{ fontSize: '1.125rem', color: 'var(--text-secondary)', lineHeight: 1.6 }}>
-          Browse our independent testing coverage across consumer tech, computing, smart home, audio, gaming, and lifestyle essentials.
-        </p>
+      <div style={{ marginBottom: '2.5rem' }}>
+        <h1 style={{ fontSize: '1.75rem', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '0.5rem', fontFamily: 'var(--font-display)' }}>
+          Departments
+        </h1>
       </div>
 
-      {categoryList.length > 0 ? (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 280px), 1fr))', gap: '1.5rem' }}>
-          {categoryList.map((cat) => (
-            <Link
-              key={cat.id}
-              href={`/category/${cat.slug}`}
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'space-between',
-                background: 'var(--bg-surface)',
-                border: '1px solid var(--border)',
-                borderRadius: 'var(--radius-lg)',
-                padding: '1.75rem',
-                textDecoration: 'none',
-                transition: 'all 0.2s ease',
-                boxShadow: 'var(--shadow-sm)',
-              }}
-            >
-              <div>
-                <h2 style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '0.5rem' }}>
-                  {cat.name}
-                </h2>
-                <p style={{ fontSize: '0.9375rem', color: 'var(--text-secondary)', lineHeight: 1.55, marginBottom: '1.25rem' }}>
-                  {cat.description || 'Explore the highest-rated recommendations, buying guides, and live Amazon price comparisons.'}
-                </p>
+      {departments.length > 0 ? (
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 320px), 1fr))', gap: '1.5rem' }}>
+          {departments.map((dept) => {
+            const subcategories = allCategories.filter((c) => c.parent_id === dept.id);
+            return (
+              <div
+                key={dept.id || dept.slug}
+                style={{
+                  background: 'var(--bg-surface)',
+                  border: '1px solid var(--border)',
+                  borderRadius: 'var(--radius-md)',
+                  padding: '1.25rem 1.5rem',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '0.75rem',
+                }}
+              >
+                <Link
+                  href={`/category/${dept.slug}`}
+                  style={{
+                    fontSize: '1.125rem',
+                    fontWeight: 700,
+                    color: 'var(--text-primary)',
+                    textDecoration: 'none',
+                    fontFamily: 'var(--font-display)',
+                    borderBottom: '1px solid var(--border)',
+                    paddingBottom: '0.5rem',
+                  }}
+                >
+                  {dept.name}
+                </Link>
+
+                {subcategories.length > 0 ? (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+                    {subcategories.map((sub) => (
+                      <Link
+                        key={sub.id || sub.slug}
+                        href={`/category/${sub.slug}`}
+                        style={{
+                          fontSize: '0.875rem',
+                          color: 'var(--text-secondary)',
+                          textDecoration: 'none',
+                          fontWeight: 500,
+                          padding: '0.2rem 0',
+                          transition: 'color 0.15s ease',
+                        }}
+                      >
+                        {sub.name}
+                      </Link>
+                    ))}
+                  </div>
+                ) : (
+                  <Link
+                    href={`/category/${dept.slug}`}
+                    style={{
+                      fontSize: '0.8125rem',
+                      color: 'var(--text-muted)',
+                      textDecoration: 'none',
+                    }}
+                  >
+                    Browse {dept.name}
+                  </Link>
+                )}
               </div>
-              <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', color: 'var(--green-accent)', fontWeight: 600, fontSize: '0.875rem' }}>
-                <span>View Top Picks</span>
-                <ArrowRight size={14} />
-              </div>
-            </Link>
-          ))}
+            );
+          })}
         </div>
       ) : (
         <div
           style={{
             textAlign: 'center',
-            padding: '4rem 1.5rem',
+            padding: '3rem 1.5rem',
             background: 'var(--bg-surface)',
-            borderRadius: 'var(--radius-lg)',
+            borderRadius: 'var(--radius-md)',
             border: '1px solid var(--border)',
           }}
         >
-          <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: 'var(--bg-subtle)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1rem', color: 'var(--text-muted)' }}>
-            <Layers size={24} />
-          </div>
-          <h2 style={{ fontSize: '1.25rem', marginBottom: '0.5rem' }}>No Categories Published Yet</h2>
-          <p style={{ color: 'var(--text-secondary)', maxWidth: '440px', margin: '0 auto 1.5rem auto', fontSize: '0.9375rem' }}>
-            Product categories will appear here once configured in the management dashboard.
+          <p style={{ color: 'var(--text-secondary)', margin: 0, fontSize: '0.9375rem' }}>
+            No departments available yet.
           </p>
-          <Link href="/products" className="btn btn-primary">
-            <span>Browse Full Product Catalog</span>
-            <ArrowRight size={16} />
-          </Link>
         </div>
       )}
     </div>
